@@ -6,8 +6,10 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.http import url_has_allowed_host_and_scheme, urlencode
 from django.views.decorators.http import require_POST
 
-from .forms import AnotacionForm, LibroForm, PrestamoForm, ProgresoForm, RegistroForm, ResenaForm
-from .models import Anotacion, Libro, Prestamo, Resena
+from .forms import (
+    AnotacionForm, LibroForm, PreferenciaLibreroForm, PrestamoForm, ProgresoForm, RegistroForm, ResenaForm,
+)
+from .models import Anotacion, Libro, PreferenciaLibrero, Prestamo, Resena
 from .services import catalogo, estadisticas
 from .services.isbn import ISBNInvalido, normalizar
 from .services.prestamos import PrestamoError, devolver, prestar
@@ -58,9 +60,11 @@ def biblioteca(request):
     if genero:
         libros = libros.filter(genero__iexact=genero)
 
+    vista_actual = "lista" if request.GET.get("vista") == "lista" else ""
+
     def enlace(**cambios):
         """Querystring que conserva los demás filtros (búsqueda, estado y género se combinan)."""
-        params = {"q": q, "estado": estado, "genero": genero, **cambios}
+        params = {"q": q, "estado": estado, "genero": genero, "vista": vista_actual, **cambios}
         return "?" + urlencode({k: v for k, v in params.items() if v}) if any(params.values()) else "?"
 
     por_estado = dict(base.values_list("estado").annotate(n=Count("id")))
@@ -72,11 +76,42 @@ def biblioteca(request):
         (nombre, n, enlace(genero="" if genero.lower() == nombre.lower() else nombre), genero.lower() == nombre.lower())
         for nombre, n in estadisticas.generos(request.user, limite=30)
     ]
+    # Vista «librero» (por defecto): estantes por estado de lectura. Vista «lista»: rejilla de tarjetas.
+    vista = "lista" if request.GET.get("vista") == "lista" else "librero"
+    estantes = [
+        ("leyendo", "Leyendo ahora", "planta"),
+        ("por_leer", "Por leer", "pila"),
+        ("leido", "Leídos", "luna"),
+    ]
+    secciones = [
+        {"valor": valor, "titulo": titulo, "adorno": adorno, "libros": [l for l in libros if l.estado == valor]}
+        for valor, titulo, adorno in estantes
+        if not estado or estado == valor
+    ]
+    preferencia = PreferenciaLibrero.de(request.user)
     return render(request, "biblioteca/biblioteca.html", {
         "libros": libros, "q": q, "estado": estado, "genero": genero,
         "estados_nav": estados_nav, "generos_nav": generos_nav,
         "sin_genero": base.filter(genero="").count(),
+        "vista": vista, "secciones": secciones,
+        "enlace_lista": enlace(vista="lista"), "enlace_librero": enlace(vista=""),
+        "preferencia": preferencia, "preferencia_form": PreferenciaLibreroForm(instance=preferencia),
     })
+
+
+@login_required
+@require_POST
+def librero_preferencias(request):
+    form = PreferenciaLibreroForm(request.POST, instance=PreferenciaLibrero.de(request.user))
+    if form.is_valid():
+        form.save()
+        messages.success(request, "Guardamos el diseño de tu librero.")
+    else:
+        messages.error(request, "Elige un diseño y un color de la lista.")
+    siguiente = request.POST.get("siguiente", "")
+    if url_has_allowed_host_and_scheme(siguiente, allowed_hosts={request.get_host()}):
+        return redirect(siguiente)
+    return redirect("biblioteca")
 
 
 @login_required

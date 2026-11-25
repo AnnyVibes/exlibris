@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load static exlibris %}
 {% block titulo %}Mi biblioteca{% endblock %}
+
 {% block contenido %}
 <div class="seccion-titulo" style="margin-top:0">
   <div>
@@ -8,9 +9,42 @@
     <p class="subtitulo" style="margin:0">{% if q %}Resultados para «{{ q }}» · {% endif %}{{ libros|length }} libro{{ libros|length|pluralize }}{% if estado or genero %} con estos filtros{% endif %}</p>
   </div>
   <div class="acciones-fila">
-    {% if q or estado or genero %}<a class="boton boton-suave boton-mini" href="{% url 'biblioteca' %}">Quitar filtros</a>{% endif %}
+    {% if q or estado or genero %}<a class="boton boton-suave boton-mini" href="{% url 'biblioteca' %}{% if vista == 'lista' %}?vista=lista{% endif %}">Quitar filtros</a>{% endif %}
     <a class="boton boton-primario boton-mini" href="{% url 'libro_nuevo' %}">{% icono 'mas' %} Agregar libro</a>
   </div>
+</div>
+
+<div class="barra-vista">
+  <nav class="selector-vista" aria-label="Cómo ver la biblioteca">
+    <a href="{{ enlace_librero }}" class="{% if vista == 'librero' %}activo{% endif %}" {% if vista == 'librero' %}aria-current="page"{% endif %}>{% icono 'libros' %} Librero</a>
+    <a href="{{ enlace_lista }}" class="{% if vista == 'lista' %}activo{% endif %}" {% if vista == 'lista' %}aria-current="page"{% endif %}>{% icono 'lista' %} Lista</a>
+  </nav>
+  {% if vista == 'librero' %}
+  <details class="personalizar">
+    <summary class="boton boton-secundario boton-mini">{% icono 'flor' %} Personalizar</summary>
+    <form method="post" action="{% url 'librero_preferencias' %}" class="personalizar-panel" id="form-librero">
+      {% csrf_token %}
+      <input type="hidden" name="siguiente" value="{{ request.get_full_path }}">
+      <fieldset>
+        <legend>Diseño</legend>
+        <div class="opciones-estilo">
+          {% for opcion in preferencia_form.estilo %}
+            <label class="opcion-estilo">{{ opcion.tag }}<span class="miniatura miniatura-{{ opcion.data.value }}" aria-hidden="true"></span>{{ opcion.choice_label }}</label>
+          {% endfor %}
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Color</legend>
+        <div class="opciones-color">
+          {% for opcion in preferencia_form.color %}
+            <label class="opcion-color librero-color-{{ opcion.data.value }}" title="{{ opcion.choice_label }}">{{ opcion.tag }}<span class="muestra" aria-hidden="true"></span><span>{{ opcion.choice_label }}</span></label>
+          {% endfor %}
+        </div>
+      </fieldset>
+      <button class="boton boton-primario boton-mini" type="submit">Guardar</button>
+    </form>
+  </details>
+  {% endif %}
 </div>
 
 {% if estados_nav.0.1 %}
@@ -34,7 +68,36 @@
 </section>
 {% endif %}
 
-{% if libros %}
+{% if vista == 'librero' and libros or vista == 'librero' and not q and not genero %}
+<section id="librero" class="librero estilo-{{ preferencia.estilo }} librero-color-{{ preferencia.color }}" aria-label="Librero">
+  <div class="mueble-copete" aria-hidden="true"></div>
+  <div class="mueble-interior">
+    {% for seccion in secciones %}
+      <div class="estante-seccion">
+        <div class="estante-cabecera">
+          <h2>{{ seccion.titulo }} <span>{{ seccion.libros|length }}</span></h2>
+          {% if seccion.libros and not estado %}<a href="?estado={{ seccion.valor }}&amp;vista=lista">Ver todos →</a>{% endif %}
+        </div>
+        <div class="repisa{% if seccion.libros|length >= 4 %} muchos{% endif %}">
+          {% for libro in seccion.libros %}
+            <a class="libro-repisa" href="{% url 'libro_detalle' libro.pk %}" title="{{ libro.titulo }} · {{ libro.autores }}">
+              <span class="tapa-repisa c{{ libro|color_libro }}">
+                {% if libro.imagen_portada %}<img src="{{ libro.imagen_portada }}" alt="{{ libro.titulo }}" loading="lazy">
+                {% else %}<span class="portada-falsa"><strong>{{ libro.titulo|truncatechars:34 }}</strong><small>{{ libro.autores|truncatechars:22 }}</small></span>{% endif %}
+                {% if libro.prestamo_activo %}<span class="marca-prestamo" title="En préstamo"><span class="solo-lectores">En préstamo</span></span>{% endif %}
+              </span>
+              {% if libro.estado == "leyendo" %}<span class="progreso-repisa"><span style="width: {{ libro.progreso }}%"></span></span>{% endif %}
+            </a>
+          {% empty %}
+            <p class="repisa-vacia">{% if seccion.valor == "leyendo" %}Nada en lectura. Marca un libro como «Leyendo».{% elif seccion.valor == "por_leer" %}Aquí irán los libros que tienes pendientes.{% else %}Aquí irán los libros que terminaste.{% endif %}</p>
+          {% endfor %}
+          <span class="adorno-repisa">{% include "biblioteca/_adorno.html" with nombre=seccion.adorno %}</span>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+{% elif libros %}
 <div class="libros" style="margin-top:26px">
   {% for libro in libros %}
     <a class="libro-tarjeta" href="{% url 'libro_detalle' libro.pk %}">
@@ -61,4 +124,20 @@
   </div>
 </div>
 {% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+/* Vista previa en vivo al elegir diseño o color; «Guardar» lo deja fijo en tu cuenta. */
+(function () {
+  const form = document.getElementById("form-librero");
+  const librero = document.getElementById("librero");
+  if (!form || !librero) return;
+  form.addEventListener("change", () => {
+    const estilo = form.querySelector("input[name=estilo]:checked");
+    const color = form.querySelector("input[name=color]:checked");
+    librero.className = librero.className.replace(/\bestilo-\S+/, "estilo-" + estilo.value).replace(/\blibrero-color-\S+/, "librero-color-" + color.value);
+  });
+})();
+</script>
 {% endblock %}

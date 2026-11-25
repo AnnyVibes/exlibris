@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Anotacion, Libro, Prestamo, Resena
+from .models import Anotacion, Libro, PreferenciaLibrero, Prestamo, Resena
 
 
 @admin.register(Libro)
@@ -13,3 +13,4 @@ class LibroAdmin(admin.ModelAdmin):
 admin.site.register(Resena)
 admin.site.register(Anotacion)
 admin.site.register(Prestamo)
+admin.site.register(PreferenciaLibrero)

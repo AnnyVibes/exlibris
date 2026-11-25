@@ -7,7 +7,7 @@ from PIL import Image, UnidentifiedImageError
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
-from .models import Anotacion, Libro, Prestamo, Resena
+from .models import Anotacion, Libro, PreferenciaLibrero, Prestamo, Resena
 from .services.isbn import ISBNInvalido, normalizar
 
 
@@ -148,3 +148,10 @@ class RegistroForm(UserCreationForm):
         if User.objects.filter(email__iexact=email).exists():
             raise forms.ValidationError("Ya existe una cuenta con ese correo.")
         return email
+
+
+class PreferenciaLibreroForm(forms.ModelForm):
+    class Meta:
+        model = PreferenciaLibrero
+        fields = ["estilo", "color"]
+        widgets = {"estilo": forms.RadioSelect, "color": forms.RadioSelect}

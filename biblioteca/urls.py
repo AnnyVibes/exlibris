@@ -9,6 +9,7 @@ urlpatterns = [
     path("salir/", auth_views.LogoutView.as_view(), name="logout"),
     path("registro/", views.registro, name="registro"),
     path("biblioteca/", views.biblioteca, name="biblioteca"),
+    path("biblioteca/librero/", views.librero_preferencias, name="librero_preferencias"),
     path("escanear/", views.escanear, name="escanear"),
     path("libros/nuevo/", views.libro_nuevo, name="libro_nuevo"),
     path("libros/<int:pk>/", views.libro_detalle, name="libro_detalle"),

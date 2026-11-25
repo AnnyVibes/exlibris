@@ -133,3 +133,33 @@ class Prestamo(models.Model):
     @property
     def vencido(self):
         return self.activo and self.devolver_el is not None and self.devolver_el < timezone.localdate()
+
+
+class PreferenciaLibrero(models.Model):
+    """Cómo quiere ver cada persona su librero (se guarda en la cuenta, no en el navegador)."""
+
+    class Color(models.TextChoices):
+        LILA = "lila", "Lila"
+        ROSA = "rosa", "Rosa"
+        CELESTE = "celeste", "Celeste"
+        MENTA = "menta", "Menta"
+        MADERA = "madera", "Madera"
+        NOCHE = "noche", "Noche"
+
+    class Estilo(models.TextChoices):
+        REPISAS = "repisas", "Repisas"
+        MUEBLE = "mueble", "Mueble"
+
+    usuario = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="preferencia_librero")
+    color = models.CharField(max_length=10, choices=Color.choices, default=Color.LILA)
+    estilo = models.CharField(max_length=10, choices=Estilo.choices, default=Estilo.MUEBLE)
+
+    class Meta:
+        verbose_name = "preferencia del librero"
+
+    def __str__(self):
+        return f"{self.usuario} · {self.color} / {self.estilo}"
+
+    @classmethod
+    def de(cls, usuario):
+        return cls.objects.get_or_create(usuario=usuario)[0]

@@ -540,3 +540,131 @@ a:focus-visible, button:focus-visible, select:focus-visible, input[type=file]:fo
   .form-libro { grid-template-columns: 1fr; }
   .portada-editor { position: static; grid-template-columns: 120px 1fr; align-items: center; }
 }
+
+/* ======================================================================
+   LIBRERO: estantes por estado, con dos diseños (repisas / mueble) y 6 colores
+   ====================================================================== */
+.librero-color-lila    { --mueble:#b9a5f0; --mueble-sombra:#9d86e6; --interior:#e6dcfb; --interior-suave:#f4effe; --tabla-sup:#f6f1ff; --tabla-frente:#cdbdf5; --veta:rgba(157,134,230,.28); --texto-mueble:#3b2a63; --clavo:#8b74d9; --luna:#9d86e6; }
+.librero-color-rosa    { --mueble:#f0a9c8; --mueble-sombra:#e48bb2; --interior:#fbe0ec; --interior-suave:#fff1f7; --tabla-sup:#fff5f9; --tabla-frente:#f6c2d9; --veta:rgba(228,139,178,.28); --texto-mueble:#6b2147; --clavo:#d9729f; --luna:#e48bb2; }
+.librero-color-celeste { --mueble:#a3b6dc; --mueble-sombra:#8aa0cc; --interior:#c7d4ed; --interior-suave:#eef3fb; --tabla-sup:#e8eef9; --tabla-frente:#b3c4e4; --veta:rgba(120,145,195,.32); --texto-mueble:#2c3e66; --clavo:#6f86b8; --luna:#6f86b8; }
+.librero-color-menta   { --mueble:#9fd3bf; --mueble-sombra:#82c2aa; --interior:#d4efe4; --interior-suave:#effaf5; --tabla-sup:#f0fbf6; --tabla-frente:#bde4d5; --veta:rgba(110,180,150,.3); --texto-mueble:#1f5642; --clavo:#6bb396; --luna:#6bb396; }
+.librero-color-madera  { --mueble:#c9a27a; --mueble-sombra:#b08660; --interior:#f0e2cf; --interior-suave:#faf4ec; --tabla-sup:#f8eddf; --tabla-frente:#dcc0a0; --veta:rgba(176,134,96,.25); --texto-mueble:#5a3d22; --clavo:#9c7450; --luna:#b08660; }
+.librero-color-noche   { --mueble:#3a3163; --mueble-sombra:#2b2450; --interior:#4b4180; --interior-suave:#2f2852; --tabla-sup:#7a6dbd; --tabla-frente:#5a4f96; --veta:rgba(0,0,0,.22); --texto-mueble:#f1ecff; --clavo:#c9bff5; --luna:#f4d35e; }
+
+.barra-vista { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 18px; flex-wrap: wrap; position: relative; }
+.selector-vista { display: inline-flex; background: var(--superficie); border: 1px solid var(--borde); border-radius: 999px; padding: 4px; box-shadow: var(--sombra); }
+.selector-vista a { display: inline-flex; align-items: center; gap: 8px; min-height: 38px; padding: 0 16px; border-radius: 999px; font-weight: 500; font-size: 14px; color: var(--texto-medio); }
+.selector-vista a .icono { width: 17px; height: 17px; }
+.selector-vista a.activo { background: var(--lila-100); color: var(--primario-texto); font-weight: 600; }
+
+/* Panel «Personalizar» */
+.personalizar summary { list-style: none; }
+.personalizar summary::-webkit-details-marker { display: none; }
+.personalizar[open] summary { background: var(--lila-50); border-color: var(--lila-400); }
+.personalizar-panel {
+  position: absolute; right: 0; top: calc(100% + 8px); z-index: 15; width: 330px;
+  background: var(--superficie); border: 1px solid var(--borde); border-radius: var(--radio-lg); padding: 18px; box-shadow: var(--sombra-fuerte);
+  display: grid; gap: 14px;
+}
+.personalizar-panel fieldset { border: 0; padding: 0; margin: 0; }
+.personalizar-panel legend { font-size: 13px; font-weight: 600; color: var(--texto-suave); text-transform: uppercase; letter-spacing: .4px; margin-bottom: 8px; }
+.opciones-estilo { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.opcion-estilo, .opcion-color { position: relative; cursor: pointer; }
+.opcion-estilo input, .opcion-color input { position: absolute; opacity: 0; pointer-events: none; }
+.opcion-estilo { display: grid; gap: 6px; justify-items: center; font-size: 13px; font-weight: 500; padding: 10px; border: 2px solid var(--borde); border-radius: var(--radio-md); }
+.opcion-estilo:has(input:checked) { border-color: var(--primario); background: var(--lila-50); color: var(--primario-texto); }
+.opcion-estilo:has(input:focus-visible) { box-shadow: var(--foco); }
+.miniatura { width: 100%; height: 54px; border-radius: 8px; background: #f6f3ff; position: relative; overflow: hidden; }
+.miniatura-repisas { background:
+  linear-gradient(#cdbdf5, #cdbdf5) 8px 22px / calc(100% - 16px) 5px no-repeat,
+  linear-gradient(#cdbdf5, #cdbdf5) 8px 44px / calc(100% - 16px) 5px no-repeat,
+  linear-gradient(90deg, #8b7fd1 0 8px, transparent 8px 11px, #f07167 11px 19px, transparent 19px 22px, #5fa777 22px 30px) 14px 8px / 40px 14px no-repeat,
+  linear-gradient(90deg, #ec8fb4 0 8px, transparent 8px 11px, #4a6fa5 11px 19px) 14px 30px / 40px 14px no-repeat, #f6f3ff; }
+.miniatura-mueble { background:
+  radial-gradient(ellipse at 50% 100%, #e6dcfb 0 58%, transparent 59%) 50% 2px / 80% 22px no-repeat,
+  linear-gradient(#b9a5f0, #b9a5f0) 50% 0 / 80% 100% no-repeat, #f6f3ff; }
+.miniatura-mueble::after { content: ""; position: absolute; left: 18%; right: 18%; top: 14px; bottom: 4px; background:
+  linear-gradient(#cdbdf5, #cdbdf5) 0 18px / 100% 4px no-repeat, linear-gradient(#cdbdf5, #cdbdf5) 0 34px / 100% 4px no-repeat,
+  linear-gradient(90deg, #8b7fd1 0 7px, transparent 7px 9px, #f07167 9px 16px) 6px 6px / 20px 12px no-repeat, #e6dcfb; }
+.opciones-color { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.opcion-color { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 12px; border: 2px solid transparent; font-size: 13px; }
+.opcion-color .muestra { width: 26px; height: 26px; border-radius: 50%; background: linear-gradient(135deg, var(--mueble) 0 50%, var(--interior) 50%); box-shadow: inset 0 0 0 1px rgba(0,0,0,.08); flex-shrink: 0; }
+.opcion-color:has(input:checked) { border-color: var(--primario); background: var(--lila-50); font-weight: 600; }
+.opcion-color:has(input:focus-visible) { box-shadow: var(--foco); }
+
+/* El librero */
+.librero { --ancho: 92px; --alto: 138px; --tabla: 16px; --aire: 18px; --fila: calc(var(--alto) + var(--tabla) + var(--aire));
+  --hoja-1: #5fa777; --hoja-2: #7cc293; --maceta: var(--mueble-sombra); --maceta-borde: var(--mueble); }
+.mueble-interior { display: grid; gap: 8px; }
+.estante-cabecera { display: flex; justify-content: space-between; align-items: baseline; padding: 0 22px; margin-bottom: 2px; }
+.estante-cabecera h2 { font-size: 16px; font-weight: 600; color: var(--texto-mueble); display: flex; align-items: center; gap: 8px; }
+.estante-cabecera h2 span { font-size: 12px; background: rgba(255,255,255,.55); color: var(--texto-mueble); border-radius: 999px; padding: 1px 9px; }
+.estante-cabecera a { font-size: 13px; font-weight: 600; color: var(--texto-mueble); opacity: .85; }
+.estante-cabecera a:hover { opacity: 1; text-decoration: underline; }
+
+.repisa {
+  display: grid; grid-template-columns: repeat(auto-fill, var(--ancho)); grid-auto-rows: var(--fila);
+  column-gap: 16px; align-items: end; padding: 0 22px;
+  /* Cada fila termina en una tabla: cara superior clara + frente */
+  background:
+    linear-gradient(to bottom, transparent calc(100% - var(--tabla)), var(--tabla-sup) calc(100% - var(--tabla)),
+      var(--tabla-sup) calc(100% - var(--tabla) + 5px), var(--tabla-frente) calc(100% - var(--tabla) + 5px)) 0 0 / 100% var(--fila) repeat-y;
+}
+.libro-repisa { position: relative; display: block; height: var(--alto); margin-bottom: calc(var(--tabla) - 2px); transition: transform .18s; }
+.libro-repisa:hover { transform: translateY(-6px); }
+.tapa-repisa {
+  position: relative; display: block; width: 100%; height: 100%; overflow: hidden; background: var(--c);
+  border-radius: 3px 7px 7px 3px; box-shadow: 4px 5px 10px rgba(20, 16, 40, .28);
+}
+.tapa-repisa img { width: 100%; height: 100%; object-fit: cover; }
+.tapa-repisa::after { content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(90deg, rgba(0,0,0,.25) 0, rgba(0,0,0,.05) 4px, rgba(255,255,255,.3) 5px, rgba(255,255,255,0) 10px); }
+.tapa-repisa .portada-falsa { padding: 8px 6px 8px 10px; gap: 5px; }
+.tapa-repisa .portada-falsa strong { font-size: 11px; letter-spacing: 0; }
+.tapa-repisa .portada-falsa small { font-size: 8px; }
+.marca-prestamo { position: absolute; top: 6px; right: 6px; z-index: 1; width: 12px; height: 12px; border-radius: 50%; background: #ec4899; box-shadow: 0 0 0 2px #fff; }
+.progreso-repisa { position: absolute; left: 7px; right: 5px; bottom: 6px; z-index: 1; height: 5px; border-radius: 999px; background: rgba(255,255,255,.7); overflow: hidden; }
+.progreso-repisa span { display: block; height: 100%; background: var(--primario); }
+.repisa-vacia { grid-column: 1 / -2; align-self: center; margin-bottom: var(--tabla); font-size: 14px; color: var(--texto-mueble); opacity: .8; }
+.adorno-repisa { display: flex; align-items: flex-end; justify-content: center; height: var(--alto); margin-bottom: calc(var(--tabla) - 1px); }
+.adorno-repisa .adorno { width: 100%; max-height: 82%; }
+
+/* Diseño «Repisas»: estantes flotantes sobre un panel suave */
+.estilo-repisas .mueble-copete { display: none; }
+.estilo-repisas .mueble-interior { background: var(--interior-suave); border-radius: var(--radio-xl); padding: 22px 0 14px; border: 1px solid rgba(0,0,0,.04); }
+.estilo-repisas .repisa { background:
+  linear-gradient(to bottom, transparent calc(100% - var(--tabla)), var(--tabla-sup) calc(100% - var(--tabla)),
+    var(--tabla-sup) calc(100% - var(--tabla) + 5px), var(--tabla-frente) calc(100% - var(--tabla) + 5px)) 12px 0 / calc(100% - 24px) var(--fila) repeat-y; }
+
+/* Diseño «Mueble»: copete en arco, laterales gruesos, tablones verticales y clavos en las repisas */
+.estilo-mueble .mueble-copete {
+  height: 66px; margin: 0 4px -2px; background: var(--mueble);
+  border-radius: 50% 50% 0 0 / 90% 90% 0 0; position: relative;
+}
+.estilo-mueble .mueble-copete::after { content: ""; position: absolute; left: 18px; right: 18px; bottom: 0; height: 46px;
+  background: var(--interior); border-radius: 50% 50% 0 0 / 90% 90% 0 0; box-shadow: inset 0 6px 10px rgba(0,0,0,.08); }
+.estilo-mueble .mueble-interior {
+  border: 18px solid var(--mueble); border-top: 0; border-bottom-width: 26px; border-radius: 0 0 16px 16px;
+  padding: 6px 0 4px;
+  background: repeating-linear-gradient(90deg, transparent 0 62px, var(--veta) 62px 64px), var(--interior);
+  box-shadow: inset 0 10px 18px rgba(0,0,0,.07), 0 18px 30px -12px rgba(40, 30, 80, .35);
+}
+.estilo-mueble .repisa { background:
+  radial-gradient(circle at 40px calc(100% - 5px), var(--clavo) 0 2.6px, transparent 3.2px) 0 0 / 80px var(--fila) repeat,
+  linear-gradient(to bottom, transparent calc(100% - var(--tabla)), var(--tabla-sup) calc(100% - var(--tabla)),
+    var(--tabla-sup) calc(100% - var(--tabla) + 5px), var(--tabla-frente) calc(100% - var(--tabla) + 5px)) 0 0 / 100% var(--fila) repeat-y; }
+.estilo-mueble.librero-color-noche .estante-cabecera h2 span { background: rgba(255,255,255,.15); }
+
+@media (max-width: 860px) {
+  .librero { --ancho: 66px; --alto: 99px; --tabla: 13px; --aire: 14px; }
+  .repisa { column-gap: 10px; padding: 0 12px; }
+  .estante-cabecera { padding: 0 12px; }
+  .estilo-mueble .mueble-interior { border-width: 0 10px 18px; }
+  .estilo-mueble .mueble-copete { height: 40px; }
+  .estilo-mueble .mueble-copete::after { left: 10px; right: 10px; height: 26px; }
+  .tapa-repisa .portada-falsa strong { font-size: 9px; }
+  .tapa-repisa .portada-falsa small { display: none; }
+  .personalizar-panel { position: fixed; left: 12px; right: 12px; top: auto; bottom: 90px; width: auto; }
+  .repisa-vacia { font-size: 13px; }
+  .repisa.muchos .adorno-repisa { display: none; }
+}
