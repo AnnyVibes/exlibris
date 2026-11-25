@@ -9,6 +9,7 @@
 - **IA (fase 2)**: Django llamará a webhooks de **n8n** (instalado localmente, gratis) con un LLM
   gratuito (Gemini en capa gratuita u Ollama), igual que el Lab 14: Basic LLM Chain + Structured Output Parser
   para clasificar y resumir, y un AI Agent con herramientas HTTP que consultan una API JSON de la biblioteca.
-- **Diseño**: inspirado en un dashboard pastel (Pinterest): barra lateral blanca, contenido central con hero
-  en degradado rosa y tarjetas muy redondeadas, panel derecho con préstamos y última anotación. En el celular
-  la barra lateral se convierte en una navegación inferior.
+- **Diseño**: estilo «librero». Tipografía del sistema (Segoe UI en Windows, San Francisco en iPhone, Roboto en
+  Android), base blanca y lila con colores de lomo de libro (coral, azul, verde, mostaza). Los libros se dibujan
+  con tapa, páginas y cinta; las categorías son libros; las anotaciones son tarjetas tipo diario. Tres columnas
+  en escritorio; en el celular, barra de navegación inferior.

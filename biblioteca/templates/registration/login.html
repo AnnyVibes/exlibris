@@ -1,11 +1,11 @@
 {% extends "base.html" %}
-{% load static %}
+{% load static exlibris %}
 {% block titulo %}Entrar{% endblock %}
 {% block cuerpo %}
 <div class="acceso">
-  <div class="acceso-arte"><img src="{% static 'biblioteca/img/estante.svg' %}" alt=""><h1>Tu biblioteca, página a página</h1><p>Escanea, anota, reseña y lleva la cuenta de tus préstamos.</p></div>
+  <div class="acceso-arte"><img src="{% static 'biblioteca/img/libros.svg' %}" alt=""><h1>Tu biblioteca, página a página</h1><p>Escanea, anota, reseña y lleva la cuenta de tus préstamos.</p></div>
   <div class="acceso-forma"><div class="caja">
-    <div class="logo"><span class="l1">Ex</span><span class="l2">Libris</span></div>
+    <div class="logo">{% libro_icono 0 "EL" "logo-libro" %}<span class="logo-texto">Ex <em>Libris</em></span></div>
     <h2 style="margin-bottom:18px">Entrar</h2>
     <form method="post" class="formulario">
       {% csrf_token %}
@@ -13,7 +13,7 @@
       {% include "biblioteca/_campo.html" with campo=form.username %}
       {% include "biblioteca/_campo.html" with campo=form.password %}
       <input type="hidden" name="next" value="{{ next }}">
-      <button class="boton boton-rosa boton-ancho" type="submit">Entrar</button>
+      <button class="boton boton-lila boton-ancho" type="submit">Entrar</button>
     </form>
     <p class="cambio">¿No tienes cuenta? <a href="{% url 'registro' %}">Crea una</a></p>
   </div></div>

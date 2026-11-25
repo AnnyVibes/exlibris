@@ -32,11 +32,15 @@ def registro(request):
 @login_required
 def inicio(request):
     libros = Libro.objects.filter(propietario=request.user)
+    resumen = estadisticas.resumen(request.user)
     return render(request, "biblioteca/inicio.html", {
-        "resumen": estadisticas.resumen(request.user),
+        "resumen": resumen,
         "leyendo": libros.filter(estado=Libro.Estado.LEYENDO).order_by("-actualizado").first(),
-        "recientes": libros.annotate(n_anotaciones=Count("anotaciones"))[:4],
-        "generos": estadisticas.generos(request.user, limite=4),
+        "recientes": libros[:6],
+        "generos": estadisticas.generos(request.user, limite=6),
+        "estados": [
+            (valor, etiqueta, resumen["por_estado"][etiqueta]) for valor, etiqueta in Libro.Estado.choices
+        ],
     })
 
 
@@ -58,9 +62,11 @@ def biblioteca(request):
         libros = libros.filter(estado=estado)
     if genero:
         libros = libros.filter(genero__iexact=genero)
+    por_estado = estadisticas.resumen(request.user)["por_estado"]
     return render(request, "biblioteca/biblioteca.html", {
         "libros": libros, "q": q, "estado": estado, "genero": genero,
-        "estados": Libro.Estado.choices,
+        "estados": [(valor, etiqueta, por_estado[etiqueta]) for valor, etiqueta in Libro.Estado.choices],
+        "generos": estadisticas.generos(request.user, limite=6),
     })
 
 

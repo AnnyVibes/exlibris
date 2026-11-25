@@ -19,7 +19,7 @@ Especificación en [`specs/`](specs/) (outcomes, requisitos, reglas, modelo de d
 
 ## Tecnología (todo gratuito)
 
-Python 3.12+, Django 5.2, SQLite, CSS propio (Poppins/Raleway), html5-qrcode 2.3.8 y Chart.js 4.4.1 por CDN,
+Python 3.12+, Django 5.2, SQLite, CSS propio (tipografía del sistema, paleta lila), html5-qrcode 2.3.8 y Chart.js 4.4.1 por CDN,
 Open Library y Google Books (sin API key), GitHub Actions.
 
 ## Instalación
@@ -70,7 +70,7 @@ exlibris/
 │   ├── services/           isbn, catalogo, prestamos, estadisticas
 │   ├── views.py · urls.py · forms.py
 │   ├── templates/          base (3 columnas) + páginas
-│   ├── static/biblioteca/  exlibris.css, estante.svg
+│   ├── static/biblioteca/  exlibris.css, libros.svg
 │   ├── management/commands/datos_demo.py
 │   └── tests/
 ├── specs/                  ODD / SDD

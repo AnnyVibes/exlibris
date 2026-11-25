@@ -1,0 +1,17 @@
+{% load exlibris %}<article class="nota">
+  <div class="nota-cabecera">
+    <h4>{% if mostrar_libro %}<a href="{% url 'libro_detalle' n.libro_id %}">{{ n.libro.titulo|truncatechars:42 }}</a>{% else %}Anotación #{{ numero|default:n.pk }}{% endif %}</h4>
+    {% if n.pagina %}<span class="insignia-estado estado-leyendo">pág. {{ n.pagina }}</span>{% endif %}
+  </div>
+  <p{% if recortar %} class="recortar"{% endif %}>{{ n.texto }}</p>
+  {% if mostrar_libro %}
+  <div class="chips">
+    {% if n.libro.genero %}<span class="chip-tag">{% icono 'etiqueta' %}{{ n.libro.genero|lower }}</span>{% endif %}
+    {% if n.libro.autores %}<span class="chip-tag">{% icono 'etiqueta' %}{{ n.libro.autores|truncatechars:22 }}</span>{% endif %}
+  </div>
+  {% endif %}
+  <div class="nota-pie">
+    <span class="fecha">{% icono 'calendario' %}{{ n.creado|date:"l j \d\e F \a \l\a\s H:i" }}</span>
+    {% if borrar %}<form method="post" action="{% url 'anotacion_eliminar' n.pk %}" onsubmit="return confirm('¿Eliminar esta anotación?');">{% csrf_token %}<button class="boton-texto" type="submit" aria-label="Eliminar anotación">{% icono 'basura' %}</button></form>{% endif %}
+  </div>
+</article>

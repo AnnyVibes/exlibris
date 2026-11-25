@@ -26,6 +26,8 @@ ICONOS = {
     "basura": '<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/>',
     "check": '<path d="m5 12 5 5 9-10"/>',
     "flor": '<circle cx="12" cy="12" r="2.5"/><path d="M12 9.5C10 6 10.5 3 12 3s2 3 0 6.5M14.5 12c3.5-2 6.5-1.5 6.5 0s-3 2-6.5 0M12 14.5c2 3.5 1.5 6.5 0 6.5s-2-3 0-6.5M9.5 12C6 14 3 13.5 3 12s3-2 6.5 0"/>',
+    "calendario": '<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/>',
+    "etiqueta": '<path d="M3 12V4h8l9 9-8 8z"/><circle cx="7.5" cy="8.5" r="1.3"/>',
     "ayuda": '<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.3-1 .9-1 1.7M12 17h.01"/>',
 }
 
@@ -46,3 +48,35 @@ def estrellas(valor):
     except (TypeError, ValueError):
         return ""
     return "★" * n + "☆" * (5 - n)
+
+
+# Colores de lomo/tapa para los libros dibujados (coinciden con .c0 … .c5 del CSS).
+COLORES_LIBRO = ["#8b7fd1", "#f07167", "#4a6fa5", "#5fa777", "#ec8fb4", "#6d5bd0"]
+
+
+@register.filter
+def color_libro(libro):
+    """Índice de color estable para un libro (según su id)."""
+    try:
+        return int(libro.pk or 0) % len(COLORES_LIBRO)
+    except (AttributeError, TypeError, ValueError):
+        return 0
+
+
+@register.simple_tag
+def libro_icono(color=0, simbolo="", clase=""):
+    """Libro de pie dibujado en SVG: tapa de color, páginas abajo y cinta separadora."""
+    c = COLORES_LIBRO[int(color) % len(COLORES_LIBRO)]
+    texto = (
+        f'<text x="27" y="22" text-anchor="middle" font-size="10" font-family="system-ui,sans-serif" '
+        f'font-weight="700" fill="{c}">{simbolo}</text>' if simbolo else ""
+    )
+    return mark_safe(
+        f'<svg class="{clase}" viewBox="0 0 50 56" aria-hidden="true">'
+        f'<rect x="6" y="2" width="38" height="46" rx="4" fill="{c}"/>'
+        f'<rect x="6" y="2" width="6" height="46" rx="3" fill="#000" opacity=".13"/>'
+        f'<rect x="16" y="12" width="22" height="14" rx="3" fill="#fff" opacity=".9"/>{texto}'
+        f'<rect x="16" y="31" width="22" height="2.5" rx="1.2" fill="#fff" opacity=".55"/>'
+        f'<path d="M10 43h34v8H13a3 3 0 0 1-3-3z" fill="#fffdf8" stroke="{c}" stroke-width="3"/>'
+        f'<path d="M32 43v12l3.5-3 3.5 3V43z" fill="#f4b942"/></svg>'
+    )

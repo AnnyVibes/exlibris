@@ -21,10 +21,7 @@
     </form>
     <div class="notas">
       {% for n in anotaciones %}
-        <div class="nota">
-          <div class="nota-cabecera"><a href="{% url 'libro_detalle' n.libro_id %}">{{ n.libro.titulo|truncatechars:40 }}</a><span>{% if n.pagina %}Pág. {{ n.pagina }} · {% endif %}{{ n.creado|date:"j M Y" }}</span></div>
-          <p>{{ n.texto }}</p>
-        </div>
+        {% include "biblioteca/_nota.html" with mostrar_libro=True %}
       {% empty %}
         <p class="vacio-panel">No hay anotaciones{% if q %} con ese texto{% endif %}.</p>
       {% endfor %}

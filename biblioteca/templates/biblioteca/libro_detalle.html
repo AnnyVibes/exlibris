@@ -8,7 +8,7 @@
     <h1>{{ libro.titulo }}</h1>
     <p class="autor">{{ libro.autores|default:"Autor desconocido" }}</p>
     <div class="datos">
-      <span class="dato">{{ libro.get_estado_display }}</span>
+      <span class="insignia-estado estado-{{ libro.estado }}">{{ libro.get_estado_display }}</span>
       {% if libro.genero %}<span class="dato">{{ libro.genero }}</span>{% endif %}
       {% if libro.anio %}<span class="dato">{{ libro.anio }}</span>{% endif %}
       {% if libro.paginas %}<span class="dato">{{ libro.paginas }} págs.</span>{% endif %}
@@ -57,32 +57,7 @@
     </form>
   </article>
 
-  <article class="tarjeta">
-    <div class="tarjeta-titulo"><h2>Anotaciones</h2><span class="contador">{% icono 'nota' %}{{ anotaciones|length }}</span></div>
-    <form method="post" action="{% url 'anotacion_crear' libro.pk %}" class="formulario" style="margin-bottom:16px">
-      {% csrf_token %}
-      <div style="display:grid;grid-template-columns:90px 1fr;gap:10px">
-        {% include "biblioteca/_campo.html" with campo=anotacion_form.pagina %}
-        {% include "biblioteca/_campo.html" with campo=anotacion_form.texto %}
-      </div>
-      <div><button class="boton boton-rosa" type="submit">{% icono 'mas' %} Anotar</button></div>
-    </form>
-    <div class="notas">
-      {% for n in anotaciones %}
-        <div class="nota">
-          <div class="nota-cabecera">
-            <span>#{{ forloop.revcounter }}{% if n.pagina %} · Pág. {{ n.pagina }}{% endif %} · {{ n.creado|date:"j M Y, H:i" }}</span>
-            <form method="post" action="{% url 'anotacion_eliminar' n.pk %}" onsubmit="return confirm('¿Eliminar esta anotación?');">{% csrf_token %}<button class="boton-texto" type="submit" aria-label="Eliminar anotación">{% icono 'basura' %}</button></form>
-          </div>
-          <p>{{ n.texto }}</p>
-        </div>
-      {% empty %}
-        <p class="vacio-panel">Aún no tienes anotaciones en este libro.</p>
-      {% endfor %}
-    </div>
-  </article>
-
-  <article class="tarjeta">
+  <article class="tarjeta ancho">
     <div class="tarjeta-titulo"><h2>Préstamo</h2>{% if prestamo_activo %}<span class="etiqueta {% if prestamo_activo.vencido %}vencido{% endif %}">{% if prestamo_activo.vencido %}Vencido{% else %}Prestado{% endif %}</span>{% else %}<span class="etiqueta gris">En casa</span>{% endif %}</div>
     {% if prestamo_activo %}
       <p style="margin-bottom:14px">Lo tiene <strong>{{ prestamo_activo.persona }}</strong>{% if prestamo_activo.contacto %} ({{ prestamo_activo.contacto }}){% endif %} desde el {{ prestamo_activo.prestado_el|date:"j \d\e F" }}{% if prestamo_activo.devolver_el %}; acordaron devolverlo el {{ prestamo_activo.devolver_el|date:"j \d\e F" }}{% endif %}.</p>
@@ -98,7 +73,7 @@
         {% include "biblioteca/_campo.html" with campo=prestamo_form.contacto %}
         {% include "biblioteca/_campo.html" with campo=prestamo_form.devolver_el %}
         {% include "biblioteca/_campo.html" with campo=prestamo_form.notas %}
-        <div class="ancho"><button class="boton boton-rosa" type="submit">{% icono 'prestamo' %} Prestar</button></div>
+        <div class="ancho"><button class="boton boton-coral" type="submit">{% icono 'prestamo' %} Prestar</button></div>
       </form>
     {% endif %}
     {% if prestamos %}
@@ -108,5 +83,24 @@
       </table></div>
     {% endif %}
   </article>
+  <article class="tarjeta ancho">
+    <div class="tarjeta-titulo"><h2>Anotaciones</h2><span class="contador">{% icono 'nota' %}{{ anotaciones|length }}</span></div>
+    <form method="post" action="{% url 'anotacion_crear' libro.pk %}" class="formulario" style="margin-bottom:16px">
+      {% csrf_token %}
+      <div style="display:grid;grid-template-columns:90px 1fr;gap:10px">
+        {% include "biblioteca/_campo.html" with campo=anotacion_form.pagina %}
+        {% include "biblioteca/_campo.html" with campo=anotacion_form.texto %}
+      </div>
+      <div><button class="boton boton-rosa" type="submit">{% icono 'mas' %} Anotar</button></div>
+    </form>
+    <div class="notas">
+      {% for n in anotaciones %}
+        {% include "biblioteca/_nota.html" with numero=forloop.revcounter borrar=True %}
+      {% empty %}
+        <p class="vacio-panel">Aún no tienes anotaciones en este libro.</p>
+      {% endfor %}
+    </div>
+  </article>
+
 </div>
 {% endblock %}

@@ -3,13 +3,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#f9a6bd">
+  <meta name="theme-color" content="#a855f7">
   <title>{% block titulo %}Ex Libris{% endblock %} · Ex Libris</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Raleway:wght@500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{% static 'biblioteca/css/exlibris.css' %}">
-  <link rel="icon" href="{% static 'biblioteca/img/estante.svg' %}">
+  <link rel="icon" href="{% static 'biblioteca/img/libros.svg' %}">
   {% block cabeza %}{% endblock %}
 </head>
 <body>
@@ -17,7 +14,7 @@
 {% with url=request.resolver_match.url_name %}
 <div class="app">
   <aside class="lateral">
-    <a class="logo" href="{% url 'inicio' %}"><span class="l1">Ex</span><span class="l2">Libris</span></a>
+    <a class="logo" href="{% url 'inicio' %}">{% libro_icono 0 "EL" "logo-libro" %}<span class="logo-texto">Ex <em>Libris</em></span></a>
     <a class="nav-destacado" href="{% url 'escanear' %}">{% icono 'escanear' %} Escanear</a>
     <nav class="nav" aria-label="Principal">
       <a href="{% url 'inicio' %}" class="{% if url == 'inicio' %}activo{% endif %}">{% icono 'inicio' %} Inicio</a>
@@ -36,11 +33,12 @@
 
   <main class="contenido">
     <header class="barra">
-      <a class="logo logo-movil" href="{% url 'inicio' %}"><span class="l1">Ex</span><span class="l2">Libris</span></a>
+      <a class="logo logo-movil" href="{% url 'inicio' %}">{% libro_icono 0 "EL" "logo-libro" %}<span class="logo-texto">Ex <em>Libris</em></span></a>
       <span class="espaciador"></span>
       <form class="buscador" method="get" action="{% url 'biblioteca' %}" role="search">
         {% icono 'buscar' %}
-        <input type="search" name="q" value="{% if url == 'biblioteca' %}{{ q }}{% endif %}" placeholder="Buscar título, autor o ISBN" aria-label="Buscar en mi biblioteca">
+        <input type="search" name="q" value="{% if url == 'biblioteca' %}{{ q }}{% endif %}" placeholder="Buscar libros, autores o ISBN" aria-label="Buscar en mi biblioteca">
+        <button type="submit">Buscar</button>
       </form>
       <a class="boton-icono" href="{% url 'libro_nuevo' %}" title="Agregar a mano" aria-label="Agregar libro a mano">{% icono 'mas' %}</a>
       <a class="boton-icono" href="{% url 'escanear' %}" title="Escanear código" aria-label="Escanear código de barras">{% icono 'camara' %}</a>
@@ -54,25 +52,19 @@
   </main>
 
   <aside class="panel" aria-label="Resumen">
-    <div class="perfil">
-      <div>
-        <h4>{{ user.get_full_name|default:user.username }}</h4>
-        <small>@{{ user.username }}</small>
-      </div>
-      <div class="avatar">{{ user.username|slice:":1" }}</div>
-    </div>
-    <div class="etiqueta-panel">#Ex Libris</div>
-    <div class="barra-colores"></div>
-
     <div>
+      <div class="perfil">
+        <div class="avatar">{{ user.username|slice:":1" }}</div>
+        <div><h4>{{ user.get_full_name|default:user.username }}</h4><small>@{{ user.username }}</small></div>
+      </div>
       <div class="tarjeta-titulo"><h3>Libros prestados</h3><a href="{% url 'prestamos' %}" aria-label="Ver préstamos">{% icono 'puntos' %}</a></div>
       <div class="lista-panel">
         {% for p in panel_prestamos %}
           <a class="item-panel" href="{% url 'libro_detalle' p.libro_id %}">
-            <span class="cuadro">{% icono 'prestamo' %}</span>
-            <div style="min-width:0">
+            {% libro_icono p.libro|color_libro "" "mini-libro" %}
+            <div>
               <strong>{{ p.libro.titulo }}</strong>
-              {% if p.vencido %}<span class="vencido">Vencido · {{ p.persona }}</span>{% else %}<span>{{ p.persona }}</span>{% endif %}
+              {% if p.vencido %}<span class="vencido">Vencido · {{ p.persona }}</span>{% else %}<span>{{ p.persona }}{% if p.devolver_el %} · hasta {{ p.devolver_el|date:"j M" }}{% endif %}</span>{% endif %}
             </div>
           </a>
         {% empty %}
@@ -84,14 +76,7 @@
     <div>
       <div class="tarjeta-titulo"><h3>Última anotación</h3><a href="{% url 'anotaciones' %}" aria-label="Ver anotaciones">{% icono 'puntos' %}</a></div>
       {% if panel_anotacion %}
-        <a class="mensaje" href="{% url 'libro_detalle' panel_anotacion.libro_id %}" style="display:block">
-          <div class="mensaje-cabecera">
-            <span class="avatar">{% icono 'nota' %}</span>
-            <div><strong>{{ panel_anotacion.libro.titulo|truncatechars:28 }}</strong>
-              <small>{% if panel_anotacion.pagina %}Pág. {{ panel_anotacion.pagina }} · {% endif %}hace {{ panel_anotacion.creado|timesince }}</small></div>
-          </div>
-          <p>{{ panel_anotacion.texto|truncatechars:140 }}</p>
-        </a>
+        {% include "biblioteca/_nota.html" with n=panel_anotacion mostrar_libro=True recortar=True %}
       {% else %}
         <p class="vacio-panel">Cuando anotes algo mientras lees, aparecerá aquí.</p>
       {% endif %}

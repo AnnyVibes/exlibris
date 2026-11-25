@@ -1,6 +1,8 @@
-{% load exlibris %}<div class="portada">
-  {% if libro.portada_url %}<img src="{{ libro.portada_url }}" alt="Portada de {{ libro.titulo }}" loading="lazy">
-  {% else %}<div class="portada-falsa" style="justify-content:flex-end"><div><strong>{{ libro.titulo|truncatechars:48 }}</strong><br><small>{{ libro.autores|truncatechars:40 }}</small></div></div>{% endif %}
-  {% if etiqueta %}<span class="insignia">{{ libro.get_estado_display }}</span>{% endif %}
-  {% if etiqueta and libro.prestamo_activo %}<span class="insignia prestado">Prestado</span>{% endif %}
+{% load exlibris %}<div class="libro3d c{{ libro|color_libro }}">
+  <div class="tapa">
+    {% if libro.portada_url %}<img src="{{ libro.portada_url }}" alt="Portada de {{ libro.titulo }}" loading="lazy">
+    {% else %}<div class="portada-falsa"><strong>{{ libro.titulo|truncatechars:40 }}</strong><span class="adorno"></span><small>{{ libro.autores|truncatechars:28 }}</small></div>{% endif %}
+    {% if etiqueta and libro.prestamo_activo %}<span class="insignia prestado">Prestado</span>{% endif %}
+  </div>
+  <span class="paginas"></span><span class="cinta"></span>
 </div>
