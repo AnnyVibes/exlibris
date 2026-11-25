@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load static %}
+{% block titulo %}Entrar{% endblock %}
+{% block cuerpo %}
+<div class="acceso">
+  <div class="acceso-arte"><img src="{% static 'biblioteca/img/estante.svg' %}" alt=""><h1>Tu biblioteca, página a página</h1><p>Escanea, anota, reseña y lleva la cuenta de tus préstamos.</p></div>
+  <div class="acceso-forma"><div class="caja">
+    <div class="logo"><span class="l1">Ex</span><span class="l2">Libris</span></div>
+    <h2 style="margin-bottom:18px">Entrar</h2>
+    <form method="post" class="formulario">
+      {% csrf_token %}
+      {% if form.non_field_errors %}<p class="error">Usuario o contraseña incorrectos.</p>{% endif %}
+      {% include "biblioteca/_campo.html" with campo=form.username %}
+      {% include "biblioteca/_campo.html" with campo=form.password %}
+      <input type="hidden" name="next" value="{{ next }}">
+      <button class="boton boton-rosa boton-ancho" type="submit">Entrar</button>
+    </form>
+    <p class="cambio">¿No tienes cuenta? <a href="{% url 'registro' %}">Crea una</a></p>
+  </div></div>
+</div>
+{% endblock %}

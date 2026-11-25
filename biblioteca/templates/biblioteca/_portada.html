@@ -1,0 +1,6 @@
+{% load exlibris %}<div class="portada">
+  {% if libro.portada_url %}<img src="{{ libro.portada_url }}" alt="Portada de {{ libro.titulo }}" loading="lazy">
+  {% else %}<div class="portada-falsa" style="justify-content:flex-end"><div><strong>{{ libro.titulo|truncatechars:48 }}</strong><br><small>{{ libro.autores|truncatechars:40 }}</small></div></div>{% endif %}
+  {% if etiqueta %}<span class="insignia">{{ libro.get_estado_display }}</span>{% endif %}
+  {% if etiqueta and libro.prestamo_activo %}<span class="insignia prestado">Prestado</span>{% endif %}
+</div>

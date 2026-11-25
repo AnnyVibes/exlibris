@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block titulo %}Anotaciones{% endblock %}
+{% block contenido %}
+<h1 class="titulo-pagina">Anotaciones</h1>
+<p class="subtitulo">Todas las ideas que se te ocurrieron leyendo.</p>
+
+<div class="detalle-rejilla">
+  <article class="tarjeta">
+    <div class="tarjeta-titulo"><h2>Conteo por libro</h2></div>
+    <p class="contador-grande">{{ anotaciones|length }}</p>
+    <p class="ayuda" style="margin-bottom:16px;color:var(--texto-suave)">anotaci{{ anotaciones|length|pluralize:"ón,ones" }}{% if q %} con «{{ q }}»{% endif %}</p>
+    <div class="tabla-envoltura"><table class="tabla">
+      {% for l in por_libro %}<tr><td><a href="{% url 'libro_detalle' l.pk %}">{{ l.titulo }}</a></td><td style="text-align:right"><span class="contador">{{ l.n_anotaciones }}</span></td></tr>
+      {% empty %}<tr><td>Sin anotaciones todavía.</td></tr>{% endfor %}
+    </table></div>
+  </article>
+  <article class="tarjeta">
+    <form method="get" class="campo" style="margin-bottom:16px">
+      <label for="buscar-nota">Buscar en anotaciones</label>
+      <div class="fila-busqueda"><input id="buscar-nota" type="search" name="q" value="{{ q }}" placeholder="Una palabra, una idea…"><button class="boton boton-rosa" type="submit">Buscar</button></div>
+    </form>
+    <div class="notas">
+      {% for n in anotaciones %}
+        <div class="nota">
+          <div class="nota-cabecera"><a href="{% url 'libro_detalle' n.libro_id %}">{{ n.libro.titulo|truncatechars:40 }}</a><span>{% if n.pagina %}Pág. {{ n.pagina }} · {% endif %}{{ n.creado|date:"j M Y" }}</span></div>
+          <p>{{ n.texto }}</p>
+        </div>
+      {% empty %}
+        <p class="vacio-panel">No hay anotaciones{% if q %} con ese texto{% endif %}.</p>
+      {% endfor %}
+    </div>
+  </article>
+</div>
+{% endblock %}

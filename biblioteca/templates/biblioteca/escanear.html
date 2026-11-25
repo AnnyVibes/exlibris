@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block titulo %}Escanear{% endblock %}
+{% block contenido %}
+<div class="escaner">
+  <h1 class="titulo-pagina">Escanear un libro</h1>
+  <p class="subtitulo">Apunta la cámara al código de barras de la contraportada (el que empieza con 978 o 979).</p>
+
+  <div class="tarjeta">
+    <div id="lector"></div>
+    <p id="estado" class="escaner-estado" role="status">Preparando la cámara…</p>
+    <div class="acciones-fila">
+      <button id="iniciar" type="button" class="boton boton-rosa">Activar cámara</button>
+      <button id="detener" type="button" class="boton boton-suave" hidden>Detener</button>
+    </div>
+
+    <div class="separador">o escribe el ISBN</div>
+    <form method="get" action="{% url 'libro_nuevo' %}" class="campo">
+      <label for="isbn-manual">ISBN</label>
+      <div class="fila-busqueda">
+        <input id="isbn-manual" name="isbn" inputmode="numeric" autocomplete="off" placeholder="978-84-376-0494-7" required>
+        <button class="boton boton-rosa" type="submit">Buscar</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+<script>
+(function () {
+  const estado = document.getElementById("estado");
+  const btnIniciar = document.getElementById("iniciar");
+  const btnDetener = document.getElementById("detener");
+  const destino = "{% url 'libro_nuevo' %}?isbn=";
+  let lector = null;
+  let leido = false;
+
+  function mostrar(texto, ok) {
+    estado.textContent = texto;
+    estado.classList.toggle("ok", !!ok);
+  }
+
+  if (!window.Html5Qrcode) {
+    mostrar("No se pudo cargar el lector. Escribe el ISBN abajo.");
+    btnIniciar.hidden = true;
+    return;
+  }
+  if (!window.isSecureContext) {
+    mostrar("La cámara solo funciona con HTTPS (o en localhost). Escribe el ISBN abajo.");
+  } else {
+    mostrar("Pulsa «Activar cámara» y permite el acceso.");
+  }
+
+  function esISBN(codigo) {
+    return /^97[89]\d{10}$/.test(codigo) || /^\d{9}[\dX]$/i.test(codigo);
+  }
+
+  async function iniciar() {
+    leido = false;
+    lector = lector || new Html5Qrcode("lector", {
+      formatsToSupport: [Html5QrcodeSupportedFormats.EAN_13, Html5QrcodeSupportedFormats.EAN_8, Html5QrcodeSupportedFormats.UPC_A],
+      verbose: false,
+    });
+    try {
+      await lector.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: (w, h) => ({ width: Math.min(w * 0.85, 320), height: Math.min(h * 0.45, 140) }) },
+        (codigo) => {
+          if (leido) return;
+          codigo = codigo.replace(/[^0-9X]/gi, "");
+          if (!esISBN(codigo)) { mostrar("Ese código no es un ISBN (" + codigo + "). Prueba con el de la contraportada."); return; }
+          leido = true;
+          mostrar("¡Leído! ISBN " + codigo + ". Buscando el libro…", true);
+          if (navigator.vibrate) navigator.vibrate(80);
+          lector.stop().finally(() => { window.location = destino + encodeURIComponent(codigo); });
+        },
+        () => {}
+      );
+      btnIniciar.hidden = true; btnDetener.hidden = false;
+      mostrar("Buscando un código de barras…");
+    } catch (e) {
+      mostrar("No se pudo abrir la cámara (" + (e && e.name ? e.name : e) + "). Revisa los permisos o escribe el ISBN.");
+    }
+  }
+
+  btnIniciar.addEventListener("click", iniciar);
+  btnDetener.addEventListener("click", async () => {
+    if (lector) { await lector.stop().catch(() => {}); }
+    btnIniciar.hidden = false; btnDetener.hidden = true;
+    mostrar("Cámara detenida.");
+  });
+})();
+</script>
+{% endblock %}

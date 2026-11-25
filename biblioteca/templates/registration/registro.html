@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load static %}
+{% block titulo %}Crear cuenta{% endblock %}
+{% block cuerpo %}
+<div class="acceso">
+  <div class="acceso-arte"><img src="{% static 'biblioteca/img/estante.svg' %}" alt=""><h1>Empieza tu estante</h1><p>Tu biblioteca personal, siempre en el bolsillo.</p></div>
+  <div class="acceso-forma"><div class="caja">
+    <div class="logo"><span class="l1">Ex</span><span class="l2">Libris</span></div>
+    <h2 style="margin-bottom:18px">Crear cuenta</h2>
+    <form method="post" class="formulario">
+      {% csrf_token %}
+      {% for campo in form %}{% include "biblioteca/_campo.html" %}{% endfor %}
+      <button class="boton boton-rosa boton-ancho" type="submit">Crear cuenta</button>
+    </form>
+    <p class="cambio">¿Ya tienes cuenta? <a href="{% url 'login' %}">Entra</a></p>
+  </div></div>
+</div>
+{% endblock %}

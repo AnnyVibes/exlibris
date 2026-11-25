@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load exlibris %}
+{% block titulo %}Estadísticas{% endblock %}
+{% block contenido %}
+<h1 class="titulo-pagina">Estadísticas</h1>
+<p class="subtitulo">Tu vida lectora en números.</p>
+<div class="kpis">
+  <div class="kpi"><small>Libros</small><strong>{{ resumen.total }}</strong></div>
+  <div class="kpi"><small>Leídos</small><strong>{{ resumen.leidos }}</strong></div>
+  <div class="kpi"><small>Anotaciones</small><strong>{{ resumen.anotaciones }}</strong></div>
+  <div class="kpi"><small>Prestados ahora</small><strong>{{ resumen.prestados }}</strong></div>
+  <div class="kpi"><small>Páginas leídas</small><strong>{{ resumen.paginas_leidas }}</strong></div>
+  <div class="kpi"><small>Calificación media</small><strong>{% if resumen.calificacion_media %}{{ resumen.calificacion_media|floatformat:1 }}★{% else %}—{% endif %}</strong></div>
+  <div class="kpi"><small>Leyendo</small><strong>{{ resumen.leyendo }}</strong></div>
+</div>
+<div class="graficos">
+  <article class="tarjeta"><div class="tarjeta-titulo"><h2>Por estado</h2></div><div class="grafico"><canvas id="g-estados" aria-label="Libros por estado"></canvas></div></article>
+  <article class="tarjeta"><div class="tarjeta-titulo"><h2>Géneros</h2></div><div class="grafico"><canvas id="g-generos" aria-label="Libros por género"></canvas></div></article>
+  <article class="tarjeta" style="grid-column:1/-1">
+    <div class="tarjeta-titulo"><h2>Libros con más anotaciones</h2></div>
+    <table class="tabla">{% for l in mas_anotados %}<tr><td><a href="{% url 'libro_detalle' l.pk %}">{{ l.titulo }}</a></td><td style="text-align:right"><span class="contador">{% icono 'nota' %}{{ l.n_anotaciones }}</span></td></tr>{% empty %}<tr><td>Sin anotaciones todavía.</td></tr>{% endfor %}</table>
+  </article>
+</div>
+{{ grafico_estados|json_script:"datos-estados" }}
+{{ grafico_generos|json_script:"datos-generos" }}
+{% endblock %}
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+(function () {
+  if (!window.Chart) return;
+  const leer = (id) => JSON.parse(document.getElementById(id).textContent);
+  const paleta = ["#f38eab", "#cfe3a1", "#ffc4d3", "#e0698e", "#e4f0c8", "#f9a9bf", "#a9c76a", "#ffdbe5"];
+  Chart.defaults.font.family = "Poppins, sans-serif";
+  Chart.defaults.color = "#8b8894";
+  const e = leer("datos-estados");
+  new Chart(document.getElementById("g-estados"), {
+    type: "doughnut",
+    data: { labels: e.labels, datasets: [{ data: e.data, backgroundColor: paleta, borderWidth: 3, borderColor: "#fff" }] },
+    options: { maintainAspectRatio: false, cutout: "62%", plugins: { legend: { position: "bottom" } } },
+  });
+  const g = leer("datos-generos");
+  new Chart(document.getElementById("g-generos"), {
+    type: "bar",
+    data: { labels: g.labels, datasets: [{ label: "Libros", data: g.data, backgroundColor: paleta[0], borderRadius: 10 }] },
+    options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } }, x: { grid: { display: false } } } },
+  });
+})();
+</script>
+{% endblock %}

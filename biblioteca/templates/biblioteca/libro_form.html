@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load exlibris %}
+{% block titulo %}{% if nuevo %}Agregar libro{% else %}Editar libro{% endif %}{% endblock %}
+{% block contenido %}
+<h1 class="titulo-pagina">{% if nuevo %}Agregar libro{% else %}Editar «{{ libro.titulo }}»{% endif %}</h1>
+<p class="subtitulo">{% if nuevo %}Busca por ISBN para rellenar los datos automáticamente, o escríbelos tú.{% else %}Corrige o completa los datos del libro.{% endif %}</p>
+
+{% if nuevo %}
+<form method="get" class="tarjeta campo" style="margin-bottom:20px">
+  <label for="buscar-isbn">Buscar por ISBN</label>
+  <div class="fila-busqueda">
+    <input id="buscar-isbn" name="isbn" value="{{ isbn_buscado }}" inputmode="numeric" placeholder="978…" required>
+    <button class="boton boton-rosa" type="submit">{% icono 'buscar' %} Buscar</button>
+    <a class="boton boton-suave" href="{% url 'escanear' %}" aria-label="Escanear">{% icono 'camara' %}</a>
+  </div>
+  {% if aviso %}<p class="error">{{ aviso }}</p>{% endif %}
+  {% if encontrado %}<p class="ayuda" style="color:#4f6327">✔ Encontramos el libro. Revisa los datos y guarda.</p>{% endif %}
+</form>
+{% endif %}
+
+<form method="post" class="tarjeta">
+  {% csrf_token %}
+  {% for e in form.non_field_errors %}<p class="error">{{ e }}</p>{% endfor %}
+  <div style="display:grid;grid-template-columns:{% if portada %}140px {% endif %}1fr;gap:22px;align-items:start" class="form-con-portada">
+    {% if portada %}<img src="{{ portada }}" alt="Portada" style="border-radius:var(--radio-md);box-shadow:var(--sombra)">{% endif %}
+    <div class="formulario dos">
+      {% include "biblioteca/_campo.html" with campo=form.titulo clase="ancho" %}
+      {% include "biblioteca/_campo.html" with campo=form.autores %}
+      {% include "biblioteca/_campo.html" with campo=form.isbn %}
+      {% include "biblioteca/_campo.html" with campo=form.editorial %}
+      {% include "biblioteca/_campo.html" with campo=form.genero %}
+      {% include "biblioteca/_campo.html" with campo=form.anio %}
+      {% include "biblioteca/_campo.html" with campo=form.paginas %}
+      {% include "biblioteca/_campo.html" with campo=form.estado %}
+      {% include "biblioteca/_campo.html" with campo=form.portada_url %}
+      {% include "biblioteca/_campo.html" with campo=form.descripcion clase="ancho" %}
+      <div class="acciones-fila ancho">
+        <button class="boton boton-rosa" type="submit">{% icono 'check' %} Guardar</button>
+        <a class="boton boton-suave" href="{% if libro %}{% url 'libro_detalle' libro.pk %}{% else %}{% url 'biblioteca' %}{% endif %}">Cancelar</a>
+      </div>
+    </div>
+  </div>
+</form>
+<style>@media (max-width:860px){.form-con-portada{grid-template-columns:1fr!important}.form-con-portada>img{max-width:140px}}</style>
+{% endblock %}

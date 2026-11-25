@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% load static exlibris %}
+{% block titulo %}Inicio{% endblock %}
+{% block contenido %}
+<section class="hero">
+  <div class="hero-texto">
+    <h1>Tu biblioteca, página a página</h1>
+    <div class="hero-acciones">
+      <a class="boton boton-blanco" href="{% url 'escanear' %}">Escanear libro</a>
+      <a class="boton boton-borde" href="{% url 'libro_nuevo' %}">Agregar a mano</a>
+    </div>
+  </div>
+  <img class="hero-ilustracion" src="{% static 'biblioteca/img/estante.svg' %}" alt="">
+</section>
+
+<section class="inicio-rejilla">
+  <article class="tarjeta leyendo area-leyendo">
+    {% if leyendo %}
+      <div class="leyendo-portada">
+        {% if leyendo.portada_url %}<img src="{{ leyendo.portada_url }}" alt="Portada de {{ leyendo.titulo }}">{% else %}<div class="portada-falsa"><strong>{{ leyendo.titulo }}</strong><small>{{ leyendo.autores }}</small></div>{% endif %}
+        <span class="corazon">{% icono 'corazon' %}</span>
+      </div>
+      <h3>{{ leyendo.titulo|truncatechars:34 }} <span class="punto-verde" title="Leyendo"></span></h3>
+      <p><strong>Leyendo ahora</strong> · {{ leyendo.autores|default:"Autor desconocido" }}</p>
+      <div class="barra-progreso"><span style="width: {{ leyendo.progreso }}%"></span></div>
+      <p>{% if leyendo.paginas %}Vas en la página {{ leyendo.pagina_actual }} de {{ leyendo.paginas }} ({{ leyendo.progreso }}%).{% else %}Actualiza tu progreso para seguir tu lectura.{% endif %}
+        {% with n=leyendo.anotaciones.count %}{% if n %} Llevas {{ n }} anotaci{{ n|pluralize:"ón,ones" }}.{% endif %}{% endwith %}</p>
+      <a class="boton boton-rosa boton-ancho" href="{% url 'libro_detalle' leyendo.pk %}">Continuar</a>
+    {% else %}
+      <div class="leyendo-portada" style="display:grid;place-items:center"><img src="{% static 'biblioteca/img/estante.svg' %}" alt="" style="height:130px;width:auto"></div>
+      <h3>Nada en la mesita de noche <span class="punto-verde"></span></h3>
+      <p>Te damos la bienvenida. Escanea el código de barras de un libro o agrégalo a mano, y márcalo como «Leyendo» para verlo aquí.</p>
+      <a class="boton boton-rosa boton-ancho" href="{% url 'escanear' %}">Empezar</a>
+    {% endif %}
+  </article>
+
+  <article class="tarjeta area-generos">
+    <div class="tarjeta-titulo"><div class="ventana-puntos"><span></span><span></span></div><a href="{% url 'estadisticas' %}" aria-label="Estadísticas">{% icono 'grafico' %}</a></div>
+    <div class="generos">
+      {% for nombre, n in generos %}
+        <a class="genero {% if forloop.first %}activo{% endif %}" href="{% url 'biblioteca' %}?genero={{ nombre|urlencode }}">
+          <span class="burbuja">{% cycle '🌷' '🌿' '🌸' '🍄' %}</span>{{ nombre|truncatechars:12 }}<small>{{ n }} libro{{ n|pluralize }}</small>
+        </a>
+      {% empty %}
+        {% for e in "🌷🌿🌸🍄" %}<span class="genero"><span class="burbuja">{{ e }}</span>Género<small>sin libros</small></span>{% endfor %}
+      {% endfor %}
+    </div>
+    <div class="pie-tarjeta">
+      <a class="boton boton-suave boton-mini" href="{% url 'biblioteca' %}">Ver todo</a>
+      <small style="color:var(--texto-suave)">{{ resumen.total }} libro{{ resumen.total|pluralize }}</small>
+    </div>
+  </article>
+
+  <a class="portada-vertical area-portada" href="{% url 'escanear' %}" aria-label="Escanear un libro">
+    <div class="marco">
+      {% with ultimo=recientes|first %}{% if ultimo.portada_url %}<img src="{{ ultimo.portada_url }}" alt="">{% endif %}{% endwith %}
+      <span class="camara">{% icono 'camara' %}</span>
+    </div>
+  </a>
+
+  <a class="tarjeta carpeta area-c1" href="{% url 'biblioteca' %}">
+    <div class="tarjeta-titulo" style="margin:0"><span class="burbuja-icono">{% icono 'carpeta' %}</span>{% icono 'puntos' %}</div>
+    <h3>Mi biblioteca</h3><strong>+{{ resumen.total }} libro{{ resumen.total|pluralize }}</strong>
+  </a>
+  <a class="tarjeta carpeta area-c2" href="{% url 'anotaciones' %}">
+    <div class="tarjeta-titulo" style="margin:0"><span class="burbuja-icono">{% icono 'carpeta' %}</span>{% icono 'puntos' %}</div>
+    <h3>Anotaciones</h3><strong>+{{ resumen.anotaciones }} nota{{ resumen.anotaciones|pluralize }}</strong>
+  </a>
+</section>
+{% endblock %}
