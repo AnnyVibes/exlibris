@@ -8,7 +8,7 @@ User 1───* Libro 1───0..1 Resena
 
 | Modelo | Campos principales |
 |---|---|
-| Libro | propietario, isbn (13, opcional), titulo, autores, editorial, anio, paginas, portada_url, descripcion, genero, estado, pagina_actual |
+| Libro | propietario, isbn (13, opcional), titulo, autores, editorial, anio, paginas, portada (imagen subida), portada_url, descripcion, genero (lista cerrada), estado, pagina_actual |
 | Resena | libro (único), calificacion (1–5), texto |
 | Anotacion | libro, pagina (opcional), texto, creado |
 | Prestamo | libro, persona, contacto, prestado_el, devolver_el, devuelto_el, notas |

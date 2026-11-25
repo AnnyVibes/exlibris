@@ -10,36 +10,94 @@
   <label for="buscar-isbn">Buscar por ISBN</label>
   <div class="fila-busqueda">
     <input id="buscar-isbn" name="isbn" value="{{ isbn_buscado }}" inputmode="numeric" placeholder="978…" required>
-    <button class="boton boton-rosa" type="submit">{% icono 'buscar' %} Buscar</button>
-    <a class="boton boton-suave" href="{% url 'escanear' %}" aria-label="Escanear">{% icono 'camara' %}</a>
+    <button class="boton boton-secundario" type="submit">{% icono 'buscar' %} Buscar</button>
+    <a class="boton boton-suave" href="{% url 'escanear' %}" aria-label="Escanear con la cámara" title="Escanear con la cámara">{% icono 'camara' %}</a>
   </div>
-  {% if aviso %}<p class="error">{{ aviso }}</p>{% endif %}
-  {% if encontrado %}<p class="ayuda" style="color:#4f6327">✔ Encontramos el libro. Revisa los datos y guarda.</p>{% endif %}
+  {% if aviso %}<p class="error" role="alert">{{ aviso }}</p>{% endif %}
+  {% if encontrado %}<p class="ayuda" style="color:var(--exito)">✔ Encontramos el libro. Revisa los datos y guarda.</p>{% endif %}
 </form>
 {% endif %}
 
-<form method="post" class="tarjeta">
+<form method="post" enctype="multipart/form-data" class="tarjeta">
   {% csrf_token %}
-  {% for e in form.non_field_errors %}<p class="error">{{ e }}</p>{% endfor %}
-  <div style="display:grid;grid-template-columns:{% if portada %}140px {% endif %}1fr;gap:22px;align-items:start" class="form-con-portada">
-    {% if portada %}<img src="{{ portada }}" alt="Portada" style="border-radius:var(--radio-md);box-shadow:var(--sombra)">{% endif %}
+  {% for e in form.non_field_errors %}<p class="error" role="alert">{{ e }}</p>{% endfor %}
+  <div class="form-libro">
+    <div class="portada-editor">
+      <div class="libro3d c{{ libro|color_libro }}">
+        <div class="tapa">
+          <img id="vista-portada" src="{{ portada }}" alt="Vista previa de la portada" {% if not portada %}hidden{% endif %}>
+          <div id="sin-portada" class="portada-vacia" {% if portada %}hidden{% endif %}>{% icono 'imagen' %}<br>Sin portada</div>
+        </div>
+        <span class="paginas"></span><span class="cinta"></span>
+      </div>
+      <div>
+        <label class="subir">
+          <span class="boton boton-secundario boton-mini" style="width:100%">{% icono 'subir' %} {% if portada %}Cambiar imagen{% else %}Subir imagen{% endif %}</span>
+          <input type="file" name="portada" id="id_portada" accept="image/jpeg,image/png,image/webp" aria-describedby="ayuda-portada">
+        </label>
+        <p class="ayuda" id="ayuda-portada" style="font-size:12px;color:var(--texto-suave);margin-top:6px">JPG, PNG o WEBP, hasta 5 MB. Desde el celular también puedes tomarle una foto a la portada.</p>
+        {% for e in form.portada.errors %}<p class="error" role="alert" style="color:var(--peligro);font-size:13px">{{ e }}</p>{% endfor %}
+        {% if libro.portada %}
+          <label class="quitar-portada" style="margin-top:8px"><input type="checkbox" name="portada-clear" id="portada-clear_id"> Quitar la imagen subida</label>
+        {% endif %}
+      </div>
+    </div>
+
     <div class="formulario dos">
       {% include "biblioteca/_campo.html" with campo=form.titulo clase="ancho" %}
       {% include "biblioteca/_campo.html" with campo=form.autores %}
+      {% include "biblioteca/_campo.html" with campo=form.genero %}
+      {% include "biblioteca/_campo.html" with campo=form.estado %}
       {% include "biblioteca/_campo.html" with campo=form.isbn %}
       {% include "biblioteca/_campo.html" with campo=form.editorial %}
-      {% include "biblioteca/_campo.html" with campo=form.genero %}
-      {% include "biblioteca/_campo.html" with campo=form.anio %}
-      {% include "biblioteca/_campo.html" with campo=form.paginas %}
-      {% include "biblioteca/_campo.html" with campo=form.estado %}
-      {% include "biblioteca/_campo.html" with campo=form.portada_url %}
+      <div class="formulario dos" style="gap:14px">
+        {% include "biblioteca/_campo.html" with campo=form.anio %}
+        {% include "biblioteca/_campo.html" with campo=form.paginas %}
+      </div>
       {% include "biblioteca/_campo.html" with campo=form.descripcion clase="ancho" %}
+      <details class="ancho">
+        <summary style="cursor:pointer;color:var(--primario-texto);font-weight:500">Usar el enlace de una imagen en lugar de subirla</summary>
+        <div style="margin-top:10px">{% include "biblioteca/_campo.html" with campo=form.portada_url %}</div>
+      </details>
       <div class="acciones-fila ancho">
-        <button class="boton boton-rosa" type="submit">{% icono 'check' %} Guardar</button>
-        <a class="boton boton-suave" href="{% if libro %}{% url 'libro_detalle' libro.pk %}{% else %}{% url 'biblioteca' %}{% endif %}">Cancelar</a>
+        <button class="boton boton-primario" type="submit">{% icono 'check' %} Guardar</button>
+        <a class="boton boton-secundario" href="{% if libro %}{% url 'libro_detalle' libro.pk %}{% else %}{% url 'biblioteca' %}{% endif %}">Cancelar</a>
       </div>
     </div>
   </div>
 </form>
-<style>@media (max-width:860px){.form-con-portada{grid-template-columns:1fr!important}.form-con-portada>img{max-width:140px}}</style>
+{% endblock %}
+{% block scripts %}
+<script>
+(function () {
+  const entrada = document.getElementById("id_portada");
+  const vista = document.getElementById("vista-portada");
+  const vacia = document.getElementById("sin-portada");
+  const enlace = document.getElementById("id_portada_url");
+  const quitar = document.getElementById("portada-clear_id");
+  const original = vista.getAttribute("src");
+  let urlTemporal = null;
+
+  function mostrar(src) {
+    vista.hidden = !src; vacia.hidden = !!src;
+    if (src) vista.src = src;
+  }
+  entrada.addEventListener("change", () => {
+    const archivo = entrada.files && entrada.files[0];
+    if (urlTemporal) URL.revokeObjectURL(urlTemporal);
+    if (!archivo) { mostrar(original); return; }
+    if (archivo.size > 5 * 1024 * 1024) {
+      alert("La imagen pesa más de 5 MB. Elige una más liviana.");
+      entrada.value = ""; mostrar(original); return;
+    }
+    urlTemporal = URL.createObjectURL(archivo);
+    mostrar(urlTemporal);
+    if (quitar) quitar.checked = false;
+  });
+  if (enlace) enlace.addEventListener("change", () => {
+    if (!(entrada.files && entrada.files.length)) mostrar(enlace.value.trim() || original);
+  });
+  if (quitar) quitar.addEventListener("change", () => mostrar(quitar.checked ? (enlace && enlace.value.trim()) : original));
+})();
+</script>
 {% endblock %}

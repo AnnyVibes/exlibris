@@ -2,7 +2,7 @@
 {% load static exlibris %}
 {% block titulo %}Inicio{% endblock %}
 {% block contenido %}
-{% include "biblioteca/_categorias.html" %}
+<p class="saludo">Hola, <strong>{{ user.get_full_name|default:user.username }}</strong> 👋</p>
 
 <section class="hero">
   <img class="hero-ilustracion" src="{% static 'biblioteca/img/libros.svg' %}" alt="">
@@ -10,8 +10,8 @@
     <h1>Tu biblioteca, página a página</h1>
     <p>Escanea el código de barras de un libro y sus datos aparecen solos. Anota tus ideas, reseña lo que lees y lleva la cuenta de lo que prestas.</p>
     <div class="hero-acciones">
-      <a class="boton boton-coral" href="{% url 'escanear' %}">{% icono 'camara' %} Escanear libro</a>
-      <a class="boton boton-blanco" href="{% url 'libro_nuevo' %}">{% icono 'mas' %} Agregar a mano</a>
+      <a class="boton boton-primario" href="{% url 'escanear' %}">{% icono 'camara' %} Escanear libro</a>
+      <a class="boton boton-secundario" href="{% url 'libro_nuevo' %}">{% icono 'mas' %} Agregar a mano</a>
     </div>
   </div>
 </section>
@@ -34,11 +34,12 @@
           <div class="barra-progreso"><span style="width: {{ leyendo.progreso }}%"></span></div>
           <p>{% if leyendo.paginas %}Página {{ leyendo.pagina_actual }} de {{ leyendo.paginas }}.{% else %}Actualiza tu progreso.{% endif %}
             {% with n=leyendo.anotaciones.count %}{% if n %}{{ n }} anotaci{{ n|pluralize:"ón,ones" }}.{% endif %}{% endwith %}</p>
-          <a class="boton boton-lila boton-mini" style="margin-top:12px" href="{% url 'libro_detalle' leyendo.pk %}">Continuar</a>
+          <a class="boton boton-primario boton-mini" style="margin-top:12px" href="{% url 'libro_detalle' leyendo.pk %}">Continuar</a>
         </div>
       </div>
     {% else %}
       <p style="color:var(--texto-medio)">No estás leyendo nada todavía. Abre un libro de tu estante y márcalo como «Leyendo» para verlo aquí.</p>
+      {% if resumen.total %}<a class="boton boton-suave boton-mini" style="margin-top:14px" href="{% url 'biblioteca' %}?estado=por_leer">Ver libros por leer</a>{% endif %}
     {% endif %}
   </article>
 
@@ -46,10 +47,15 @@
     <div class="tarjeta-titulo"><h2>Agregados recientemente</h2><a class="boton boton-suave boton-mini" href="{% url 'biblioteca' %}">Ver todo</a></div>
     {% if recientes %}
       <div class="estante"><div class="estante-libros">
-        {% for libro in recientes|slice:":4" %}<a href="{% url 'libro_detalle' libro.pk %}" title="{{ libro.titulo }}">{% include "biblioteca/_portada.html" %}</a>{% endfor %}
+        {% for libro in recientes %}<a href="{% url 'libro_detalle' libro.pk %}" title="{{ libro.titulo }}">{% include "biblioteca/_portada.html" %}</a>{% endfor %}
       </div></div>
     {% else %}
-      <p style="color:var(--texto-medio)">Tu estante está vacío. ¡Escanea tu primer libro!</p>
+      <div class="vacio" style="box-shadow:none;padding:20px 10px">
+        <img src="{% static 'biblioteca/img/libros.svg' %}" alt="" style="width:110px">
+        <h3>Tu estante está vacío</h3>
+        <p>Empieza escaneando el código de barras de tu primer libro.</p>
+        <div class="acciones"><a class="boton boton-primario boton-mini" href="{% url 'escanear' %}">{% icono 'camara' %} Escanear</a></div>
+      </div>
     {% endif %}
   </article>
 </div>

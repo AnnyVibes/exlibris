@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load exlibris %}
 {% block titulo %}Escanear{% endblock %}
 {% block contenido %}
 <div class="escaner">
@@ -9,7 +10,7 @@
     <div id="lector"></div>
     <p id="estado" class="escaner-estado" role="status">Preparando la cámara…</p>
     <div class="acciones-fila">
-      <button id="iniciar" type="button" class="boton boton-rosa">Activar cámara</button>
+      <button id="iniciar" type="button" class="boton boton-primario">{% icono 'camara' %} Activar cámara</button>
       <button id="detener" type="button" class="boton boton-suave" hidden>Detener</button>
     </div>
 
@@ -18,7 +19,7 @@
       <label for="isbn-manual">ISBN</label>
       <div class="fila-busqueda">
         <input id="isbn-manual" name="isbn" inputmode="numeric" autocomplete="off" placeholder="978-84-376-0494-7" required>
-        <button class="boton boton-rosa" type="submit">Buscar</button>
+        <button class="boton boton-secundario" type="submit">Buscar</button>
       </div>
     </form>
   </div>

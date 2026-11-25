@@ -13,7 +13,7 @@
       {% include "biblioteca/_campo.html" with campo=form.username %}
       {% include "biblioteca/_campo.html" with campo=form.password %}
       <input type="hidden" name="next" value="{{ next }}">
-      <button class="boton boton-lila boton-ancho" type="submit">Entrar</button>
+      <button class="boton boton-primario boton-ancho" type="submit">Entrar</button>
     </form>
     <p class="cambio">¿No tienes cuenta? <a href="{% url 'registro' %}">Crea una</a></p>
   </div></div>

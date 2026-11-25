@@ -4,6 +4,8 @@ from django.db import models
 from django.db.models import Q
 from django.utils import timezone
 
+from .services.generos import GENEROS
+
 
 class Libro(models.Model):
     """Un libro de la biblioteca personal de un usuario."""
@@ -23,9 +25,10 @@ class Libro(models.Model):
     editorial = models.CharField(max_length=255, blank=True)
     anio = models.PositiveIntegerField("año", null=True, blank=True)
     paginas = models.PositiveIntegerField("páginas", null=True, blank=True)
-    portada_url = models.URLField("portada", max_length=500, blank=True)
+    portada = models.ImageField("imagen de portada", upload_to="portadas/", blank=True)
+    portada_url = models.URLField("enlace de la portada", max_length=500, blank=True)
     descripcion = models.TextField("descripción", blank=True)
-    genero = models.CharField("género", max_length=80, blank=True)
+    genero = models.CharField("género", max_length=80, blank=True, choices=[(g, g) for g in GENEROS])
     estado = models.CharField(max_length=12, choices=Estado.choices, default=Estado.POR_LEER)
     pagina_actual = models.PositiveIntegerField("página actual", default=0)
     creado = models.DateTimeField(auto_now_add=True)
@@ -44,6 +47,13 @@ class Libro(models.Model):
 
     def __str__(self):
         return self.titulo
+
+    @property
+    def imagen_portada(self):
+        """La imagen subida tiene prioridad sobre el enlace del catálogo."""
+        if self.portada:
+            return self.portada.url
+        return self.portada_url
 
     @property
     def progreso(self):

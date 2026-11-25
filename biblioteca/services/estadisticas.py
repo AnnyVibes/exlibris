@@ -29,7 +29,8 @@ def resumen(usuario):
 
 def generos(usuario, limite=6):
     nombres = Libro.objects.filter(propietario=usuario).exclude(genero="").values_list("genero", flat=True)
-    return Counter(g.strip().capitalize() for g in nombres).most_common(limite)
+    conteo = Counter(g.strip() for g in nombres)
+    return sorted(conteo.items(), key=lambda par: (-par[1], par[0]))[:limite]
 
 
 def mas_anotados(usuario, limite=5):

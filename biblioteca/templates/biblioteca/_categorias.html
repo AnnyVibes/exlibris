@@ -1,9 +1,5 @@
-{% load exlibris %}<nav class="categorias" aria-label="Categorías">
-  <a class="categoria {% if not estado and not genero %}activo{% endif %}" href="{% url 'biblioteca' %}">{% libro_icono 0 "★" %}Todos</a>
-  {% for valor, etiqueta, n in estados %}
-    <a class="categoria {% if estado == valor %}activo{% endif %}" href="{% url 'biblioteca' %}?estado={{ valor }}">{% libro_icono forloop.counter "" %}{{ etiqueta }}{% if n is not None %}<small>{{ n }}</small>{% endif %}</a>
-  {% endfor %}
-  {% for nombre, n in generos %}
-    <a class="categoria {% if genero|lower == nombre|lower %}activo{% endif %}" href="{% url 'biblioteca' %}?genero={{ nombre|urlencode }}">{% libro_icono forloop.counter|add:4 "" %}{{ nombre|truncatechars:12 }}<small>{{ n }}</small></a>
+{% load exlibris %}<nav class="categorias" aria-label="Filtrar por género">
+  {% for nombre, n, url, activo in generos_nav %}
+    <a class="categoria {% if activo %}activo{% endif %}" href="{{ url }}" {% if activo %}aria-current="true" title="Quitar filtro de género"{% endif %}>{% libro_icono forloop.counter0 "" %}{{ nombre|truncatechars:16 }}<small>{{ n }} libro{{ n|pluralize }}</small></a>
   {% endfor %}
 </nav>

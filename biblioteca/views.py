@@ -3,7 +3,7 @@ from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404, redirect, render
-from django.utils.http import url_has_allowed_host_and_scheme
+from django.utils.http import url_has_allowed_host_and_scheme, urlencode
 from django.views.decorators.http import require_POST
 
 from .forms import AnotacionForm, LibroForm, PrestamoForm, ProgresoForm, RegistroForm, ResenaForm
@@ -36,37 +36,46 @@ def inicio(request):
     return render(request, "biblioteca/inicio.html", {
         "resumen": resumen,
         "leyendo": libros.filter(estado=Libro.Estado.LEYENDO).order_by("-actualizado").first(),
-        "recientes": libros[:6],
-        "generos": estadisticas.generos(request.user, limite=6),
-        "estados": [
-            (valor, etiqueta, resumen["por_estado"][etiqueta]) for valor, etiqueta in Libro.Estado.choices
-        ],
+        "recientes": libros[:4],
     })
 
 
 @login_required
 def biblioteca(request):
-    libros = (
-        Libro.objects.filter(propietario=request.user)
-        .annotate(n_anotaciones=Count("anotaciones"))
-        .select_related("resena")
-    )
+    base = Libro.objects.filter(propietario=request.user)
     q = request.GET.get("q", "").strip()
     estado = request.GET.get("estado", "")
+    estado = estado if estado in Libro.Estado.values else ""
     genero = request.GET.get("genero", "").strip()
+
+    libros = base.annotate(n_anotaciones=Count("anotaciones")).select_related("resena")
     if q:
         libros = libros.filter(
             Q(titulo__icontains=q) | Q(autores__icontains=q) | Q(isbn__icontains=q) | Q(genero__icontains=q)
         )
-    if estado in Libro.Estado.values:
+    if estado:
         libros = libros.filter(estado=estado)
     if genero:
         libros = libros.filter(genero__iexact=genero)
-    por_estado = estadisticas.resumen(request.user)["por_estado"]
+
+    def enlace(**cambios):
+        """Querystring que conserva los demás filtros (búsqueda, estado y género se combinan)."""
+        params = {"q": q, "estado": estado, "genero": genero, **cambios}
+        return "?" + urlencode({k: v for k, v in params.items() if v}) if any(params.values()) else "?"
+
+    por_estado = dict(base.values_list("estado").annotate(n=Count("id")))
+    estados_nav = [("Todos", base.count(), enlace(estado=""), not estado)] + [
+        (etiqueta, por_estado.get(valor, 0), enlace(estado=valor), estado == valor)
+        for valor, etiqueta in Libro.Estado.choices
+    ]
+    generos_nav = [
+        (nombre, n, enlace(genero="" if genero.lower() == nombre.lower() else nombre), genero.lower() == nombre.lower())
+        for nombre, n in estadisticas.generos(request.user, limite=30)
+    ]
     return render(request, "biblioteca/biblioteca.html", {
         "libros": libros, "q": q, "estado": estado, "genero": genero,
-        "estados": [(valor, etiqueta, por_estado[etiqueta]) for valor, etiqueta in Libro.Estado.choices],
-        "generos": estadisticas.generos(request.user, limite=6),
+        "estados_nav": estados_nav, "generos_nav": generos_nav,
+        "sin_genero": base.filter(genero="").count(),
     })
 
 
@@ -79,7 +88,7 @@ def escanear(request):
 def libro_nuevo(request):
     """Alta de un libro. Con ?isbn= busca sus datos en el catálogo y precarga el formulario."""
     if request.method == "POST":
-        form = LibroForm(request.POST, propietario=request.user)
+        form = LibroForm(request.POST, request.FILES, propietario=request.user)
         if form.is_valid():
             libro = form.save(commit=False)
             libro.propietario = request.user
@@ -129,12 +138,15 @@ def libro_detalle(request, pk):
 @login_required
 def libro_editar(request, pk):
     libro = _libro_del_usuario(request, pk)
-    form = LibroForm(request.POST or None, instance=libro, propietario=request.user)
+    portada_anterior = libro.portada.name
+    form = LibroForm(request.POST or None, request.FILES or None, instance=libro, propietario=request.user)
     if request.method == "POST" and form.is_valid():
-        form.save()
+        libro = form.save()
+        if portada_anterior and portada_anterior != libro.portada.name:
+            libro.portada.storage.delete(portada_anterior)  # no dejar imágenes huérfanas
         messages.success(request, "Cambios guardados.")
         return redirect("libro_detalle", pk=libro.pk)
-    return render(request, "biblioteca/libro_form.html", {"form": form, "libro": libro, "portada": libro.portada_url})
+    return render(request, "biblioteca/libro_form.html", {"form": form, "libro": libro, "portada": libro.imagen_portada})
 
 
 @login_required
@@ -142,6 +154,8 @@ def libro_editar(request, pk):
 def libro_eliminar(request, pk):
     libro = _libro_del_usuario(request, pk)
     titulo = libro.titulo
+    if libro.portada:
+        libro.portada.delete(save=False)
     libro.delete()
     messages.success(request, f"«{titulo}» se eliminó de tu biblioteca.")
     return redirect("biblioteca")

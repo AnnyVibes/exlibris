@@ -43,6 +43,7 @@ class CatalogoTests(SimpleTestCase):
         self.assertEqual(datos["descripcion"], "La historia de los Buendía.")
         self.assertTrue(datos["portada_url"].startswith("https://"))
         self.assertEqual(datos["isbn"], ISBN)
+        self.assertEqual(datos["genero"], "Novela")  # «Fiction» se traduce a la lista de géneros
 
     def test_solo_google(self):
         with patch.object(catalogo, "_get_json", side_effect=falso({"googleapis": GOOGLE})):

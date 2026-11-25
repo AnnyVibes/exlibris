@@ -131,3 +131,8 @@ LOGOUT_REDIRECT_URL = "login"
 
 # Catálogo de libros por ISBN (APIs públicas y gratuitas)
 CATALOGO_TIMEOUT = float(os.environ.get("CATALOGO_TIMEOUT", "6"))
+
+# Portadas subidas por la persona usuaria
+MEDIA_URL = "media/"
+MEDIA_ROOT = BASE_DIR / "media"
+PORTADA_MAX_MB = 5

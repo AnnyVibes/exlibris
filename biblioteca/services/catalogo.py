@@ -13,6 +13,8 @@ from urllib.request import Request, urlopen
 
 from django.conf import settings
 
+from .generos import sugerir
+
 logger = logging.getLogger(__name__)
 
 CAMPOS = ("titulo", "autores", "editorial", "anio", "paginas", "portada_url", "descripcion", "genero")
@@ -56,7 +58,7 @@ def desde_open_library(isbn):
         "paginas": libro.get("number_of_pages"),
         "portada_url": _https((libro.get("cover") or {}).get("medium", "")),
         "descripcion": descripcion,
-        "genero": sujetos[0].get("name", "") if sujetos else "",
+        "genero": sugerir(*(x.get("name", "") for x in sujetos[:8])),
     }
 
 
@@ -74,7 +76,7 @@ def desde_google_books(isbn):
         "paginas": info.get("pageCount"),
         "portada_url": _https((info.get("imageLinks") or {}).get("thumbnail", "")),
         "descripcion": info.get("description", ""),
-        "genero": (info.get("categories") or [""])[0],
+        "genero": sugerir(*(info.get("categories") or [])),
     }
 
 

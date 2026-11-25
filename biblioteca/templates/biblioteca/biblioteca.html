@@ -2,38 +2,63 @@
 {% load static exlibris %}
 {% block titulo %}Mi biblioteca{% endblock %}
 {% block contenido %}
-{% include "biblioteca/_categorias.html" %}
-
-<div class="seccion-titulo">
+<div class="seccion-titulo" style="margin-top:0">
   <div>
     <h1 class="titulo-pagina">Mi biblioteca</h1>
-    <p class="subtitulo" style="margin:0">{% if q %}Resultados para «{{ q }}» · {% endif %}{% if genero %}Género: {{ genero }} · {% endif %}{{ libros|length }} libro{{ libros|length|pluralize }}</p>
+    <p class="subtitulo" style="margin:0">{% if q %}Resultados para «{{ q }}» · {% endif %}{{ libros|length }} libro{{ libros|length|pluralize }}{% if estado or genero %} con estos filtros{% endif %}</p>
   </div>
-  {% if q or estado or genero %}<a class="boton boton-suave boton-mini" href="{% url 'biblioteca' %}">Quitar filtros</a>{% endif %}
+  <div class="acciones-fila">
+    {% if q or estado or genero %}<a class="boton boton-suave boton-mini" href="{% url 'biblioteca' %}">Quitar filtros</a>{% endif %}
+    <a class="boton boton-primario boton-mini" href="{% url 'libro_nuevo' %}">{% icono 'mas' %} Agregar libro</a>
+  </div>
 </div>
 
+{% if estados_nav.0.1 %}
+<section class="filtro-bloque" aria-labelledby="t-estado">
+  <h2 id="t-estado">Estado de lectura</h2>
+  <nav class="filtros" aria-label="Filtrar por estado" style="margin:0">
+    {% for etiqueta, n, url, activo in estados_nav %}
+      <a class="chip {% if activo %}activo{% endif %}" href="{{ url }}" {% if activo %}aria-current="true"{% endif %}>{{ etiqueta }} <small>{{ n }}</small></a>
+    {% endfor %}
+  </nav>
+</section>
+
+<section class="filtro-bloque" aria-labelledby="t-generos">
+  <h2 id="t-generos">Géneros</h2>
+  {% if generos_nav %}
+    {% include "biblioteca/_categorias.html" %}
+  {% else %}
+    <p class="filtro-vacio">Cuando elijas el género de tus libros, aparecerán aquí como estantes para filtrar.</p>
+  {% endif %}
+  {% if sin_genero and generos_nav %}<p class="filtro-vacio" style="margin-top:6px">{{ sin_genero }} libro{{ sin_genero|pluralize }} sin género.</p>{% endif %}
+</section>
+{% endif %}
+
 {% if libros %}
-<div class="libros">
+<div class="libros" style="margin-top:26px">
   {% for libro in libros %}
     <a class="libro-tarjeta" href="{% url 'libro_detalle' libro.pk %}">
       {% include "biblioteca/_portada.html" with etiqueta=True %}
       <h3>{{ libro.titulo|truncatechars:50 }}</h3>
       <p class="autor">{{ libro.autores|default:"Autor desconocido"|truncatechars:40 }}</p>
-      {% if libro.estado == "leyendo" %}<div class="barra-progreso"><span style="width: {{ libro.progreso }}%"></span></div>{% endif %}
+      {% if libro.estado == "leyendo" %}<div class="barra-progreso" role="progressbar" aria-valuenow="{{ libro.progreso }}" aria-valuemin="0" aria-valuemax="100"><span style="width: {{ libro.progreso }}%"></span></div>{% endif %}
       <div class="libro-meta">
         <span class="insignia-estado estado-{{ libro.estado }}">{{ libro.get_estado_display }}</span>
-        <span class="contador" title="Anotaciones">{% icono 'nota' %}{{ libro.n_anotaciones }}</span>
+        <span class="contador" title="Anotaciones">{% icono 'nota' %}{{ libro.n_anotaciones }}<span class="solo-lectores"> anotaciones</span></span>
       </div>
-      {% if libro.resena %}<span class="estrellas">{{ libro.resena.calificacion|estrellas }}</span>{% endif %}
+      {% if libro.resena %}<span class="estrellas" aria-label="{{ libro.resena.calificacion }} de 5 estrellas">{{ libro.resena.calificacion|estrellas }}</span>{% endif %}
     </a>
   {% endfor %}
 </div>
 {% else %}
-<div class="vacio">
+<div class="vacio" style="margin-top:20px">
   <img src="{% static 'biblioteca/img/libros.svg' %}" alt="">
-  <h3>{% if q or estado or genero %}No hay libros con ese filtro{% else %}Tu estante está vacío{% endif %}</h3>
-  <p>Escanea el código de barras de un libro con la cámara o escribe su ISBN.</p>
-  <div class="acciones"><a class="boton boton-coral" href="{% url 'escanear' %}">Escanear</a><a class="boton boton-suave" href="{% url 'libro_nuevo' %}">Agregar a mano</a></div>
+  <h3>{% if q or estado or genero %}No hay libros con estos filtros{% else %}Tu estante está vacío{% endif %}</h3>
+  <p>{% if q or estado or genero %}Prueba quitando algún filtro.{% else %}Escanea el código de barras de un libro con la cámara o escribe su ISBN.{% endif %}</p>
+  <div class="acciones">
+    {% if q or estado or genero %}<a class="boton boton-secundario" href="{% url 'biblioteca' %}">Quitar filtros</a>
+    {% else %}<a class="boton boton-primario" href="{% url 'escanear' %}">{% icono 'camara' %} Escanear</a><a class="boton boton-secundario" href="{% url 'libro_nuevo' %}">Agregar a mano</a>{% endif %}
+  </div>
 </div>
 {% endif %}
 {% endblock %}

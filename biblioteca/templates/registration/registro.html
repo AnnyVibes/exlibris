@@ -10,7 +10,7 @@
     <form method="post" class="formulario">
       {% csrf_token %}
       {% for campo in form %}{% include "biblioteca/_campo.html" %}{% endfor %}
-      <button class="boton boton-lila boton-ancho" type="submit">Crear cuenta</button>
+      <button class="boton boton-primario boton-ancho" type="submit">Crear cuenta</button>
     </form>
     <p class="cambio">¿Ya tienes cuenta? <a href="{% url 'login' %}">Entra</a></p>
   </div></div>

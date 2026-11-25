@@ -19,7 +19,7 @@
     </div>
     {% if libro.descripcion %}<p class="descripcion">{{ libro.descripcion }}</p>{% endif %}
     <div class="acciones-fila">
-      <a class="boton boton-blanco boton-mini" href="{% url 'libro_editar' libro.pk %}">{% icono 'editar' %} Editar</a>
+      <a class="boton boton-secundario boton-mini" href="{% url 'libro_editar' libro.pk %}">{% icono 'editar' %} Editar</a>
       <form method="post" action="{% url 'libro_eliminar' libro.pk %}" onsubmit="return confirm('¿Eliminar «{{ libro.titulo|escapejs }}» y todas sus anotaciones?');">
         {% csrf_token %}<button class="boton boton-peligro boton-mini" type="submit">{% icono 'basura' %} Eliminar</button>
       </form>
@@ -35,7 +35,7 @@
       {% csrf_token %}
       {% include "biblioteca/_campo.html" with campo=progreso_form.estado %}
       {% include "biblioteca/_campo.html" with campo=progreso_form.pagina_actual %}
-      <div class="ancho"><button class="boton boton-rosa" type="submit">Actualizar</button></div>
+      <div class="ancho"><button class="boton boton-primario" type="submit">Actualizar</button></div>
     </form>
   </article>
 
@@ -53,7 +53,7 @@
         </div>
       </div>
       {% include "biblioteca/_campo.html" with campo=resena_form.texto %}
-      <div><button class="boton boton-rosa" type="submit">Guardar reseña</button></div>
+      <div><button class="boton boton-primario" type="submit">Guardar reseña</button></div>
     </form>
   </article>
 
@@ -73,7 +73,7 @@
         {% include "biblioteca/_campo.html" with campo=prestamo_form.contacto %}
         {% include "biblioteca/_campo.html" with campo=prestamo_form.devolver_el %}
         {% include "biblioteca/_campo.html" with campo=prestamo_form.notas %}
-        <div class="ancho"><button class="boton boton-coral" type="submit">{% icono 'prestamo' %} Prestar</button></div>
+        <div class="ancho"><button class="boton boton-primario" type="submit">{% icono 'prestamo' %} Prestar</button></div>
       </form>
     {% endif %}
     {% if prestamos %}
@@ -91,7 +91,7 @@
         {% include "biblioteca/_campo.html" with campo=anotacion_form.pagina %}
         {% include "biblioteca/_campo.html" with campo=anotacion_form.texto %}
       </div>
-      <div><button class="boton boton-rosa" type="submit">{% icono 'mas' %} Anotar</button></div>
+      <div><button class="boton boton-primario" type="submit">{% icono 'mas' %} Anotar</button></div>
     </form>
     <div class="notas">
       {% for n in anotaciones %}

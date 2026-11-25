@@ -7,7 +7,7 @@ from .base import ConUsuario
 
 class EstadisticasTests(ConUsuario):
     def test_resumen(self):
-        a = self.libro(estado="leido", paginas=300, genero="novela")
+        a = self.libro(estado="leido", paginas=300, genero="Novela")
         b = self.libro(titulo="Ficciones", estado="leyendo", paginas=200, genero="Novela")
         self.libro(titulo="Ajeno", propietario=self.otro, estado="leido")
         Resena.objects.create(libro=a, calificacion=4)

@@ -1,6 +1,9 @@
-"""Crea un usuario de demostración con libros, reseñas, anotaciones y préstamos.
+"""Cuenta de demostración «demo» (contraseña «exlibris-demo»).
 
-Uso: python manage.py datos_demo  (usuario «demo», contraseña «exlibris-demo»)
+  python manage.py datos_demo              crea la cuenta si no existe, con la biblioteca vacía
+                                           (no borra nada si ya existe)
+  python manage.py datos_demo --vaciar     borra TODOS los libros de «demo» para empezar de cero
+  python manage.py datos_demo --ejemplos   carga 8 libros de ejemplo (para capturas o pruebas)
 """
 
 from datetime import timedelta
@@ -33,14 +36,30 @@ NOTAS = {
 
 
 class Command(BaseCommand):
-    help = "Crea datos de demostración para el usuario «demo»."
+    help = "Crea la cuenta «demo» (vacía). Con --vaciar la deja sin libros; con --ejemplos carga libros de muestra."
+
+    def add_arguments(self, parser):
+        parser.add_argument("--vaciar", action="store_true", help="Borra todos los libros de la cuenta demo.")
+        parser.add_argument("--ejemplos", action="store_true", help="Reemplaza la biblioteca de demo por libros de ejemplo.")
 
     def handle(self, *args, **opciones):
-        usuario, creado = User.objects.get_or_create(username="demo", defaults={"email": "demo@example.com", "first_name": "Lectora", "last_name": "Demo"})
+        usuario, creado = User.objects.get_or_create(username="demo", defaults={"email": "demo@example.com", "first_name": "Demo"})
         if creado:
             usuario.set_password("exlibris-demo")
             usuario.save()
-        Libro.objects.filter(propietario=usuario).delete()
+        if opciones["vaciar"] or opciones["ejemplos"]:
+            for libro in Libro.objects.filter(propietario=usuario).exclude(portada=""):
+                libro.portada.delete(save=False)
+            borrados = Libro.objects.filter(propietario=usuario).count()
+            Libro.objects.filter(propietario=usuario).delete()
+            self.stdout.write(f"Se borraron {borrados} libro(s) de «demo».")
+        if not opciones["ejemplos"]:
+            total = Libro.objects.filter(propietario=usuario).count()
+            estado = "creada" if creado else "ya existía"
+            self.stdout.write(self.style.SUCCESS(
+                f"Cuenta «demo» {estado} (contraseña «exlibris-demo»). Libros en su biblioteca: {total}."
+            ))
+            return
         hoy = timezone.localdate()
         libros = {}
         for isbn, titulo, autor, genero, paginas, estado, actual, estrellas in LIBROS:
@@ -57,4 +76,4 @@ class Command(BaseCommand):
         Prestamo.objects.create(libro=libros["Rayuela"], persona="Lucía", contacto="6000-1234", prestado_el=hoy - timedelta(days=20), devolver_el=hoy - timedelta(days=2))
         Prestamo.objects.create(libro=libros["Ficciones"], persona="Carlos", prestado_el=hoy - timedelta(days=5), devolver_el=hoy + timedelta(days=10))
         Prestamo.objects.create(libro=libros["Harry Potter y la piedra filosofal"], persona="Sofía", prestado_el=hoy - timedelta(days=60), devuelto_el=hoy - timedelta(days=30))
-        self.stdout.write(self.style.SUCCESS("Listo: usuario «demo» / contraseña «exlibris-demo»"))
+        self.stdout.write(self.style.SUCCESS("Listo: «demo» tiene 8 libros de ejemplo (contraseña «exlibris-demo»)."))

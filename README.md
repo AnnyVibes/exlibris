@@ -14,12 +14,12 @@ virtual con **reseñas**, **anotaciones con conteo**, **control de préstamos** 
 | 1 | Biblioteca, escáner, ISBN manual, catálogo, reseñas, anotaciones, préstamos, estadísticas, diseño, pruebas y CI | ✅ |
 | 2 | IA: clasificar, resumir anotaciones, borrador de reseña, agente conversacional (n8n + Gemini/Ollama) | ⏳ |
 
-Especificación en [`specs/`](specs/) (outcomes, requisitos, reglas, modelo de datos, arquitectura) y registro de IA en
+Auditoría de diseño en [`docs/auditoria-ux.md`](docs/auditoria-ux.md). Especificación en [`specs/`](specs/) (outcomes, requisitos, reglas, modelo de datos, arquitectura) y registro de IA en
 [`AI_LOG.md`](AI_LOG.md).
 
 ## Tecnología (todo gratuito)
 
-Python 3.12+, Django 5.2, SQLite, CSS propio (tipografía del sistema, paleta lila), html5-qrcode 2.3.8 y Chart.js 4.4.1 por CDN,
+Python 3.12+, Django 5.2, Pillow (portadas), SQLite, CSS propio (tipografía del sistema, paleta lila), html5-qrcode 2.3.8 y Chart.js 4.4.1 por CDN,
 Open Library y Google Books (sin API key), GitHub Actions.
 
 ## Instalación
@@ -31,11 +31,19 @@ python -m venv venv
 source venv/bin/activate          # Windows (PowerShell): .\venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 python manage.py migrate
-python manage.py datos_demo       # usuario: demo · contraseña: exlibris-demo
+python manage.py datos_demo       # crea la cuenta demo (contraseña exlibris-demo) con la biblioteca vacía
 python manage.py runserver
 ```
 
 Abre http://127.0.0.1:8000 y entra con `demo` / `exlibris-demo`, o crea tu cuenta.
+
+| Comando | Qué hace |
+|---|---|
+| `python manage.py datos_demo` | Crea la cuenta `demo` si no existe. **No borra nada.** |
+| `python manage.py datos_demo --vaciar` | Borra todos los libros de `demo` para empezar de cero. |
+| `python manage.py datos_demo --ejemplos` | Reemplaza la biblioteca de `demo` por 8 libros de ejemplo (capturas, pruebas). |
+
+Las portadas que subes se guardan en la carpeta `media/` (no se sube a GitHub).
 
 ## Escanear desde el celular
 
@@ -56,9 +64,9 @@ y `CSRF_TRUSTED_ORIGINS`), ve a **Escanear**, activa la cámara y apunta al cód
 python manage.py test
 ```
 
-44 pruebas: validación de ISBN, catálogo (con respuestas simuladas), alta por escaneo y manual, duplicados,
+69 pruebas: validación de ISBN, catálogo (con respuestas simuladas), géneros, portadas subidas, filtros, alta por escaneo y manual, duplicados,
 aislamiento entre usuarios, progreso, reseñas, anotaciones y conteo, préstamos (reglas, vencidos, redirección segura)
-y estadísticas. Se ejecutan en CI en cada push (`.github/workflows/tests.yml`).
+estadísticas y el comando demo. Se ejecutan en CI en cada push (`.github/workflows/tests.yml`).
 
 ## Estructura
 
