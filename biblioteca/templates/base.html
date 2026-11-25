@@ -19,6 +19,7 @@
     <nav class="nav" aria-label="Principal">
       <a href="{% url 'inicio' %}" class="{% if url == 'inicio' %}activo{% endif %}">{% icono 'inicio' %} Inicio</a>
       <a href="{% url 'biblioteca' %}" class="{% if url == 'biblioteca' or url == 'libro_detalle' %}activo{% endif %}">{% icono 'libros' %} Mi biblioteca</a>
+      <a href="{% url 'generos' %}" class="{% if url == 'generos' %}activo{% endif %}">{% icono 'etiqueta' %} Géneros</a>
       <a href="{% url 'libro_nuevo' %}" class="{% if url == 'libro_nuevo' %}activo{% endif %}">{% icono 'mas' %} Agregar libro</a>
       <a href="{% url 'anotaciones' %}" class="{% if url == 'anotaciones' %}activo{% endif %}">{% icono 'nota' %} Anotaciones</a>
       <a href="{% url 'prestamos' %}" class="{% if url == 'prestamos' %}activo{% endif %}">{% icono 'prestamo' %} Préstamos</a>
@@ -45,7 +46,7 @@
     </header>
 
     {% if messages %}
-      <ul class="mensajes" role="status">{% for m in messages %}<li class="{{ m.tags }}">{% if m.tags == 'error' %}{% icono 'alerta' %}{% elif m.tags == 'info' or m.tags == 'warning' %}{% icono 'info' %}{% else %}{% icono 'check' %}{% endif %}<span>{{ m }}</span></li>{% endfor %}</ul>
+      <ul class="mensajes" role="status">{% for m in messages %}<li class="{{ m.tags }}">{% if m.tags == 'error' %}{% icono 'alerta' %}{% elif m.tags == 'info' or m.tags == 'warning' %}{% icono 'info' %}{% else %}{% icono 'check' %}{% endif %}<span>{{ m }}</span><button type="button" class="cerrar-mensaje" aria-label="Cerrar mensaje">&times;</button></li>{% endfor %}</ul>
     {% endif %}
 
     {% block contenido %}{% endblock %}
@@ -93,6 +94,16 @@
 </nav>
 {% endwith %}
 {% endblock %}
+<script>
+/* Mensajes: se cierran con la ×; los de confirmación se van solos a los 6 s (los errores se quedan). */
+(function () {
+  document.querySelectorAll(".mensajes li").forEach((li) => {
+    const cerrar = () => { li.classList.add("saliendo"); setTimeout(() => li.remove(), 250); };
+    li.querySelector(".cerrar-mensaje").addEventListener("click", cerrar);
+    if (!li.classList.contains("error")) setTimeout(cerrar, 6000);
+  });
+})();
+</script>
 {% block scripts %}{% endblock %}
 </body>
 </html>

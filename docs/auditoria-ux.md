@@ -45,7 +45,7 @@ así no dependen solo del color (útil para daltonismo):
 
 | Tipo | Color | Ícono |
 |---|---|---|
-| Éxito | verde `#15803d` | ✓ |
+| Éxito / confirmación | fucsia `#a21caf` (color de marca, a pedido de la autora) | ✓ |
 | Error | rojo `#b42318` | ⓘ alerta |
 | Aviso | ámbar `#92400e` | ⓘ |
 | Información | violeta `#6d28d9` | ⓘ |
@@ -87,3 +87,13 @@ de él (p. ej. «Tu estante está vacío» → **Escanear**).
 - **Libro con portada**: tapa con esquinas redondeadas, bloque de páginas con contorno y cinta separadora, como en la
   referencia de librería. Si hay foto de portada, el cuerpo del libro usa la misma imagen difuminada, para que una tapa
   oscura no quede sobre una base de otro color.
+
+## 8. Tercera ronda
+
+- **Mensajes**: la confirmación usa fucsia (marca) y el error mantiene el rojo: el color de error es una convención que
+  no conviene cambiar. Las confirmaciones se cierran solas a los 6 s y todas tienen botón «×»; los errores no se cierran
+  solos para que dé tiempo a leerlos. Se respeta «reducir movimiento» del sistema.
+- **Librero «Mueble»**: ancho máximo para conservar proporciones de mueble real. Los estantes vacíos muestran
+  siluetas punteadas (indican qué va ahí) y una acción concreta en lugar de solo texto.
+- **Géneros** pasa a ser una sección propia en la navegación lateral, con una tarjeta por género. En el celular se llega
+  desde los filtros de Mi biblioteca (la barra inferior se mantiene en 5 accesos para no saturarla).

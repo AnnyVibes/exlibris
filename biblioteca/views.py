@@ -115,6 +115,23 @@ def librero_preferencias(request):
 
 
 @login_required
+def generos(request):
+    """Sección «Géneros»: una tarjeta por género con sus libros más recientes."""
+    libros = Libro.objects.filter(propietario=request.user).exclude(genero="")
+    tarjetas = []
+    for nombre, total in estadisticas.generos(request.user, limite=50):
+        tarjetas.append({
+            "nombre": nombre, "total": total,
+            "libros": list(libros.filter(genero=nombre).order_by("-creado")[:5]),
+            "leidos": libros.filter(genero=nombre, estado=Libro.Estado.LEIDO).count(),
+        })
+    return render(request, "biblioteca/generos.html", {
+        "tarjetas": tarjetas,
+        "sin_genero": Libro.objects.filter(propietario=request.user, genero="").count(),
+    })
+
+
+@login_required
 def escanear(request):
     return render(request, "biblioteca/escanear.html")
 

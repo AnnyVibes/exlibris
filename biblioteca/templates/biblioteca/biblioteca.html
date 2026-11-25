@@ -89,7 +89,11 @@
               {% if libro.estado == "leyendo" %}<span class="progreso-repisa"><span style="width: {{ libro.progreso }}%"></span></span>{% endif %}
             </a>
           {% empty %}
-            <p class="repisa-vacia">{% if seccion.valor == "leyendo" %}Nada en lectura. Marca un libro como «Leyendo».{% elif seccion.valor == "por_leer" %}Aquí irán los libros que tienes pendientes.{% else %}Aquí irán los libros que terminaste.{% endif %}</p>
+            <span class="hueco" aria-hidden="true"></span><span class="hueco" aria-hidden="true"></span><span class="hueco" aria-hidden="true"></span>
+            <div class="repisa-vacia">
+              <p>{% if seccion.valor == "leyendo" %}Nada en lectura todavía.{% elif seccion.valor == "por_leer" %}Aquí irán los libros que tienes pendientes.{% else %}Aquí irán los libros que terminaste.{% endif %}</p>
+              {% if seccion.valor == "leyendo" %}<a href="?estado=por_leer&amp;vista=lista">Elegir uno de «Por leer» →</a>{% else %}<a href="{% url 'libro_nuevo' %}">Agregar libro →</a>{% endif %}
+            </div>
           {% endfor %}
           <span class="adorno-repisa">{% include "biblioteca/_adorno.html" with nombre=seccion.adorno %}</span>
         </div>

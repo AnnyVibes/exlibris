@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load static exlibris %}
+{% block titulo %}Géneros{% endblock %}
+{% block contenido %}
+<div class="seccion-titulo" style="margin-top:0">
+  <div>
+    <h1 class="titulo-pagina">Géneros</h1>
+    <p class="subtitulo" style="margin:0">{{ tarjetas|length }} género{{ tarjetas|length|pluralize }} en tu biblioteca</p>
+  </div>
+  <a class="boton boton-primario boton-mini" href="{% url 'libro_nuevo' %}">{% icono 'mas' %} Agregar libro</a>
+</div>
+
+{% if sin_genero %}
+  <p class="aviso-suave">{% icono 'info' %} {{ sin_genero }} libro{{ sin_genero|pluralize }} sin género. Edítalo{{ sin_genero|pluralize }} desde su ficha para que aparezca{{ sin_genero|pluralize:"n" }} aquí.</p>
+{% endif %}
+
+{% if tarjetas %}
+<div class="generos-rejilla">
+  {% for t in tarjetas %}
+    <a class="genero-tarjeta" href="{% url 'biblioteca' %}?genero={{ t.nombre|urlencode }}">
+      <div class="genero-cabecera">
+        {% libro_icono forloop.counter0 "" "genero-icono" %}
+        <div>
+          <h2>{{ t.nombre }}</h2>
+          <small>{{ t.total }} libro{{ t.total|pluralize }} · {{ t.leidos }} leído{{ t.leidos|pluralize }}</small>
+        </div>
+      </div>
+      <div class="mini-estante">
+        {% for libro in t.libros %}
+          <span class="mini-tapa c{{ libro|color_libro }}" title="{{ libro.titulo }}">
+            {% if libro.imagen_portada %}<img src="{{ libro.imagen_portada }}" alt="" loading="lazy">{% else %}<span>{{ libro.titulo|truncatechars:18 }}</span>{% endif %}
+          </span>
+        {% endfor %}
+      </div>
+      <span class="genero-ver">Ver libros →</span>
+    </a>
+  {% endfor %}
+</div>
+{% else %}
+<div class="vacio">
+  <img src="{% static 'biblioteca/img/libros.svg' %}" alt="">
+  <h3>Todavía no hay géneros</h3>
+  <p>Cuando agregues libros y elijas su género, aquí verás un estante por cada uno.</p>
+  <div class="acciones"><a class="boton boton-primario" href="{% url 'escanear' %}">{% icono 'camara' %} Escanear</a><a class="boton boton-secundario" href="{% url 'libro_nuevo' %}">Agregar a mano</a></div>
+</div>
+{% endif %}
+{% endblock %}
