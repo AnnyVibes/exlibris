@@ -74,3 +74,16 @@ Problema: la página de inicio mostraba todos los géneros y estados como libros
 
 La cuenta demo empieza vacía, así que se cuidaron los estados vacíos: cada uno explica qué pasa y ofrece la acción para salir
 de él (p. ej. «Tu estante está vacío» → **Escanear**).
+
+## 7. Segunda ronda (comentarios de la autora)
+
+- **Colores de acento**: el azul y el naranja del resumen no armonizaban con el violeta. Se usa una paleta **análoga**
+  (colores vecinos en el círculo cromático): violeta `#7c3aed` (libros), rosa `#ec4899` (anotaciones) y fucsia
+  `#c026d3` (préstamos). Se aplica también a las estadísticas y los gráficos.
+- **Lenguaje**: «prestados ahora» → **«En préstamo»**, el término usado en bibliotecas, en el panel, el inicio, las
+  insignias de las tapas y las estadísticas.
+- **Menos ruido**: se quitó el saludo del inicio (no aportaba información) y el estado «Abandonado» (los libros que lo
+  tenían pasan a «Por leer»).
+- **Libro con portada**: tapa con esquinas redondeadas, bloque de páginas con contorno y cinta separadora, como en la
+  referencia de librería. Si hay foto de portada, el cuerpo del libro usa la misma imagen difuminada, para que una tapa
+  oscura no quede sobre una base de otro color.

@@ -1,8 +1,8 @@
-{% load exlibris %}<div class="libro3d c{{ libro|color_libro }}">
+{% load exlibris %}<div class="libro3d c{{ libro|color_libro }}{% if libro.imagen_portada %} con-imagen" style="--img: url(&quot;{{ libro.imagen_portada }}&quot;){% endif %}">
   <div class="tapa">
     {% if libro.imagen_portada %}<img src="{{ libro.imagen_portada }}" alt="Portada de {{ libro.titulo }}" loading="lazy">
     {% else %}<div class="portada-falsa"><strong>{{ libro.titulo|truncatechars:40 }}</strong><span class="adorno"></span><small>{{ libro.autores|truncatechars:28 }}</small></div>{% endif %}
-    {% if etiqueta and libro.prestamo_activo %}<span class="insignia prestado">Prestado</span>{% endif %}
+    {% if etiqueta and libro.prestamo_activo %}<span class="insignia prestado">En préstamo</span>{% endif %}
   </div>
   <span class="paginas"></span><span class="cinta"></span>
 </div>

@@ -22,7 +22,7 @@ LIBROS = [
     ("9788497592208", "Veinte poemas de amor", "Pablo Neruda", "Poesía", 112, "leido", 112, 4),
     ("9788499089515", "Sapiens", "Yuval Noah Harari", "Historia", 496, "leyendo", 120, None),
     ("9788498381498", "Harry Potter y la piedra filosofal", "J. K. Rowling", "Fantasía", 264, "leido", 264, 5),
-    ("9788420412146", "El túnel", "Ernesto Sabato", "Novela", 160, "abandonado", 40, 2),
+    ("9788420412146", "El túnel", "Ernesto Sabato", "Novela", 160, "por_leer", 0, None),
 ]
 NOTAS = {
     "Cien años de soledad": [

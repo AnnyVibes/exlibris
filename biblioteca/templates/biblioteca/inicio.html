@@ -2,7 +2,6 @@
 {% load static exlibris %}
 {% block titulo %}Inicio{% endblock %}
 {% block contenido %}
-<p class="saludo">Hola, <strong>{{ user.get_full_name|default:user.username }}</strong> 👋</p>
 
 <section class="hero">
   <img class="hero-ilustracion" src="{% static 'biblioteca/img/libros.svg' %}" alt="">
@@ -17,9 +16,9 @@
 </section>
 
 <div class="resumen-tarjetas">
-  <a class="resumen" href="{% url 'biblioteca' %}"><span class="burbuja-icono bg-lila">{% icono 'libros' %}</span><div><strong>{{ resumen.total }}</strong><small>libro{{ resumen.total|pluralize }} en tu estante</small></div></a>
-  <a class="resumen" href="{% url 'anotaciones' %}"><span class="burbuja-icono bg-azul">{% icono 'nota' %}</span><div><strong>{{ resumen.anotaciones }}</strong><small>anotaci{{ resumen.anotaciones|pluralize:"ón,ones" }}</small></div></a>
-  <a class="resumen" href="{% url 'prestamos' %}"><span class="burbuja-icono bg-coral">{% icono 'prestamo' %}</span><div><strong>{{ resumen.prestados }}</strong><small>prestado{{ resumen.prestados|pluralize }} ahora</small></div></a>
+  <a class="resumen" href="{% url 'biblioteca' %}"><span class="burbuja-icono bg-libros">{% icono 'libros' %}</span><div><strong>{{ resumen.total }}</strong><small>libro{{ resumen.total|pluralize }} en tu estante</small></div></a>
+  <a class="resumen" href="{% url 'anotaciones' %}"><span class="burbuja-icono bg-notas">{% icono 'nota' %}</span><div><strong>{{ resumen.anotaciones }}</strong><small>anotaci{{ resumen.anotaciones|pluralize:"ón,ones" }}</small></div></a>
+  <a class="resumen" href="{% url 'prestamos' %}"><span class="burbuja-icono bg-prestamo">{% icono 'prestamo' %}</span><div><strong>{{ resumen.prestados }}</strong><small>en préstamo</small></div></a>
 </div>
 
 <div class="inicio-rejilla">

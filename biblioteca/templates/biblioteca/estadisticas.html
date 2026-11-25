@@ -5,13 +5,13 @@
 <h1 class="titulo-pagina">Estadísticas</h1>
 <p class="subtitulo">Tu vida lectora en números.</p>
 <div class="kpis">
-  <div class="kpi" style="--c:var(--lila-400)"><small>Libros</small><strong>{{ resumen.total }}</strong></div>
-  <div class="kpi" style="--c:var(--verde)"><small>Leídos</small><strong>{{ resumen.leidos }}</strong></div>
-  <div class="kpi" style="--c:var(--azul)"><small>Anotaciones</small><strong>{{ resumen.anotaciones }}</strong></div>
-  <div class="kpi" style="--c:var(--coral)"><small>Prestados ahora</small><strong>{{ resumen.prestados }}</strong></div>
-  <div class="kpi" style="--c:var(--mostaza)"><small>Páginas leídas</small><strong>{{ resumen.paginas_leidas }}</strong></div>
-  <div class="kpi" style="--c:var(--rosa)"><small>Calificación media</small><strong>{% if resumen.calificacion_media %}{{ resumen.calificacion_media|floatformat:1 }}★{% else %}—{% endif %}</strong></div>
-  <div class="kpi" style="--c:var(--morado)"><small>Leyendo</small><strong>{{ resumen.leyendo }}</strong></div>
+  <div class="kpi" style="--c:#7c3aed"><small>Libros</small><strong>{{ resumen.total }}</strong></div>
+  <div class="kpi" style="--c:#ec4899"><small>Leídos</small><strong>{{ resumen.leidos }}</strong></div>
+  <div class="kpi" style="--c:#c026d3"><small>Anotaciones</small><strong>{{ resumen.anotaciones }}</strong></div>
+  <div class="kpi" style="--c:#a78bfa"><small>En préstamo</small><strong>{{ resumen.prestados }}</strong></div>
+  <div class="kpi" style="--c:#f472b6"><small>Páginas leídas</small><strong>{{ resumen.paginas_leidas }}</strong></div>
+  <div class="kpi" style="--c:#8b5cf6"><small>Calificación media</small><strong>{% if resumen.calificacion_media %}{{ resumen.calificacion_media|floatformat:1 }}★{% else %}—{% endif %}</strong></div>
+  <div class="kpi" style="--c:#e879f9"><small>Leyendo</small><strong>{{ resumen.leyendo }}</strong></div>
 </div>
 <div class="graficos">
   <article class="tarjeta"><div class="tarjeta-titulo"><h2>Por estado</h2></div><div class="grafico"><canvas id="g-estados" aria-label="Libros por estado"></canvas></div></article>
@@ -30,7 +30,7 @@
 (function () {
   if (!window.Chart) return;
   const leer = (id) => JSON.parse(document.getElementById(id).textContent);
-  const paleta = ["#a78bfa", "#f07167", "#4a6fa5", "#5fa777", "#f4b942", "#ec8fb4", "#6d5bd0", "#c084fc"];
+  const paleta = ["#7c3aed", "#ec4899", "#c026d3", "#a78bfa", "#f472b6", "#8b5cf6", "#e879f9", "#c4b5fd"];
   Chart.defaults.font.family = "system-ui, sans-serif";
   Chart.defaults.color = "#6b7280";
   const e = leer("datos-estados");

@@ -23,7 +23,7 @@
   {% for e in form.non_field_errors %}<p class="error" role="alert">{{ e }}</p>{% endfor %}
   <div class="form-libro">
     <div class="portada-editor">
-      <div class="libro3d c{{ libro|color_libro }}">
+      <div id="libro-vista" class="libro3d c{{ libro|color_libro }}{% if portada %} con-imagen" style="--img: url(&quot;{{ portada }}&quot;){% endif %}">
         <div class="tapa">
           <img id="vista-portada" src="{{ portada }}" alt="Vista previa de la portada" {% if not portada %}hidden{% endif %}>
           <div id="sin-portada" class="portada-vacia" {% if portada %}hidden{% endif %}>{% icono 'imagen' %}<br>Sin portada</div>
@@ -78,9 +78,13 @@
   const original = vista.getAttribute("src");
   let urlTemporal = null;
 
+  const libro = document.getElementById("libro-vista");
   function mostrar(src) {
     vista.hidden = !src; vacia.hidden = !!src;
     if (src) vista.src = src;
+    libro.classList.toggle("con-imagen", !!src);
+    if (src) libro.style.setProperty("--img", `url("${src.replace(/"/g, "%22")}")`);
+    else libro.style.removeProperty("--img");
   }
   entrada.addEventListener("change", () => {
     const archivo = entrada.files && entrada.files[0];

@@ -14,7 +14,6 @@ class Libro(models.Model):
         POR_LEER = "por_leer", "Por leer"
         LEYENDO = "leyendo", "Leyendo"
         LEIDO = "leido", "Leído"
-        ABANDONADO = "abandonado", "Abandonado"
 
     propietario = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="libros"

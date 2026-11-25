@@ -57,7 +57,7 @@
         <div class="avatar">{{ user.username|slice:":1" }}</div>
         <div><h4>{{ user.get_full_name|default:user.username }}</h4><small>@{{ user.username }}</small></div>
       </div>
-      <div class="tarjeta-titulo"><h3>Libros prestados</h3><a href="{% url 'prestamos' %}" aria-label="Ver préstamos">{% icono 'puntos' %}</a></div>
+      <div class="tarjeta-titulo"><h3>En préstamo</h3><a href="{% url 'prestamos' %}" aria-label="Ver préstamos">{% icono 'puntos' %}</a></div>
       <div class="lista-panel">
         {% for p in panel_prestamos %}
           <a class="item-panel" href="{% url 'libro_detalle' p.libro_id %}">
@@ -68,7 +68,7 @@
             </div>
           </a>
         {% empty %}
-          <p class="vacio-panel">No tienes libros prestados. Todos están en casa.</p>
+          <p class="vacio-panel">Ningún libro en préstamo. Todos están en casa.</p>
         {% endfor %}
       </div>
     </div>

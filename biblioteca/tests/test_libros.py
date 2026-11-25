@@ -133,3 +133,23 @@ class BibliotecaTests(ConUsuario):
         self.assertEqual(self.client.get(reverse("libro_eliminar", args=[libro.pk])).status_code, 405)
         self.client.post(reverse("libro_eliminar", args=[libro.pk]))
         self.assertFalse(Libro.objects.filter(pk=libro.pk).exists())
+
+
+class EstadosTests(ConUsuario):
+    def test_no_existe_abandonado(self):
+        self.assertNotIn("abandonado", Libro.Estado.values)
+        r = self.client.post(reverse("libro_nuevo"), {"titulo": "X", "estado": "abandonado"})
+        self.assertEqual(r.status_code, 200)
+        self.assertFalse(Libro.objects.filter(titulo="X").exists())
+        self.assertNotContains(self.client.get(reverse("biblioteca")), "Abandonado")
+
+    def test_migracion_pasa_abandonados_a_por_leer(self):
+        from importlib import import_module
+
+        from django.apps import apps
+        migracion = import_module("biblioteca.migrations.0003_quitar_abandonado")
+        libro = self.libro()
+        Libro.objects.filter(pk=libro.pk).update(estado="abandonado")
+        migracion.abandonados_a_por_leer(apps, None)
+        libro.refresh_from_db()
+        self.assertEqual(libro.estado, "por_leer")
