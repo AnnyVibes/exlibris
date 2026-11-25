@@ -39,6 +39,8 @@
   --aviso: #92400e; --aviso-fondo: #fffbeb; --aviso-borde: #fde68a;
   --info: #6d28d9; --info-fondo: #f5f3ff; --info-borde: #ddd6fe;
   --degradado: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  /* Degradado de marca: solo en «Escanear» (menú) y «Buscar» (decisión de diseño de la autora) */
+  --degradado-arcoiris: linear-gradient(90deg, #8b7fd1 0%, #c084fc 35%, #f07167 75%, #f4b942 100%);
   --foco: 0 0 0 3px #fff, 0 0 0 5px #a78bfa;
   --degradado-suave: linear-gradient(135deg, #f5efff 0%, #eef0ff 100%);
   --sombra: 0 8px 24px rgba(91, 71, 160, 0.08);
@@ -103,10 +105,10 @@ a:focus-visible, button:focus-visible, select:focus-visible, input[type=file]:fo
 .nav-destacado {
   display: flex; align-items: center; justify-content: center; gap: 10px;
   margin: 0 22px 22px; padding: 13px 18px;
-  background: var(--primario); color: #fff; font-weight: 600; font-size: 15px;
-  border-radius: 999px; box-shadow: var(--sombra-boton); transition: background .15s;
+  background: var(--degradado-arcoiris); color: #fff; font-weight: 600; font-size: 15px;
+  border-radius: 999px; box-shadow: 0 8px 20px rgba(240, 113, 103, 0.25); transition: filter .15s;
 }
-.nav-destacado:hover { background: var(--primario-hover); }
+.nav-destacado:hover { filter: brightness(0.95); }
 .nav { display: flex; flex-direction: column; gap: 4px; padding: 0 16px; }
 .nav a, .nav-pie button {
   display: flex; align-items: center; gap: 14px;
@@ -136,9 +138,9 @@ a:focus-visible, button:focus-visible, select:focus-visible, input[type=file]:fo
 .buscador input::placeholder { color: #9ca3af; }
 .buscador button {
   border: 0; cursor: pointer; font: inherit; font-weight: 600; color: #fff; height: 100%;
-  padding: 0 22px; border-radius: 999px; background: var(--lila-100); color: var(--primario-texto);
+  padding: 0 24px; border-radius: 999px; background: var(--degradado-arcoiris); color: #fff;
 }
-.buscador button:hover { background: var(--lila-200); }
+.buscador button:hover { filter: brightness(0.95); }
 .boton-icono {
   width: 50px; height: 50px; border-radius: 50%; display: grid; place-items: center;
   background: var(--superficie); color: var(--lila-600); box-shadow: var(--sombra); border: 1px solid var(--borde); cursor: pointer;

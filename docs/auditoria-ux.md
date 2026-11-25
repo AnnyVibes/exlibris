@@ -9,12 +9,16 @@ Texto normal necesita **4.5:1**; texto grande y elementos gráficos (íconos, bo
 | Elemento | Antes | Contraste | Después | Contraste |
 |---|---|---|---|---|
 | Botón principal (texto blanco) | degradado lila `#a78bfa → #c084fc` | **2.6–2.7 ❌** | violeta sólido `#7c3aed` (hover `#6d28d9`) | **5.7 / 7.1 ✅** |
-| Botón «Buscar» y «Escanear» del menú | degradado arcoíris (termina en mostaza `#f4b942`) | **1.8 ❌** | «Escanear»: violeta sólido · «Buscar»: lila suave con texto `#6d28d9` | **5.7 / 6.0 ✅** |
+| Botón «Buscar» y «Escanear» del menú | degradado arcoíris (termina en mostaza `#f4b942`) | **1.8 ❌** en el extremo amarillo | **Se mantiene el degradado** por decisión de la autora (es parte de la identidad visual) | ⚠️ riesgo aceptado |
 | Botón «Escanear libro» / «Prestar» | coral `#f07167` | **2.9 ❌** | violeta sólido (una sola acción principal) | **5.7 ✅** |
 | Autor del libro | coral `#f07167` sobre blanco | **2.9 ❌** | `#c2410c` | **5.2 ✅** |
 | Estrellas | mostaza `#f4b942` | **1.8 ❌** (ícono) | ámbar `#d97706` | **3.2 ✅** |
 | Botón suave (lila) | `#7e22ce` sobre `#f3e8ff` | 5.9 ✅ | `#6d28d9` sobre `#f3e8ff` | 6.0 ✅ |
 | Texto secundario | `#6b7280` sobre `#f6f7ff` | 4.5 ✅ | sin cambio | 4.5 ✅ |
+
+**Decisión de diseño:** el degradado arcoíris se conserva solo en esos dos botones como elemento de marca.
+Son botones con una palabra corta, en negrita, en lugares fijos y con ícono (Escanear) o junto a una lupa (Buscar),
+lo que reduce el impacto del menor contraste. El resto de botones usa el violeta sólido.
 
 Los colores de lomo de libro (coral, azul, verde, rosa, mostaza) se mantienen **solo como decoración**
 (tapas, íconos, ilustraciones), nunca como fondo de texto pequeño ni para comunicar información por sí solos.
