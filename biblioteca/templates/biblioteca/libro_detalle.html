@@ -52,7 +52,7 @@
           <div class="pagina-fila">
             <input type="number" name="pagina_actual" id="{{ progreso_form.pagina_actual.id_for_label }}" value="{{ libro.pagina_actual }}" placeholder="Ej.: 120" min="0" {% if libro.paginas %}max="{{ libro.paginas }}" data-total="{{ libro.paginas }}"{% endif %} inputmode="numeric">
             {% if libro.paginas %}<span class="pagina-total">de {{ libro.paginas }}</span>{% endif %}
-            <button class="boton boton-primario" type="submit">{% icono 'check' %} Guardar</button>
+            <button class="boton boton-primario" type="submit">Guardar</button>
           </div>
         </div>
       </form>
