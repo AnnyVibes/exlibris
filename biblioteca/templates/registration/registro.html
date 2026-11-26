@@ -6,6 +6,8 @@
   {% include "registration/_cartel.html" %}
   <div class="acceso-lado">
   <div class="acceso-tarjeta">
+    <div class="tarjeta-libros" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+    <div class="acceso-centro">
     <header class="acceso-marca">
       <h2>Crea tu cuenta</h2>
       <p class="marca-texto">Empieza tu librero en un minuto.</p>
@@ -20,9 +22,10 @@
         </label>
         {% if campo.errors %}<p class="acceso-error-campo" id="err-{{ campo.html_name }}">{{ campo.errors|first }}</p>{% endif %}
       {% endfor %}
-      <button class="boton boton-primario boton-ancho" type="submit">Crear cuenta</button>
-      <p class="cambio">¿Ya tienes una cuenta? <a href="{% url 'login' %}">Inicia sesión</a></p>
+      <button class="boton boton-arcoiris boton-ancho" type="submit">Crear cuenta</button>
     </form>
+    </div>
+    <p class="cambio acceso-pie">¿Ya tienes una cuenta? <a href="{% url 'login' %}">Inicia sesión</a></p>
   </div>
   </div>
 </main>

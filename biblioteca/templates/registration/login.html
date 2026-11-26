@@ -6,6 +6,8 @@
   {% include "registration/_cartel.html" %}
   <div class="acceso-lado">
   <div class="acceso-tarjeta">
+    <div class="tarjeta-libros" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+    <div class="acceso-centro">
     <header class="acceso-marca">
       <h2>Te damos la bienvenida</h2>
       <p class="marca-texto">Inicia sesión para ver tu librero.</p>
@@ -25,9 +27,10 @@
       </label>
       <label class="recordarme"><input type="checkbox" name="recordarme" checked> Recordarme en este equipo</label>
       <input type="hidden" name="next" value="{{ next }}">
-      <button class="boton boton-primario boton-ancho" type="submit">Iniciar sesión</button>
-      <p class="cambio">¿Aún no tienes una cuenta? <a href="{% url 'registro' %}">Regístrate</a></p>
+      <button class="boton boton-arcoiris boton-ancho" type="submit">Iniciar sesión</button>
     </form>
+    </div>
+    <p class="cambio acceso-pie">¿Aún no tienes una cuenta? <a href="{% url 'registro' %}">Regístrate</a></p>
   </div>
   </div>
 </main>
