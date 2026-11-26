@@ -78,16 +78,16 @@ class ConteoDiasTests(ConUsuario):
         p.refresh_from_db()
         self.assertEqual((p.dias, p.dias_para_devolver), (3, 5))
         r = self.client.get(reverse("prestamos"))
-        self.assertContains(r, "Faltan 5 días")
         self.assertContains(r, "¿Ya lo devolvió?")
-        self.assertContains(r, "Sí, devuelto")
+        self.assertContains(r, ">Devuelto</button>")
+        self.assertNotContains(r, "Faltan")
 
     def test_vencido_y_hoy(self):
         hoy = timezone.localdate()
         p = prestar(self.libro(), "Lucía", devolver_el=hoy)
-        self.assertContains(self.client.get(reverse("prestamos")), "Vence hoy")
+        self.assertNotContains(self.client.get(reverse("prestamos")), "fecha-devolucion vencida")
         Prestamo.objects.filter(pk=p.pk).update(devolver_el=hoy - timedelta(days=2))
-        self.assertContains(self.client.get(reverse("prestamos")), "Vencido hace 2 días")
+        self.assertContains(self.client.get(reverse("prestamos")), "fecha-devolucion vencida")
 
     def test_duracion_en_historial(self):
         hoy = timezone.localdate()

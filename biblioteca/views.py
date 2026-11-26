@@ -113,6 +113,8 @@ def biblioteca(request):
         "estados_nav": estados_nav, "generos_nav": generos_nav,
         "sin_genero": base.filter(genero="").count(),
         "vista": vista, "secciones": secciones,
+        "opciones_estado": [(v, e, por_estado.get(v, 0)) for v, e in Libro.Estado.choices],
+        "opciones_genero": estadisticas.generos(request.user, limite=30),
         "enlace_lista": enlace(vista="lista"), "enlace_librero": enlace(vista=""),
         "preferencia": preferencia, "preferencia_form": PreferenciaLibreroForm(instance=preferencia),
     })

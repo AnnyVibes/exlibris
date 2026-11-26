@@ -81,12 +81,12 @@
     <div class="tarjeta-titulo"><h2>Compartir</h2>{% if prestamo_activo %}<span class="etiqueta {% if prestamo_activo.vencido %}vencido{% endif %}">{% if prestamo_activo.vencido %}Vencido{% else %}Compartido{% endif %}</span>{% else %}<span class="etiqueta gris">En casa</span>{% endif %}</div>
     {% if prestamo_activo %}
       <p style="margin-bottom:14px">Lo tiene <strong>{{ prestamo_activo.persona }}</strong>{% if prestamo_activo.contacto %} ({{ prestamo_activo.contacto }}){% endif %} desde el {{ prestamo_activo.prestado_el|date:"j \d\e F" }} ({{ prestamo_activo.dias|dias_texto|lower }}).</p>
-      <p style="margin-bottom:14px">{% include "biblioteca/_plazo.html" with p=prestamo_activo %}</p>
+      {% if prestamo_activo.devolver_el %}<p style="margin-bottom:14px">Devolución: <span class="fecha-devolucion{% if prestamo_activo.vencido %} vencida{% endif %}">{{ prestamo_activo.devolver_el|date:"j \d\e F" }}</span></p>{% endif %}
       {% if prestamo_activo.notas %}<p class="ayuda" style="margin-bottom:14px">{{ prestamo_activo.notas }}</p>{% endif %}
       <p class="pregunta-devuelto">¿Ya te lo devolvieron?</p>
       <form method="post" action="{% url 'prestamo_devolver' prestamo_activo.pk %}" onsubmit="return confirm('¿Confirmas que te devolvieron «{{ libro.titulo|escapejs }}»?');">
         {% csrf_token %}<input type="hidden" name="siguiente" value="{{ request.path }}">
-        <button class="boton boton-arcoiris" type="submit">{% icono 'check' %} Sí, ya me lo devolvió</button>
+        <button class="boton boton-primario" type="submit">Devuelto</button>
       </form>
     {% else %}
       <form method="post" action="{% url 'prestamo_crear' libro.pk %}" class="formulario dos">

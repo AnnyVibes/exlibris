@@ -826,3 +826,28 @@ html { scrollbar-width: thin; scrollbar-color: rgba(168, 85, 247, .45) transpare
 .tabla-compartidos td { vertical-align: middle; }
 .tabla-compartidos .boton { white-space: nowrap; }
 .pregunta-devuelto { font-weight: 600; color: #3b2a63; margin-bottom: 8px; }
+
+/* ---------- Biblioteca: una sola barra de herramientas ---------- */
+.barra-herramientas { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 22px; position: relative; }
+.barra-herramientas .selector-vista { box-shadow: none; }
+.filtro-selects { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; flex: 1; }
+.select-filtro select {
+  appearance: none; -webkit-appearance: none; height: 40px; padding: 0 34px 0 14px; border-radius: 999px; cursor: pointer;
+  font: inherit; font-size: 14px; font-weight: 500; color: var(--texto-medio); border: 1px solid var(--borde);
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236d28d9' stroke-width='2.2' stroke-linecap='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") right 12px center / 14px no-repeat;
+}
+.select-filtro select:hover { border-color: var(--lila-300); }
+.select-filtro select:focus-visible { outline: none; box-shadow: var(--foco); }
+.select-filtro.activo select { background-color: var(--lila-100); border-color: var(--lila-300); color: var(--primario-texto); font-weight: 600; }
+.limpiar { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; font-size: 20px; line-height: 1; color: var(--texto-suave); }
+.limpiar:hover { background: var(--lila-100); color: var(--primario-texto); }
+.barra-herramientas .personalizar { margin-left: auto; }
+@media (max-width: 860px) {
+  .barra-herramientas .selector-vista a span { display: none; }
+  .barra-herramientas .selector-vista a { padding: 0 12px; }
+  .filtro-selects { order: 3; flex-basis: 100%; flex-wrap: nowrap; }
+  .select-filtro { flex: 1; min-width: 0; }
+  .select-filtro select { width: 100%; }
+}
+.fecha-devolucion { font-weight: 500; }
+.fecha-devolucion.vencida { color: var(--peligro); font-weight: 600; }

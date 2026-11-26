@@ -16,8 +16,8 @@
         <td><a href="{% url 'libro_detalle' p.libro_id %}"><strong>{{ p.libro.titulo|truncatechars:40 }}</strong></a></td>
         <td>{{ p.persona }}{% if p.contacto %}<br><small style="color:var(--texto-suave)">{{ p.contacto }}</small>{% endif %}</td>
         <td><span class="contador-dias"><strong>{{ p.dias }}</strong> día{{ p.dias|pluralize }}</span><small class="plazo-fecha">desde el {{ p.prestado_el|date:"j M" }}</small></td>
-        <td>{% include "biblioteca/_plazo.html" %}</td>
-        <td><form method="post" action="{% url 'prestamo_devolver' p.pk %}" onsubmit="return confirm('¿Confirmas que te devolvieron «{{ p.libro.titulo|escapejs }}»?');">{% csrf_token %}<button class="boton boton-arcoiris boton-mini" type="submit">{% icono 'check' %} Sí, devuelto</button></form></td>
+        <td>{% if p.devolver_el %}<span class="fecha-devolucion{% if p.vencido %} vencida{% endif %}">{{ p.devolver_el|date:"j M Y" }}</span>{% else %}—{% endif %}</td>
+        <td><form method="post" action="{% url 'prestamo_devolver' p.pk %}" onsubmit="return confirm('¿Confirmas que te devolvieron «{{ p.libro.titulo|escapejs }}»?');">{% csrf_token %}<button class="boton boton-primario boton-mini" type="submit">Devuelto</button></form></td>
       </tr>
     {% endfor %}
     </tbody>

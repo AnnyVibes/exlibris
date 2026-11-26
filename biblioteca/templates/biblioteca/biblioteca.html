@@ -3,25 +3,39 @@
 {% block titulo %}Mi biblioteca{% endblock %}
 
 {% block contenido %}
-<div class="seccion-titulo" style="margin-top:0">
-  <div>
-    <h1 class="titulo-pagina">Mi biblioteca</h1>
-    <p class="subtitulo" style="margin:0">{% if q %}Resultados para «{{ q }}» · {% endif %}{{ libros|length }} libro{{ libros|length|pluralize }}{% if estado or genero %} con estos filtros{% endif %}</p>
-  </div>
-  <div class="acciones-fila">
-    {% if q or estado or genero %}<a class="boton boton-suave boton-mini" href="{% url 'biblioteca' %}{% if vista == 'lista' %}?vista=lista{% endif %}">Quitar filtros</a>{% endif %}
-    <a class="boton boton-primario boton-mini" href="{% url 'libro_nuevo' %}">{% icono 'mas' %} Agregar libro</a>
-  </div>
-</div>
+<h1 class="titulo-pagina">Mi biblioteca</h1>
+<p class="subtitulo">{% if q %}Resultados para «{{ q }}» · {% endif %}{{ libros|length }} libro{{ libros|length|pluralize }}</p>
 
-<div class="barra-vista">
+<div class="barra-herramientas">
   <nav class="selector-vista" aria-label="Cómo ver la biblioteca">
-    <a href="{{ enlace_librero }}" class="{% if vista == 'librero' %}activo{% endif %}" {% if vista == 'librero' %}aria-current="page"{% endif %}>{% icono 'libros' %} Librero</a>
-    <a href="{{ enlace_lista }}" class="{% if vista == 'lista' %}activo{% endif %}" {% if vista == 'lista' %}aria-current="page"{% endif %}>{% icono 'lista' %} Lista</a>
+    <a href="{{ enlace_librero }}" class="{% if vista == 'librero' %}activo{% endif %}" {% if vista == 'librero' %}aria-current="page"{% endif %} title="Librero">{% icono 'libros' %}<span>Librero</span></a>
+    <a href="{{ enlace_lista }}" class="{% if vista == 'lista' %}activo{% endif %}" {% if vista == 'lista' %}aria-current="page"{% endif %} title="Lista">{% icono 'lista' %}<span>Lista</span></a>
   </nav>
+  {% if estados_nav.0.1 %}
+  <form method="get" class="filtro-selects" id="form-filtros">
+    {% if q %}<input type="hidden" name="q" value="{{ q }}">{% endif %}
+    {% if vista == 'lista' %}<input type="hidden" name="vista" value="lista">{% endif %}
+    <label class="select-filtro{% if estado %} activo{% endif %}"><span class="solo-lectores">Estado</span>
+      <select name="estado" aria-label="Filtrar por estado">
+        <option value="">Estado: todos</option>
+        {% for valor, etiqueta, n in opciones_estado %}<option value="{{ valor }}" {% if estado == valor %}selected{% endif %}>{{ etiqueta }} ({{ n }})</option>{% endfor %}
+      </select>
+    </label>
+    {% if opciones_genero %}
+    <label class="select-filtro{% if genero %} activo{% endif %}"><span class="solo-lectores">Género</span>
+      <select name="genero" aria-label="Filtrar por género">
+        <option value="">Género: todos</option>
+        {% for nombre, n in opciones_genero %}<option value="{{ nombre }}" {% if genero|lower == nombre|lower %}selected{% endif %}>{{ nombre }} ({{ n }})</option>{% endfor %}
+      </select>
+    </label>
+    {% endif %}
+    <noscript><button class="boton boton-secundario boton-mini" type="submit">Filtrar</button></noscript>
+    {% if estado or genero %}<a class="limpiar" href="{% url 'biblioteca' %}{% if vista == 'lista' %}?vista=lista{% endif %}" title="Quitar filtros" aria-label="Quitar filtros">&times;</a>{% endif %}
+  </form>
+  {% endif %}
   {% if vista == 'librero' %}
   <details class="personalizar">
-    <summary class="boton boton-secundario boton-mini">{% icono 'flor' %} Personalizar</summary>
+    <summary class="boton-accion" title="Personalizar librero" aria-label="Personalizar librero">{% icono 'flor' %}</summary>
     <form method="post" action="{% url 'librero_preferencias' %}" class="personalizar-panel" id="form-librero">
       {% csrf_token %}
       <input type="hidden" name="siguiente" value="{{ request.get_full_path }}">
@@ -47,23 +61,6 @@
   {% endif %}
 </div>
 
-{% if estados_nav.0.1 %}
-<div class="filtros-compactos">
-  <nav class="chips-fila" aria-label="Filtrar por estado">
-    {% for etiqueta, n, url, activo in estados_nav %}
-      <a class="chip-filtro{% if activo %} activo{% endif %}" href="{{ url }}" {% if activo %}aria-current="true"{% endif %}>{% if forloop.counter == 2 %}<span class="punto punto-por_leer"></span>{% elif forloop.counter == 3 %}<span class="punto punto-leyendo"></span>{% elif forloop.counter == 4 %}<span class="punto punto-leido"></span>{% endif %}{{ etiqueta }} <small>{{ n }}</small></a>
-    {% endfor %}
-  </nav>
-  {% if generos_nav %}
-  <nav class="chips-fila chips-generos" aria-label="Filtrar por género">
-    <span class="chips-etiqueta">{% icono 'etiqueta' %} Géneros</span>
-    {% for nombre, n, url, activo in generos_nav %}
-      <a class="chip-filtro{% if activo %} activo{% endif %}" href="{{ url }}" {% if activo %}aria-current="true" title="Quitar filtro de género"{% endif %}>{{ nombre }} <small>{{ n }}</small>{% if activo %} <span aria-hidden="true">×</span>{% endif %}</a>
-    {% endfor %}
-  </nav>
-  {% endif %}
-</div>
-{% endif %}
 
 {% if vista == 'librero' and libros or vista == 'librero' and not q and not genero %}
 <section id="librero" class="librero estilo-{{ preferencia.estilo }} librero-color-{{ preferencia.color }}" aria-label="Librero">
@@ -73,7 +70,6 @@
       <div class="estante-seccion">
         <div class="estante-cabecera">
           <h2>{{ seccion.titulo }} <span>{{ seccion.libros|length }}</span></h2>
-          {% if seccion.libros and not estado %}<a href="?estado={{ seccion.valor }}&amp;vista=lista">Ver todos</a>{% endif %}
         </div>
         <div class="repisa{% if seccion.libros|length >= 4 %} muchos{% endif %}">
           {% for libro in seccion.libros %}
@@ -128,6 +124,16 @@
 {% endblock %}
 
 {% block scripts %}
+<script>
+/* Los filtros se aplican al elegir una opción (sin botón extra). */
+(function () {
+  const f = document.getElementById("form-filtros");
+  if (f) f.addEventListener("change", () => {
+    f.querySelectorAll("select").forEach((s) => { s.disabled = !s.value; });  // URL limpia: sin «estado=»
+    f.submit();
+  });
+})();
+</script>
 <script>
 /* Vista previa en vivo al elegir diseño o color; «Guardar» lo deja fijo en tu cuenta. */
 (function () {
