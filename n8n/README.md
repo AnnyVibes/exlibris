@@ -24,8 +24,10 @@ Ex Libris (Django) ──POST──▶ n8n /webhook/exlibris-tarea  ──▶ Sw
    npx n8n
    ```
    Se abre en http://localhost:5678. La primera vez te pide crear una cuenta local.
-2. **Importa los workflows**: *Create workflow* → menú `⋯` → **Import from File** → `exlibris-tareas.json`.
-   Repite con `exlibris-agente.json` en otro workflow.
+2. **Importa los workflows**: *Create workflow* → menú `⋯` (junto al nombre) → **Import ▸ From File…** → `exlibris-tareas.json`.
+   n8n 2.x muestra la ventana **«Importing this from an AI tool?»**: pulsa **Skip** y entonces aparecen los nodos
+   (si cierras con la ✕ o la ignoras, el lienzo queda vacío). Repite con `exlibris-agente.json` en otro workflow.
+   Alternativa: abre el `.json` en VS Code, copia todo (Ctrl + A, Ctrl + C), haz clic en el lienzo vacío y pega (Ctrl + V).
 3. **Conecta el modelo** (en cada nodo con el triángulo rojo ⚠):
    - **Gemini**: abre el nodo → *Credential* → *Create new* → pega tu API key de https://aistudio.google.com/apikey.
      Si el modelo `gemini-2.5-flash` no aparece, elige otro *flash* de la lista.
