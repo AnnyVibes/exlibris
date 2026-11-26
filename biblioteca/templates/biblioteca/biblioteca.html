@@ -69,13 +69,13 @@
     {% for seccion in secciones %}
       <div class="estante-seccion">
         <div class="estante-cabecera">
-          <h2>{{ seccion.titulo }} <span>{{ seccion.libros|length }}</span></h2>
+          <h2>{{ seccion.titulo }} <span>{{ seccion.total }}</span></h2>
         </div>
         {% if seccion.libros %}
         <div class="carrusel" data-carrusel>
           <button type="button" class="carrusel-flecha anterior" aria-label="Ver libros anteriores de «{{ seccion.titulo }}»" hidden>{% icono 'flecha-izq' %}</button>
         {% endif %}
-        <div class="repisa{% if seccion.libros %} en-fila{% endif %}" {% if seccion.libros %}tabindex="0" aria-label="{{ seccion.titulo }}: {{ seccion.libros|length }} libro{{ seccion.libros|length|pluralize }}, desliza para ver más"{% endif %}>
+        <div class="repisa{% if seccion.libros %} en-fila{% endif %}" {% if seccion.libros %}tabindex="0" aria-label="{{ seccion.titulo }}: {{ seccion.total }} libro{{ seccion.total|pluralize }}, desliza para ver más"{% endif %}>
           {% for libro in seccion.libros %}
             <a class="libro-repisa" href="{% url 'libro_detalle' libro.pk %}" title="{{ libro.titulo }} · {{ libro.autores }}">
               <span class="tapa-repisa c{{ libro|color_libro }}">
@@ -92,6 +92,13 @@
               {% if seccion.valor == "leyendo" %}<a href="?estado=por_leer&amp;vista=lista">Elegir uno de «Por leer»</a>{% else %}<a href="{% url 'libro_nuevo' %}">Agregar libro</a>{% endif %}
             </div>
           {% endfor %}
+          {% if seccion.hay_mas %}
+            <a class="ver-mas-repisa" href="{{ seccion.url_lista }}">
+              <span class="ver-mas-numero">+{{ seccion.total|add:"-10" }}</span>
+              <span>Ver los {{ seccion.total }} libros</span>
+              {% icono 'flecha-der' %}
+            </a>
+          {% endif %}
           <span class="adorno-repisa">{% include "biblioteca/_adorno.html" with nombre=seccion.adorno %}</span>
         </div>
         {% if seccion.libros %}
@@ -149,6 +156,27 @@
     ant.addEventListener("click", () => mover(-1));
     sig.addEventListener("click", () => mover(1));
     fila.addEventListener("scroll", actualizar, { passive: true });
+
+    // Arrastrar con el mouse (en el celular el dedo ya desliza de forma nativa).
+    let arrastrando = false, inicioX = 0, inicioScroll = 0, movido = false;
+    fila.addEventListener("pointerdown", (e) => {
+      if (e.pointerType !== "mouse" || e.button !== 0) return;
+      arrastrando = true; movido = false; inicioX = e.clientX; inicioScroll = fila.scrollLeft;
+      fila.classList.add("arrastrando");
+    });
+    window.addEventListener("pointermove", (e) => {
+      if (!arrastrando) return;
+      const dx = e.clientX - inicioX;
+      if (Math.abs(dx) > 5) movido = true;
+      fila.scrollLeft = inicioScroll - dx;
+    });
+    window.addEventListener("pointerup", () => {
+      if (!arrastrando) return;
+      arrastrando = false; fila.classList.remove("arrastrando");
+    });
+    // Si se arrastró, el clic al soltar no abre el libro.
+    fila.addEventListener("click", (e) => { if (movido) { e.preventDefault(); e.stopPropagation(); movido = false; } }, true);
+    fila.addEventListener("dragstart", (e) => e.preventDefault());
     window.addEventListener("resize", actualizar);
     actualizar();
   });

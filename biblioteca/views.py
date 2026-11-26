@@ -104,11 +104,18 @@ def biblioteca(request):
         ("por_leer", "Por leer", "pila"),
         ("leido", "Leídos", "luna"),
     ]
-    secciones = [
-        {"valor": valor, "titulo": titulo, "adorno": adorno, "libros": [l for l in libros if l.estado == valor]}
-        for valor, titulo, adorno in estantes
-        if not estado or estado == valor
-    ]
+    MAX_POR_ESTANTE = 10  # después de 10 aparece «Ver los N libros», que abre la lista de esa categoría
+    secciones = []
+    for valor, titulo, adorno in estantes:
+        if estado and estado != valor:
+            continue
+        del_estante = [l for l in libros if l.estado == valor]
+        secciones.append({
+            "valor": valor, "titulo": titulo, "adorno": adorno, "total": len(del_estante),
+            "libros": del_estante[:MAX_POR_ESTANTE],
+            "hay_mas": len(del_estante) > MAX_POR_ESTANTE,
+            "url_lista": enlace(estado=valor, vista="lista"),
+        })
     preferencia = PreferenciaLibrero.de(request.user)
     return render(request, "biblioteca/biblioteca.html", {
         "libros": libros, "q": q, "estado": estado, "genero": genero,

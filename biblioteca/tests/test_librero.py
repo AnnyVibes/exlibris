@@ -70,3 +70,21 @@ class PreferenciaLibreroTests(ConUsuario):
     def test_redireccion_externa_ignorada(self):
         r = self.client.post(reverse("librero_preferencias"), {"estilo": "repisas", "color": "rosa", "siguiente": "https://malo.example"})
         self.assertRedirects(r, reverse("biblioteca"))
+
+
+class LibreroMaximoTests(ConUsuario):
+    def test_maximo_10_por_estante_y_enlace_a_la_lista(self):
+        for i in range(13):
+            self.libro(titulo=f"L{i}", estado="leido")
+        r = self.client.get(reverse("biblioteca"))
+        leidos = [s for s in r.context["secciones"] if s["valor"] == "leido"][0]
+        self.assertEqual((len(leidos["libros"]), leidos["total"], leidos["hay_mas"]), (10, 13, True))
+        self.assertContains(r, "Ver los 13 libros")
+        self.assertContains(r, "+3")
+        self.assertIn("estado=leido", leidos["url_lista"])
+        self.assertIn("vista=lista", leidos["url_lista"])
+
+    def test_sin_enlace_con_10_o_menos(self):
+        for i in range(10):
+            self.libro(titulo=f"L{i}", estado="leido")
+        self.assertNotContains(self.client.get(reverse("biblioteca")), "ver-mas-repisa")

@@ -947,3 +947,17 @@ a.perfil { transition: box-shadow .15s; } a.perfil:hover { box-shadow: var(--som
 #lector.espejo video { transform: scaleX(-1); }
 #linterna[aria-pressed="true"] { background: #fef3c7; border-color: #f6c453; color: #8a4b0f; }
 #espejo[aria-pressed="true"] { background: var(--lila-100); border-color: var(--lila-300); }
+
+/* ---------- Carrusel: arrastre con el mouse y tarjeta «Ver los N libros» ---------- */
+.librero .repisa.en-fila { cursor: grab; user-select: none; -webkit-user-select: none; touch-action: pan-x pan-y; }
+.librero .repisa.en-fila.arrastrando { cursor: grabbing; scroll-snap-type: none; scroll-behavior: auto; }
+.repisa.en-fila img { -webkit-user-drag: none; pointer-events: none; }
+.ver-mas-repisa {
+  aspect-ratio: 2 / 3; margin-bottom: calc(var(--tabla) - 2px); scroll-snap-align: start;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; text-align: center; padding: 8px;
+  border-radius: 6px 10px 10px 6px; border: 2px dashed var(--primario); background: rgba(255, 255, 255, .7);
+  color: var(--primario-texto); font-size: 13px; font-weight: 600; line-height: 1.25; transition: background .15s, transform .15s;
+}
+.ver-mas-repisa:hover { background: #fff; transform: translateY(-4px); }
+.ver-mas-numero { font-size: 22px; font-weight: 800; }
+.ver-mas-repisa .icono { width: 18px; height: 18px; stroke-width: 2.4; }
