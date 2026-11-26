@@ -39,6 +39,25 @@ Ex Libris (Django) ──POST──▶ n8n /webhook/exlibris-tarea  ──▶ Sw
    python manage.py runserver
    ```
 
+## Opción con Docker (recomendada en Windows)
+
+Docker trae su propio Node, así que no hay problemas de versiones.
+
+1. Instala **Docker Desktop** (`winget install Docker.DockerDesktop`), reinicia la PC y abre Docker Desktop
+   hasta que diga *Engine running*.
+2. Arranca n8n (los datos quedan en el volumen `n8n_data` y se conservan entre reinicios):
+   ```powershell
+   docker run -it --rm --name n8n -p 5678:5678 -v n8n_data:/home/node/.n8n --add-host=host.docker.internal:host-gateway docker.n8n.io/n8nio/n8n
+   ```
+3. Arranca Django **escuchando en todas las interfaces** e indicando cómo lo encuentra n8n:
+   ```powershell
+   $env:EXLIBRIS_API_URL = "http://host.docker.internal:8000"
+   python manage.py runserver 0.0.0.0:8000
+   ```
+   Dentro del contenedor, `localhost` es el propio contenedor: por eso las herramientas del agente usan
+   `host.docker.internal`. Django sigue llamando a n8n en `http://localhost:5678` (el puerto está publicado).
+4. Con **Ollama** en Docker, la credencial de Ollama en n8n debe usar `http://host.docker.internal:11434`.
+
 ## Dónde aparece la IA en la app
 
 | Pantalla | Botón | Qué hace |
