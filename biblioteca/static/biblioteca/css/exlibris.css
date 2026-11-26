@@ -807,12 +807,15 @@ a:focus-visible, button:focus-visible, select:focus-visible, input[type=file]:fo
 .chips-etiqueta .icono { width: 16px; height: 16px; }
 .chips-generos .chip-filtro { min-height: 32px; font-size: 13px; }
 
-/* ---------- Barra de desplazamiento lila translúcida ---------- */
-html { scrollbar-width: thin; scrollbar-color: rgba(168, 85, 247, .45) transparent; }
-::-webkit-scrollbar { width: 10px; height: 8px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(168, 85, 247, .35); border-radius: 999px; border: 2px solid transparent; background-clip: padding-box; }
-::-webkit-scrollbar-thumb:hover { background: rgba(147, 51, 234, .55); border: 2px solid transparent; background-clip: padding-box; }
+/* ---------- Barra de desplazamiento lila translúcida ----------
+   Siempre visible a la derecha (aunque la página sea corta) para que se note que el sitio se puede mover. */
+html { overflow-y: scroll; scrollbar-width: auto; scrollbar-color: rgba(147, 51, 234, .55) rgba(233, 213, 255, .45); }
+::-webkit-scrollbar { width: 14px; height: 10px; }
+::-webkit-scrollbar-track { background: rgba(233, 213, 255, .45); }
+::-webkit-scrollbar-thumb { background: rgba(147, 51, 234, .5); border-radius: 999px; border: 3px solid transparent; background-clip: padding-box; min-height: 48px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(126, 34, 206, .7); border: 3px solid transparent; background-clip: padding-box; }
+/* Las filas que se deslizan de lado (filtros, categorías) usan una barra más fina */
+.categorias, .chips-fila, .tabla-envoltura { scrollbar-width: thin; }
 
 /* ---------- Compartidos: conteo de días y plazos ---------- */
 .contador-dias { display: block; font-size: 14px; color: var(--texto-medio); }
