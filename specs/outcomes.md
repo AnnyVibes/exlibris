@@ -1,6 +1,6 @@
 # Outcomes (ODD)
 
-Versión 0.1 · Responsable: Anllelina Varcasia
+Versión 0.2 · Responsable: Anllelina Varcasia · Versión de entrega: [docs/entrega-arquitectura/1-problema-outcome.md](../docs/entrega-arquitectura/1-problema-outcome.md)
 
 Problema: quien tiene muchos libros en papel no recuerda bien cuáles tiene, qué opinó de ellos,
 qué ideas anotó ni a quién se los prestó. Las notas quedan en papelitos y los libros prestados no vuelven.
