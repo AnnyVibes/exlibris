@@ -77,18 +77,27 @@
     </form>
   </article>
 
-  <article class="tarjeta ancho">
-    <div class="tarjeta-titulo"><h2>Compartir</h2>{% if prestamo_activo %}<span class="etiqueta {% if prestamo_activo.vencido %}vencido{% endif %}">{% if prestamo_activo.vencido %}Vencido{% else %}Compartido{% endif %}</span>{% else %}<span class="etiqueta gris">En casa</span>{% endif %}</div>
+  <article class="tarjeta ancho compartir-tarjeta">
+    <div class="tarjeta-titulo">
+      <h2>Compartir</h2>
+      {% if prestamo_activo %}<span class="etiqueta {% if prestamo_activo.vencido %}vencido{% else %}compartido{% endif %}">{% if prestamo_activo.vencido %}Vencido{% else %}Compartido{% endif %}</span>
+      {% else %}<span class="etiqueta en-casa">En casa</span>{% endif %}
+    </div>
     {% if prestamo_activo %}
-      <p style="margin-bottom:14px">Lo tiene <strong>{{ prestamo_activo.persona }}</strong>{% if prestamo_activo.contacto %} ({{ prestamo_activo.contacto }}){% endif %} desde el {{ prestamo_activo.prestado_el|date:"j \d\e F" }} ({{ prestamo_activo.dias|dias_texto|lower }}).</p>
-      {% if prestamo_activo.devolver_el %}<p style="margin-bottom:14px">Devolución: <span class="fecha-devolucion{% if prestamo_activo.vencido %} vencida{% endif %}">{{ prestamo_activo.devolver_el|date:"j \d\e F" }}</span></p>{% endif %}
-      {% if prestamo_activo.notas %}<p class="ayuda" style="margin-bottom:14px">{{ prestamo_activo.notas }}</p>{% endif %}
-      <p style="margin-bottom:14px"><a class="enlace-plegable" href="{% url 'prestamo_editar' prestamo_activo.pk %}?siguiente={{ request.path|urlencode }}">{% icono 'editar' %} Editar datos</a></p>
-      <p class="pregunta-devuelto">¿Ya te lo devolvieron?</p>
-      <form method="post" action="{% url 'prestamo_devolver' prestamo_activo.pk %}" onsubmit="return confirm('¿Confirmas que te devolvieron «{{ libro.titulo|escapejs }}»?');">
-        {% csrf_token %}<input type="hidden" name="siguiente" value="{{ request.path }}">
-        <button class="boton boton-primario" type="submit">Devuelto</button>
-      </form>
+      <div class="compartir-datos">
+        <div><small>Con quién</small><strong>{{ prestamo_activo.persona }}</strong>{% if prestamo_activo.contacto %}<span>{{ prestamo_activo.contacto }}</span>{% endif %}</div>
+        <div><small>Desde</small><strong>{{ prestamo_activo.prestado_el|date:"j M Y" }}</strong><span>{{ prestamo_activo.dias|dias_texto }}</span></div>
+        <div><small>Devolución</small><strong class="{% if prestamo_activo.vencido %}fecha-devolucion vencida{% endif %}">{% if prestamo_activo.devolver_el %}{{ prestamo_activo.devolver_el|date:"j M Y" }}{% else %}Sin fecha{% endif %}</strong></div>
+      </div>
+      {% if prestamo_activo.notas %}<p class="compartir-notas">{% icono 'nota' %} {{ prestamo_activo.notas }}</p>{% endif %}
+      <div class="compartir-acciones">
+        <p class="pregunta-devuelto">¿Ya te lo devolvieron?</p>
+        <form method="post" action="{% url 'prestamo_devolver' prestamo_activo.pk %}" onsubmit="return confirm('¿Confirmas que te devolvieron «{{ libro.titulo|escapejs }}»?');">
+          {% csrf_token %}<input type="hidden" name="siguiente" value="{{ request.path }}">
+          <button class="boton boton-primario" type="submit">Devuelto</button>
+        </form>
+        <a class="boton-accion" href="{% url 'prestamo_editar' prestamo_activo.pk %}?siguiente={{ request.path|urlencode }}" title="Editar" aria-label="Editar datos del compartido">{% icono 'editar' %}</a>
+      </div>
     {% else %}
       <form method="post" action="{% url 'prestamo_crear' libro.pk %}" class="formulario dos">
         {% csrf_token %}
@@ -100,21 +109,31 @@
       </form>
     {% endif %}
     {% if prestamos %}
-      <h3 style="font-size:13px;margin:20px 0 8px;color:var(--texto-suave)">Historial</h3>
-      <div class="tabla-envoltura"><table class="tabla">
-        {% for p in prestamos %}<tr><td>{{ p.persona }}</td><td>{{ p.prestado_el|date:"d/m/Y" }}</td><td>{% if p.devuelto_el %}{{ p.devuelto_el|date:"d/m/Y" }}{% else %}<span class="etiqueta">Activo</span>{% endif %}</td></tr>{% endfor %}
-      </table></div>
+      <h3 class="compartir-historial-titulo">Historial</h3>
+      <ul class="compartir-historial">
+        {% for p in prestamos %}
+          <li>
+            <strong>{{ p.persona }}</strong>
+            <span>{{ p.prestado_el|date:"j M Y" }}{% if p.devuelto_el %} → {{ p.devuelto_el|date:"j M Y" }}{% endif %}</span>
+            <span class="historial-dias">{{ p.dias|dias_texto }}</span>
+            {% if p.devuelto_el %}<span class="etiqueta devuelto">Devuelto</span>{% else %}<span class="etiqueta compartido">Activo</span>{% endif %}
+          </li>
+        {% endfor %}
+      </ul>
     {% endif %}
   </article>
   <article class="tarjeta ancho">
     <div class="tarjeta-titulo"><h2>Anotaciones</h2><span class="contador">{% icono 'nota' %}{{ anotaciones|length }}</span></div>
-    <form method="post" action="{% url 'anotacion_crear' libro.pk %}" class="formulario" style="margin-bottom:16px">
+    <form method="post" action="{% url 'anotacion_crear' libro.pk %}" class="anotar-form">
       {% csrf_token %}
-      <div style="display:grid;grid-template-columns:90px 1fr;gap:10px">
-        {% include "biblioteca/_campo.html" with campo=anotacion_form.pagina %}
-        {% include "biblioteca/_campo.html" with campo=anotacion_form.texto %}
+      {% include "biblioteca/_campo.html" with campo=anotacion_form.texto %}
+      <div class="anotar-pie">
+        <div class="campo anotar-pagina">
+          <label for="{{ anotacion_form.pagina.id_for_label }}">Página</label>
+          {{ anotacion_form.pagina }}
+        </div>
+        <button class="boton boton-primario" type="submit">{% icono 'mas' %} Anotar</button>
       </div>
-      <div><button class="boton boton-primario" type="submit">{% icono 'mas' %} Anotar</button></div>
     </form>
     <div class="notas">
       {% for n in anotaciones %}

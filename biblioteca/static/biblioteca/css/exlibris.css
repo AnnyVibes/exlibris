@@ -432,9 +432,12 @@ a:focus-visible, button:focus-visible, select:focus-visible, input[type=file]:fo
 .tabla td { padding: 12px 10px; border-top: 1px solid var(--borde); vertical-align: middle; }
 .tabla td form { margin: 0; }
 .tabla a:hover { color: var(--lila-700); }
-.etiqueta { display: inline-block; padding: 3px 12px; border-radius: 999px; font-size: 13px; font-weight: 600; background: #dcfce7; color: #15803d; }
+/* Etiquetas con la paleta pastel: compartido/activo = morado, devuelto = rosado, en casa = amarillo, vencido = rojo suave */
+.etiqueta { display: inline-block; padding: 3px 12px; border-radius: 999px; font-size: 13px; font-weight: 600; background: #ede9fe; color: #6d28d9; }
+.etiqueta.compartido { background: #ede9fe; color: #6d28d9; }
+.etiqueta.devuelto { background: #fce7f3; color: #be185d; }
+.etiqueta.en-casa, .etiqueta.gris { background: #fef3c7; color: #8a4b0f; }
 .etiqueta.vencido { background: #fee4e2; color: #b42318; }
-.etiqueta.gris { background: #f3f4f6; color: var(--texto-medio); }
 
 /* ---------- Estadísticas ---------- */
 .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
@@ -961,3 +964,35 @@ a.perfil { transition: box-shadow .15s; } a.perfil:hover { box-shadow: var(--som
 .ver-mas-repisa:hover { background: #fff; transform: translateY(-4px); }
 .ver-mas-numero { font-size: 22px; font-weight: 800; }
 .ver-mas-repisa .icono { width: 18px; height: 18px; stroke-width: 2.4; }
+
+/* ---------- Compartidos: columna de edición a la derecha ---------- */
+.tabla .col-editar { width: 52px; text-align: right; }
+
+/* ---------- Ficha: tarjeta «Compartir» ---------- */
+.compartir-datos { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 14px; }
+.compartir-datos > div { background: #fbfaff; border: 1px solid var(--borde); border-radius: var(--radio-md); padding: 12px 14px; display: grid; gap: 2px; }
+.compartir-datos small { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .4px; color: var(--texto-suave); }
+.compartir-datos strong { font-size: 16px; color: #3b2a63; }
+.compartir-datos span { font-size: 13px; color: var(--texto-suave); }
+.compartir-notas { display: flex; align-items: center; gap: 8px; color: var(--texto-medio); font-size: 14px; margin-bottom: 14px; }
+.compartir-notas .icono { width: 16px; height: 16px; color: var(--primario-texto); }
+.compartir-acciones { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 14px 16px; border-radius: var(--radio-md); background: var(--lila-50); }
+.compartir-acciones .pregunta-devuelto { margin: 0 auto 0 0; }
+.compartir-acciones form { margin: 0; }
+.compartir-historial-titulo { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: .4px; color: var(--texto-suave); margin: 20px 0 8px; }
+.compartir-historial { list-style: none; margin: 0; padding: 0; }
+.compartir-historial li { display: grid; grid-template-columns: minmax(0, 1fr) auto auto auto; align-items: center; gap: 14px; padding: 10px 4px; border-top: 1px solid var(--borde); font-size: 14px; }
+.compartir-historial li span { color: var(--texto-medio); white-space: nowrap; }
+.compartir-historial .historial-dias { color: var(--texto-suave); font-size: 13px; }
+
+/* ---------- Ficha: formulario de anotación ---------- */
+.anotar-form { display: grid; gap: 12px; margin-bottom: 18px; }
+.anotar-pie { display: flex; align-items: flex-end; gap: 12px; }
+.anotar-pagina { width: 130px; }
+.anotar-pie .boton { margin-left: auto; min-height: 46px; }
+
+@media (max-width: 860px) {
+  .compartir-datos { grid-template-columns: 1fr; }
+  .compartir-historial li { grid-template-columns: minmax(0, 1fr) auto; }
+  .compartir-historial li span:nth-of-type(1) { grid-column: 1; }
+}
