@@ -30,6 +30,8 @@ class Libro(models.Model):
     genero = models.CharField("género", max_length=80, blank=True, choices=[(g, g) for g in GENEROS])
     estado = models.CharField(max_length=12, choices=Estado.choices, default=Estado.POR_LEER)
     pagina_actual = models.PositiveIntegerField("página actual", default=0)
+    resumen_ia = models.TextField("resumen de anotaciones (IA)", blank=True)
+    resumen_ia_fecha = models.DateTimeField(null=True, blank=True)
     creado = models.DateTimeField(auto_now_add=True)
     actualizado = models.DateTimeField(auto_now=True)
 

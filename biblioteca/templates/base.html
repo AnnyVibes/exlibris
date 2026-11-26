@@ -24,6 +24,7 @@
       <a href="{% url 'anotaciones' %}" class="{% if url == 'anotaciones' %}activo{% endif %}">{% icono 'nota' %} Anotaciones</a>
       <a href="{% url 'prestamos' %}" class="{% if url == 'prestamos' %}activo{% endif %}">{% icono 'prestamo' %} Compartidos</a>
       <a href="{% url 'estadisticas' %}" class="{% if url == 'estadisticas' %}activo{% endif %}">{% icono 'grafico' %} Estadísticas</a>
+      <a href="{% url 'asistente' %}" class="nav-ia {% if url == 'asistente' %}activo{% endif %}">{% icono 'ia' %} Asistente IA</a>
       <hr>
     </nav>
     <nav class="nav nav-pie" aria-label="Cuenta">
@@ -93,6 +94,19 @@
 </nav>
 {% endwith %}
 {% endblock %}
+<script>
+/* Ayudante para las llamadas a la IA: envía JSON con el token CSRF y devuelve {ok, datos}. */
+window.exlibrisIA = async function (url, datos) {
+  const csrf = (document.cookie.match(/(?:^|; )csrftoken=([^;]+)/) || [])[1] || "";
+  try {
+    const r = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json", "X-CSRFToken": decodeURIComponent(csrf) }, body: JSON.stringify(datos || {}) });
+    const j = await r.json().catch(() => ({}));
+    return { ok: r.ok, datos: j, error: j.error || (r.ok ? "" : "No se pudo completar la solicitud.") };
+  } catch (e) {
+    return { ok: false, datos: {}, error: "Sin conexión con el servidor." };
+  }
+};
+</script>
 <script>
 /* Tarjeta de confirmación: se abre como ventana modal y se cierra con «Aceptar» o Esc. */
 (function () {

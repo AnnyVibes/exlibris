@@ -1,0 +1,375 @@
+{
+  "name": "Ex Libris · Agente",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "exlibris-agente",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "w-exlibris-agente",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "exlibris-agente"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.mensaje }}",
+        "options": {
+          "systemMessage": "=Eres el asistente de «Ex Libris», la biblioteca personal de {{ $('Webhook').item.json.body.persona.nombre }} ({{ $('Webhook').item.json.body.persona.tratamiento }}).\nHoy es {{ $now.toFormat('dd/MM/yyyy') }}.\n\n- Responde siempre en español, de forma breve y amable.\n- Para cualquier dato de su biblioteca USA LAS HERRAMIENTAS: nunca inventes libros, personas, fechas ni anotaciones.\n- «Compartido» significa prestado: usa la herramienta de compartidos para saber quién tiene un libro y desde hace cuántos días.\n- Si te piden recomendaciones, básate en los géneros y calificaciones de lo que ya leyó; puedes sugerir libros que no tiene, pero aclara que no están en su biblioteca.\n- Si una herramienta no encuentra nada, dilo con honestidad."
+        }
+      },
+      "id": "n-agente",
+      "name": "Agente Ex Libris",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        260,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash",
+        "options": {
+          "temperature": 0.3
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "id": "m-agente",
+      "name": "Modelo",
+      "position": [
+        100,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Webhook').item.json.body.sesion }}",
+        "contextWindowLength": 10
+      },
+      "id": "n-memoria",
+      "name": "Memoria",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        260,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "toolDescription": "Busca libros de la biblioteca. Devuelve título, autor, género, estado (Por leer, Leyendo, Leído), progreso, calificación, número de anotaciones y con quién está compartido. Sin parámetros devuelve todos.",
+        "method": "GET",
+        "url": "={{ $('Webhook').item.json.body.api }}/libros/",
+        "sendHeaders": true,
+        "specifyHeaders": "keypair",
+        "parametersHeaders": {
+          "values": [
+            {
+              "name": "X-ExLibris-Token",
+              "valueProvider": "fieldValue",
+              "value": "={{ $('Webhook').item.json.body.token }}"
+            }
+          ]
+        },
+        "optimizeResponse": false,
+        "sendQuery": true,
+        "specifyQuery": "keypair",
+        "parametersQuery": {
+          "values": [
+            {
+              "name": "q",
+              "valueProvider": "modelOptional",
+              "description": "texto a buscar en título, autor o ISBN"
+            },
+            {
+              "name": "estado",
+              "valueProvider": "modelOptional",
+              "description": "por_leer, leyendo o leido"
+            },
+            {
+              "name": "genero",
+              "valueProvider": "modelOptional",
+              "description": "género exacto, p. ej. Novela"
+            }
+          ]
+        }
+      },
+      "id": "t-libros",
+      "name": "buscar_libros",
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [
+        420,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "toolDescription": "Muestra el detalle de un libro por su id (de buscar_libros): descripción, reseña, anotaciones, resumen de notas e historial de compartidos.",
+        "method": "GET",
+        "url": "={{ $('Webhook').item.json.body.api }}/libros/{id}/",
+        "sendHeaders": true,
+        "specifyHeaders": "keypair",
+        "parametersHeaders": {
+          "values": [
+            {
+              "name": "X-ExLibris-Token",
+              "valueProvider": "fieldValue",
+              "value": "={{ $('Webhook').item.json.body.token }}"
+            }
+          ]
+        },
+        "optimizeResponse": false,
+        "placeholderDefinitions": {
+          "values": [
+            {
+              "name": "id",
+              "description": "id numérico del libro",
+              "type": "number"
+            }
+          ]
+        }
+      },
+      "id": "t-libro",
+      "name": "ver_libro",
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [
+        580,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "toolDescription": "Lista los libros compartidos (prestados) ahora: con quién, contacto, desde cuándo, cuántos días y si la devolución está vencida. Con todos=1 incluye el historial.",
+        "method": "GET",
+        "url": "={{ $('Webhook').item.json.body.api }}/compartidos/",
+        "sendHeaders": true,
+        "specifyHeaders": "keypair",
+        "parametersHeaders": {
+          "values": [
+            {
+              "name": "X-ExLibris-Token",
+              "valueProvider": "fieldValue",
+              "value": "={{ $('Webhook').item.json.body.token }}"
+            }
+          ]
+        },
+        "optimizeResponse": false,
+        "sendQuery": true,
+        "specifyQuery": "keypair",
+        "parametersQuery": {
+          "values": [
+            {
+              "name": "todos",
+              "valueProvider": "modelOptional",
+              "description": "1 para incluir los ya devueltos"
+            }
+          ]
+        }
+      },
+      "id": "t-compartidos",
+      "name": "libros_compartidos",
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [
+        740,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "toolDescription": "Busca en las anotaciones que la persona escribió mientras leía. Devuelve el libro, la página y el texto.",
+        "method": "GET",
+        "url": "={{ $('Webhook').item.json.body.api }}/anotaciones/",
+        "sendHeaders": true,
+        "specifyHeaders": "keypair",
+        "parametersHeaders": {
+          "values": [
+            {
+              "name": "X-ExLibris-Token",
+              "valueProvider": "fieldValue",
+              "value": "={{ $('Webhook').item.json.body.token }}"
+            }
+          ]
+        },
+        "optimizeResponse": false,
+        "sendQuery": true,
+        "specifyQuery": "keypair",
+        "parametersQuery": {
+          "values": [
+            {
+              "name": "q",
+              "valueProvider": "modelOptional",
+              "description": "palabra o tema a buscar"
+            }
+          ]
+        }
+      },
+      "id": "t-notas",
+      "name": "buscar_anotaciones",
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [
+        900,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "toolDescription": "Totales de la biblioteca: libros, leídos, leyendo, anotaciones, compartidos, páginas leídas, calificación media y libros por género.",
+        "method": "GET",
+        "url": "={{ $('Webhook').item.json.body.api }}/resumen/",
+        "sendHeaders": true,
+        "specifyHeaders": "keypair",
+        "parametersHeaders": {
+          "values": [
+            {
+              "name": "X-ExLibris-Token",
+              "valueProvider": "fieldValue",
+              "value": "={{ $('Webhook').item.json.body.token }}"
+            }
+          ]
+        },
+        "optimizeResponse": false
+      },
+      "id": "t-resumen",
+      "name": "resumen_biblioteca",
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [
+        1060,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ respuesta: $json.output }) }}",
+        "options": {}
+      },
+      "id": "n-resp",
+      "name": "Responder a Ex Libris",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        560,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Agente Ex Libris",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente Ex Libris": {
+      "main": [
+        [
+          {
+            "node": "Responder a Ex Libris",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Modelo": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agente Ex Libris",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Memoria": {
+      "ai_memory": [
+        [
+          {
+            "node": "Agente Ex Libris",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "buscar_libros": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente Ex Libris",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ver_libro": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente Ex Libris",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "libros_compartidos": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente Ex Libris",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "buscar_anotaciones": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente Ex Libris",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "resumen_biblioteca": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente Ex Libris",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {},
+  "pinData": {}
+}

@@ -73,7 +73,11 @@
         </div>
       </div>
       {% include "biblioteca/_campo.html" with campo=resena_form.texto %}
-      <div><button class="boton boton-primario" type="submit">Guardar reseña</button></div>
+      <div class="acciones-fila">
+        <button class="boton boton-primario" type="submit">Guardar reseña</button>
+        <button class="boton boton-ia" type="button" id="ia-resena" data-url="{% url 'ia_resena' libro.pk %}">{% icono 'ia' %} <span>Sugerir borrador con IA</span></button>
+      </div>
+      <p class="ia-estado" id="ia-resena-estado" role="status" hidden></p>
     </form>
   </article>
 
@@ -135,6 +139,22 @@
         <button class="boton boton-primario" type="submit">{% icono 'mas' %} Anotar</button>
       </div>
     </form>
+    {% if anotaciones %}
+    <section class="ia-resumen" id="resumen-ia" aria-labelledby="t-resumen-ia">
+      <div class="ia-resumen-cabecera">
+        <h3 id="t-resumen-ia">{% icono 'ia' %} Resumen de tus notas</h3>
+        <form method="post" action="{% url 'ia_resumir' libro.pk %}" class="form-ia">{% csrf_token %}
+          <button class="boton boton-ia boton-mini" type="submit">{% if libro.resumen_ia %}Actualizar{% else %}Resumir con IA{% endif %}</button>
+        </form>
+      </div>
+      {% if libro.resumen_ia %}
+        <div class="ia-resumen-texto">{{ libro.resumen_ia|linebreaks }}</div>
+        <small class="ia-nota">Generado por IA el {{ libro.resumen_ia_fecha|date:"j M Y, H:i" }} a partir de {{ anotaciones|length }} anotaci{{ anotaciones|length|pluralize:"ón,ones" }}. Revísalo: puede equivocarse.</small>
+      {% else %}
+        <p class="ia-nota">La IA agrupa tus anotaciones por temas y te devuelve un resumen.</p>
+      {% endif %}
+    </section>
+    {% endif %}
     <div class="notas">
       {% for n in anotaciones %}
         {% include "biblioteca/_nota.html" with numero=forloop.revcounter borrar=True %}
@@ -148,6 +168,26 @@
 {% endblock %}
 
 {% block scripts %}
+<script>
+/* IA: borrador de reseña (no se guarda hasta pulsar «Guardar reseña») y estado de carga al resumir. */
+(function () {
+  const boton = document.getElementById("ia-resena");
+  const estado = document.getElementById("ia-resena-estado");
+  const area = document.getElementById("id_texto");
+  if (boton && area) boton.addEventListener("click", async () => {
+    if (area.value.trim() && !confirm("¿Reemplazar el texto actual de tu reseña por un borrador de la IA?")) return;
+    const estrella = document.querySelector("input[name=calificacion]:checked");
+    boton.disabled = true; boton.classList.add("cargando"); estado.hidden = false; estado.textContent = "La IA está escribiendo un borrador…";
+    const r = await window.exlibrisIA(boton.dataset.url, { calificacion: estrella ? estrella.value : null });
+    boton.disabled = false; boton.classList.remove("cargando");
+    if (r.ok) { area.value = r.datos.texto; area.focus(); estado.textContent = "Borrador listo. Edítalo a tu gusto y pulsa «Guardar reseña»."; }
+    else { estado.textContent = r.error; estado.classList.add("error"); }
+  });
+  document.querySelectorAll(".form-ia").forEach((f) => f.addEventListener("submit", () => {
+    const b = f.querySelector("button"); b.disabled = true; b.classList.add("cargando"); b.textContent = "Resumiendo…";
+  }));
+})();
+</script>
 <script>
 /* Al marcar «Leído» se completa la página; «Por leer» la deja en 0 (el servidor también lo valida). */
 (function () {

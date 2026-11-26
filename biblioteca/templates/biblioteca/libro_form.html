@@ -46,7 +46,11 @@
     <div class="formulario dos">
       {% include "biblioteca/_campo.html" with campo=form.titulo clase="ancho" %}
       {% include "biblioteca/_campo.html" with campo=form.autores %}
-      {% include "biblioteca/_campo.html" with campo=form.genero %}
+      <div class="campo-con-ia">
+        {% include "biblioteca/_campo.html" with campo=form.genero %}
+        <button class="boton boton-ia boton-mini" type="button" id="ia-clasificar" data-url="{% url 'ia_clasificar' %}" title="Sugerir género y etiquetas con IA">{% icono 'ia' %} <span>Sugerir con IA</span></button>
+        <p class="ia-estado" id="ia-clasificar-estado" role="status" hidden></p>
+      </div>
       {% include "biblioteca/_campo.html" with campo=form.estado %}
       {% include "biblioteca/_campo.html" with campo=form.isbn %}
       {% include "biblioteca/_campo.html" with campo=form.editorial %}
@@ -68,6 +72,28 @@
 </form>
 {% endblock %}
 {% block scripts %}
+<script>
+/* IA: sugerir género (de la lista) y etiquetas a partir del título, autor y descripción. */
+(function () {
+  const boton = document.getElementById("ia-clasificar");
+  if (!boton) return;
+  const estado = document.getElementById("ia-clasificar-estado");
+  const valor = (id) => (document.getElementById(id) || {}).value || "";
+  boton.addEventListener("click", async () => {
+    const titulo = valor("id_titulo").trim();
+    estado.hidden = false; estado.classList.remove("error");
+    if (!titulo) { estado.textContent = "Primero escribe el título."; estado.classList.add("error"); return; }
+    boton.disabled = true; boton.classList.add("cargando"); estado.textContent = "La IA está pensando…";
+    const r = await window.exlibrisIA(boton.dataset.url, { titulo, autores: valor("id_autores"), descripcion: valor("id_descripcion") });
+    boton.disabled = false; boton.classList.remove("cargando");
+    if (!r.ok) { estado.textContent = r.error; estado.classList.add("error"); return; }
+    const select = document.getElementById("id_genero");
+    if (r.datos.genero) select.value = r.datos.genero;
+    const etiquetas = (r.datos.etiquetas || []).map((e) => "#" + e).join("  ");
+    estado.textContent = (r.datos.genero ? "Sugerencia: " + r.datos.genero + "." : "La IA no encontró un género de la lista.") + (etiquetas ? "  " + etiquetas : "") + " Puedes cambiarlo.";
+  });
+})();
+</script>
 <script>
 (function () {
   const entrada = document.getElementById("id_portada");

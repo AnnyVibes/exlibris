@@ -19,10 +19,10 @@ Versión 0.1. Estado: ✅ implementado en la fase 1 · ⏳ pendiente.
 | RF-09 | Anotaciones por libro (texto y página opcional), con conteo por libro y búsqueda global. | ✅ |
 | RF-10 | Compartidos (préstamos): con quién, contacto, fecha, fecha acordada, devolución e historial. | ✅ |
 | RF-11 | Panel de inicio y estadísticas (totales, por estado, por género, páginas leídas, calificación media, libros con más anotaciones). | ✅ |
-| RF-12 | IA: clasificar el género y etiquetas de un libro. | ⏳ |
-| RF-13 | IA: resumir las anotaciones de un libro. | ⏳ |
-| RF-14 | IA: borrador de reseña a partir de las anotaciones y la calificación. | ⏳ |
-| RF-15 | IA: agente que responde preguntas en lenguaje natural sobre la biblioteca y los préstamos. | ⏳ |
+| RF-12 | IA: sugerir el género (de la lista) y etiquetas de un libro. | ✅ |
+| RF-13 | IA: resumir las anotaciones de un libro (se guarda con fecha). | ✅ |
+| RF-14 | IA: borrador de reseña a partir de las anotaciones y la calificación (editable antes de guardar). | ✅ |
+| RF-15 | IA: agente que responde preguntas en lenguaje natural sobre la biblioteca y los compartidos, con herramientas que consultan la API. | ✅ |
 
 ## No funcionales
 | ID | Requisito |

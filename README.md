@@ -12,7 +12,7 @@ virtual con **reseñas**, **anotaciones con conteo**, **control de préstamos** 
 | Fase | Contenido | Estado |
 |---|---|---|
 | 1 | Biblioteca, escáner, ISBN manual, catálogo, reseñas, anotaciones, préstamos, estadísticas, diseño, pruebas y CI | ✅ |
-| 2 | IA: clasificar, resumir anotaciones, borrador de reseña, agente conversacional (n8n + Gemini/Ollama) | ⏳ |
+| 2 | IA: clasificar, resumir anotaciones, borrador de reseña, agente conversacional (n8n + Gemini/Ollama) | ✅ — ver [`n8n/README.md`](n8n/README.md) |
 
 Auditoría de diseño en [`docs/auditoria-ux.md`](docs/auditoria-ux.md). Especificación en [`specs/`](specs/) (outcomes, requisitos, reglas, modelo de datos, arquitectura) y registro de IA en
 [`AI_LOG.md`](AI_LOG.md).

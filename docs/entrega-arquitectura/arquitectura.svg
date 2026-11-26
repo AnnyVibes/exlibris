@@ -11,8 +11,8 @@
 <text x="566" y="136" font-size="16" font-weight="700" fill="#7c3aed">Ex Libris · Django 5.2 (Python)</text>
 <rect x="1150" y="110" width="420" height="200" rx="18" fill="#fef3c7" fill-opacity=".55" stroke="#d97706" stroke-width="2"/>
 <text x="1166" y="136" font-size="16" font-weight="700" fill="#d97706">APIs públicas de libros (gratis, sin key)</text>
-<rect x="1150" y="340" width="420" height="380" rx="18" fill="#fce7f3" fill-opacity=".55" stroke="#db2777" stroke-width="2" stroke-dasharray="8 6"/>
-<text x="1166" y="366" font-size="16" font-weight="700" fill="#db2777">IA generativa · fase 2</text>
+<rect x="1150" y="340" width="420" height="380" rx="18" fill="#fce7f3" fill-opacity=".55" stroke="#db2777" stroke-width="2"/>
+<text x="1166" y="366" font-size="16" font-weight="700" fill="#db2777">IA generativa · fase 2 (n8n)</text>
 <rect x="30" y="760" width="1540" height="190" rx="18" fill="#ecfdf5" fill-opacity=".55" stroke="#059669" stroke-width="2"/>
 <text x="46" y="786" font-size="16" font-weight="700" fill="#059669">Ciclo de desarrollo asistido por IA</text>
 <rect x="50" y="160" width="190" height="70" rx="12" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.6"/>
@@ -63,31 +63,31 @@
 <text x="830.0" y="639.5" font-size="15" font-weight="700" fill="#1f2937" text-anchor="middle">Media</text>
 <text x="830.0" y="660.5" font-size="12.5" fill="#4b5563" text-anchor="middle">portadas subidas</text>
 <text x="830.0" y="677.5" font-size="12.5" fill="#4b5563" text-anchor="middle">(Pillow)</text>
-<rect x="930" y="610" width="160" height="85" rx="12" fill="#fdf4ff" stroke="#c026d3" stroke-width="1.6" stroke-dasharray="6 5"/>
-<text x="1010.0" y="648.0" font-size="15" font-weight="700" fill="#1f2937" text-anchor="middle">API JSON</text>
-<text x="1010.0" y="669.0" font-size="12.5" fill="#4b5563" text-anchor="middle">para el agente</text>
+<rect x="930" y="610" width="160" height="85" rx="12" fill="#fdf4ff" stroke="#c026d3" stroke-width="1.6"/>
+<text x="1010.0" y="648.0" font-size="15" font-weight="700" fill="#1f2937" text-anchor="middle">API /api/ia/</text>
+<text x="1010.0" y="669.0" font-size="12.5" fill="#4b5563" text-anchor="middle">solo lectura · token</text>
 <rect x="1170" y="170" width="180" height="90" rx="12" fill="#fef3c7" stroke="#d97706" stroke-width="1.6"/>
 <text x="1260.0" y="210.5" font-size="15" font-weight="700" fill="#1f2937" text-anchor="middle">Open Library</text>
 <text x="1260.0" y="231.5" font-size="12.5" fill="#4b5563" text-anchor="middle">datos y portada</text>
 <rect x="1370" y="170" width="180" height="90" rx="12" fill="#fef3c7" stroke="#d97706" stroke-width="1.6"/>
 <text x="1460.0" y="210.5" font-size="15" font-weight="700" fill="#1f2937" text-anchor="middle">Google Books</text>
 <text x="1460.0" y="231.5" font-size="12.5" fill="#4b5563" text-anchor="middle">respaldo</text>
-<rect x="1170" y="390" width="380" height="70" rx="12" fill="#fce7f3" stroke="#db2777" stroke-width="1.6" stroke-dasharray="6 5"/>
+<rect x="1170" y="390" width="380" height="70" rx="12" fill="#fce7f3" stroke="#db2777" stroke-width="1.6"/>
 <text x="1360.0" y="420.5" font-size="15" font-weight="700" fill="#1f2937" text-anchor="middle">n8n (instalado en local, gratis)</text>
 <text x="1360.0" y="441.5" font-size="12.5" fill="#4b5563" text-anchor="middle">Webhooks · workflows como el Lab 14</text>
-<rect x="1170" y="480" width="88" height="70" rx="12" fill="#fce7f3" stroke="#db2777" stroke-width="1.6" stroke-dasharray="6 5"/>
+<rect x="1170" y="480" width="88" height="70" rx="12" fill="#fce7f3" stroke="#db2777" stroke-width="1.6"/>
 <text x="1214.0" y="510.5" font-size="15" font-weight="700" fill="#1f2937" text-anchor="middle">Agente</text>
 <text x="1214.0" y="531.5" font-size="12.5" fill="#4b5563" text-anchor="middle">preguntas</text>
-<rect x="1268" y="480" width="88" height="70" rx="12" fill="#fce7f3" stroke="#db2777" stroke-width="1.6" stroke-dasharray="6 5"/>
+<rect x="1268" y="480" width="88" height="70" rx="12" fill="#fce7f3" stroke="#db2777" stroke-width="1.6"/>
 <text x="1312.0" y="510.5" font-size="15" font-weight="700" fill="#1f2937" text-anchor="middle">Clasificar</text>
 <text x="1312.0" y="531.5" font-size="12.5" fill="#4b5563" text-anchor="middle">género</text>
-<rect x="1366" y="480" width="88" height="70" rx="12" fill="#fce7f3" stroke="#db2777" stroke-width="1.6" stroke-dasharray="6 5"/>
+<rect x="1366" y="480" width="88" height="70" rx="12" fill="#fce7f3" stroke="#db2777" stroke-width="1.6"/>
 <text x="1410.0" y="510.5" font-size="15" font-weight="700" fill="#1f2937" text-anchor="middle">Resumir</text>
 <text x="1410.0" y="531.5" font-size="12.5" fill="#4b5563" text-anchor="middle">notas</text>
-<rect x="1464" y="480" width="88" height="70" rx="12" fill="#fce7f3" stroke="#db2777" stroke-width="1.6" stroke-dasharray="6 5"/>
+<rect x="1464" y="480" width="88" height="70" rx="12" fill="#fce7f3" stroke="#db2777" stroke-width="1.6"/>
 <text x="1508.0" y="510.5" font-size="15" font-weight="700" fill="#1f2937" text-anchor="middle">Borrador</text>
 <text x="1508.0" y="531.5" font-size="12.5" fill="#4b5563" text-anchor="middle">de reseña</text>
-<rect x="1170" y="590" width="380" height="100" rx="12" fill="#fce7f3" stroke="#db2777" stroke-width="1.6" stroke-dasharray="6 5"/>
+<rect x="1170" y="590" width="380" height="100" rx="12" fill="#fce7f3" stroke="#db2777" stroke-width="1.6"/>
 <text x="1360.0" y="627.0" font-size="15" font-weight="700" fill="#1f2937" text-anchor="middle">LLM gratuito</text>
 <text x="1360.0" y="648.0" font-size="12.5" fill="#4b5563" text-anchor="middle">Google Gemini (capa gratuita)</text>
 <text x="1360.0" y="665.0" font-size="12.5" fill="#4b5563" text-anchor="middle">o Ollama (modelo local)</text>
@@ -104,7 +104,7 @@
 <text x="790.0" y="881.5" font-size="12.5" fill="#4b5563" text-anchor="middle">repositorio exlibris</text>
 <rect x="990" y="815" width="220" height="100" rx="12" fill="#ecfdf5" stroke="#059669" stroke-width="1.6"/>
 <text x="1100.0" y="852.0" font-size="15" font-weight="700" fill="#1f2937" text-anchor="middle">GitHub Actions</text>
-<text x="1100.0" y="873.0" font-size="12.5" fill="#4b5563" text-anchor="middle">CI: 100 pruebas</text>
+<text x="1100.0" y="873.0" font-size="12.5" fill="#4b5563" text-anchor="middle">CI: 143 pruebas</text>
 <text x="1100.0" y="890.0" font-size="12.5" fill="#4b5563" text-anchor="middle">en cada push</text>
 <rect x="1300" y="815" width="240" height="100" rx="12" fill="#ecfdf5" stroke="#059669" stroke-width="1.6"/>
 <text x="1420.0" y="852.0" font-size="15" font-weight="700" fill="#1f2937" text-anchor="middle">AI_LOG.md</text>
@@ -122,10 +122,10 @@
 <polyline points="650,515 650,610" fill="none" stroke="#5b4a8a" stroke-width="2" marker-end="url(#f)"/>
 <polyline points="830,515 830,610" fill="none" stroke="#5b4a8a" stroke-width="2" marker-end="url(#f)"/>
 <polyline points="1090,382 1115,382 1115,215 1150,215" fill="none" stroke="#5b4a8a" stroke-width="2" marker-end="url(#f)"/>
-<polyline points="1090,285 1135,285 1135,425 1170,425" fill="none" stroke="#5b4a8a" stroke-width="2" stroke-dasharray="7 5" marker-end="url(#f)"/>
-<polyline points="1360,460 1360,480" fill="none" stroke="#5b4a8a" stroke-width="2" stroke-dasharray="7 5" marker-end="url(#f)"/>
-<polyline points="1360,550 1360,590" fill="none" stroke="#5b4a8a" stroke-width="2" stroke-dasharray="7 5" marker-end="url(#f)"/>
-<polyline points="1170,515 1130,515 1130,652 1090,652" fill="none" stroke="#5b4a8a" stroke-width="2" stroke-dasharray="7 5" marker-end="url(#f)"/>
+<polyline points="1090,285 1135,285 1135,425 1170,425" fill="none" stroke="#5b4a8a" stroke-width="2" marker-end="url(#f)"/>
+<polyline points="1360,460 1360,480" fill="none" stroke="#5b4a8a" stroke-width="2" marker-end="url(#f)"/>
+<polyline points="1360,550 1360,590" fill="none" stroke="#5b4a8a" stroke-width="2" marker-end="url(#f)"/>
+<polyline points="1170,515 1130,515 1130,652 1090,652" fill="none" stroke="#5b4a8a" stroke-width="2" marker-end="url(#f)"/>
 <polyline points="280,865 370,865" fill="none" stroke="#5b4a8a" stroke-width="2" marker-end="url(#f)"/>
 <polyline points="590,865 680,865" fill="none" stroke="#5b4a8a" stroke-width="2" marker-end="url(#f)"/>
 <polyline points="900,865 990,865" fill="none" stroke="#5b4a8a" stroke-width="2" marker-end="url(#f)"/>
@@ -152,8 +152,8 @@
 <rect x="796.0" y="756.5" width="54" height="20" rx="6" fill="#fff" stroke="#e9e3fb"/>
 <text x="802.0" y="771.5" font-size="12" fill="#3b2a63">código</text>
 <line x1="30" y1="985" x2="80" y2="985" stroke="#5b4a8a" stroke-width="2" marker-end="url(#f)"/>
-<text x="90" y="990" font-size="14" fill="#374151">Implementado (fase 1)</text>
+<text x="90" y="990" font-size="14" fill="#374151">Implementado</text>
 <line x1="270" y1="985" x2="320" y2="985" stroke="#5b4a8a" stroke-width="2" stroke-dasharray="7 5" marker-end="url(#f)"/>
-<text x="330" y="990" font-size="14" fill="#374151">Planificado (fase 2: IA y despliegue)</text>
+<text x="330" y="990" font-size="14" fill="#374151">Planificado (despliegue)</text>
 <text x="1570" y="990" font-size="14" fill="#6b7280" text-anchor="end">Costo total: $0 · software libre y capas gratuitas</text>
 </svg>

@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% load exlibris %}
+{% block titulo %}Asistente IA{% endblock %}
+{% block contenido %}
+<h1 class="titulo-pagina">Asistente IA</h1>
+<p class="subtitulo">Pregúntale a tu biblioteca. El asistente consulta tus libros, notas y compartidos para responderte.</p>
+
+<section class="chat tarjeta" aria-label="Conversación con el asistente">
+  <div class="chat-mensajes" id="chat" aria-live="polite">
+    <div class="burbuja ia">
+      <span class="burbuja-autor">{% icono 'ia' %} Asistente</span>
+      <p>Hola, {{ user.first_name|default:user.username }}. Puedo decirte qué libros tienes compartidos, qué estás leyendo, buscar en tus anotaciones o recomendarte qué leer. ¿Qué quieres saber?</p>
+    </div>
+  </div>
+  <div class="chat-sugerencias" id="sugerencias">
+    {% for s in sugerencias %}<button type="button" class="chip-filtro">{{ s }}</button>{% endfor %}
+  </div>
+  <form class="chat-entrada" id="form-chat" data-url="{% url 'ia_agente' %}">
+    <label class="solo-lectores" for="pregunta">Tu pregunta</label>
+    <textarea id="pregunta" rows="1" maxlength="2000" placeholder="Ej.: ¿A quién le presté Rayuela?" required></textarea>
+    <button class="boton boton-arcoiris" type="submit" aria-label="Enviar">{% icono 'flecha-der' %}</button>
+  </form>
+  <p class="ia-nota" style="text-align:center">El asistente usa IA generativa (Gemini u Ollama vía n8n) y puede equivocarse. Solo ve tu biblioteca.</p>
+</section>
+{% endblock %}
+{% block scripts %}
+<script>
+(function () {
+  const chat = document.getElementById("chat"), form = document.getElementById("form-chat"), entrada = document.getElementById("pregunta");
+  let sesion = "";
+  try { sesion = sessionStorage.getItem("exlibris-sesion-ia") || ""; } catch (e) {}
+  if (!sesion) { sesion = Math.random().toString(36).slice(2, 12); try { sessionStorage.setItem("exlibris-sesion-ia", sesion); } catch (e) {} }
+
+  function burbuja(texto, quien) {
+    const div = document.createElement("div");
+    div.className = "burbuja " + quien;
+    if (quien === "ia") {
+      const autor = document.createElement("span"); autor.className = "burbuja-autor"; autor.textContent = "Asistente"; div.appendChild(autor);
+    }
+    const p = document.createElement("p"); p.textContent = texto; div.appendChild(p);
+    chat.appendChild(div); chat.scrollTop = chat.scrollHeight;
+    return div;
+  }
+  async function enviar(texto) {
+    texto = texto.trim(); if (!texto) return;
+    burbuja(texto, "yo"); entrada.value = ""; entrada.style.height = "";
+    document.getElementById("sugerencias").hidden = true;
+    const escribiendo = burbuja("Pensando…", "ia escribiendo");
+    form.querySelector("button").disabled = true;
+    const r = await window.exlibrisIA(form.dataset.url, { mensaje: texto, sesion });
+    form.querySelector("button").disabled = false;
+    escribiendo.remove();
+    const b = burbuja(r.ok ? r.datos.respuesta : r.error, r.ok ? "ia" : "ia error");
+    entrada.focus();
+  }
+  form.addEventListener("submit", (e) => { e.preventDefault(); enviar(entrada.value); });
+  entrada.addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); enviar(entrada.value); } });
+  entrada.addEventListener("input", () => { entrada.style.height = ""; entrada.style.height = Math.min(entrada.scrollHeight, 160) + "px"; });
+  document.querySelectorAll("#sugerencias button").forEach((b) => b.addEventListener("click", () => enviar(b.textContent)));
+})();
+</script>
+{% endblock %}

@@ -1,7 +1,7 @@
 from django.contrib.auth import views as auth_views
 from django.urls import path
 
-from . import views
+from . import api_ia, views
 
 urlpatterns = [
     path("", views.inicio, name="inicio"),
@@ -29,4 +29,16 @@ urlpatterns = [
     path("prestamos/<int:pk>/editar/", views.prestamo_editar, name="prestamo_editar"),
     path("prestamos/<int:pk>/devolver/", views.prestamo_devolver, name="prestamo_devolver"),
     path("estadisticas/", views.estadisticas_view, name="estadisticas"),
+    # IA (fase 2)
+    path("asistente/", views.asistente, name="asistente"),
+    path("ia/agente/", views.ia_agente, name="ia_agente"),
+    path("ia/clasificar/", views.ia_clasificar, name="ia_clasificar"),
+    path("ia/libros/<int:pk>/resumir/", views.ia_resumir, name="ia_resumir"),
+    path("ia/libros/<int:pk>/resena/", views.ia_resena, name="ia_resena"),
+    # API para las herramientas del agente (token firmado)
+    path("api/ia/libros/", api_ia.libros, name="api_ia_libros"),
+    path("api/ia/libros/<int:pk>/", api_ia.libro, name="api_ia_libro"),
+    path("api/ia/compartidos/", api_ia.compartidos, name="api_ia_compartidos"),
+    path("api/ia/anotaciones/", api_ia.anotaciones, name="api_ia_anotaciones"),
+    path("api/ia/resumen/", api_ia.resumen, name="api_ia_resumen"),
 ]

@@ -136,3 +136,12 @@ CATALOGO_TIMEOUT = float(os.environ.get("CATALOGO_TIMEOUT", "6"))
 MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "media"
 PORTADA_MAX_MB = 5
+
+# IA generativa (fase 2): n8n local con un LLM gratuito (Gemini u Ollama).
+# Django llama a los webhooks de n8n; el agente consulta la API /api/ia/ con un token firmado que caduca.
+N8N_URL = os.environ.get("N8N_URL", "http://localhost:5678/webhook").rstrip("/")
+N8N_SECRET = os.environ.get("N8N_SECRET", "")  # opcional: se envía como cabecera X-ExLibris-Secret
+N8N_TIMEOUT = float(os.environ.get("N8N_TIMEOUT", "60"))
+# Dirección con la que n8n llega a Django (para las herramientas del agente)
+EXLIBRIS_API_URL = os.environ.get("EXLIBRIS_API_URL", "http://localhost:8000").rstrip("/")
+IA_TOKEN_MINUTOS = 15

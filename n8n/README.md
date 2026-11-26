@@ -1,0 +1,68 @@
+# Ex Libris · IA con n8n (fase 2)
+
+La app no llama al modelo de IA directamente. Envía cada tarea a un **webhook de n8n** y n8n usa un LLM gratuito:
+**Google Gemini** (capa gratuita, con API key) u **Ollama** (modelo local, sin key). Es la misma idea del Lab 14.
+
+```
+Ex Libris (Django) ──POST──▶ n8n /webhook/exlibris-tarea  ──▶ Switch ──▶ Cadena LLM + Parser ──▶ JSON
+                   ──POST──▶ n8n /webhook/exlibris-agente ──▶ Agente IA (memoria + 5 herramientas) ──▶ JSON
+                                                                   │
+                         ◀──GET /api/ia/... (token firmado)────────┘  las herramientas consultan la biblioteca
+```
+
+| Archivo | Qué hace |
+|---|---|
+| `exlibris-tareas.json` | **Clasificar** un libro (género de la lista + etiquetas), **resumir** las anotaciones y **borrador de reseña**. Switch por `tarea` → 3 *Basic LLM Chain* con *Structured Output Parser* → *Respond to Webhook*. |
+| `exlibris-agente.json` | **Asistente «Pregúntale a tu biblioteca»**: *AI Agent* con memoria por conversación y 5 herramientas HTTP (`buscar_libros`, `ver_libro`, `libros_compartidos`, `buscar_anotaciones`, `resumen_biblioteca`). |
+| `*-ollama.json` | Los mismos workflows con **Ollama** en lugar de Gemini. |
+| `generar_workflows.py` | Script que genera los cuatro JSON (prompts, esquemas y lista de géneros salen del código de la app). |
+
+## Puesta en marcha (gratis)
+
+1. **Instala y abre n8n** en tu PC (necesita Node.js 20 o superior):
+   ```powershell
+   npx n8n
+   ```
+   Se abre en http://localhost:5678. La primera vez te pide crear una cuenta local.
+2. **Importa los workflows**: *Create workflow* → menú `⋯` → **Import from File** → `exlibris-tareas.json`.
+   Repite con `exlibris-agente.json` en otro workflow.
+3. **Conecta el modelo** (en cada nodo con el triángulo rojo ⚠):
+   - **Gemini**: abre el nodo → *Credential* → *Create new* → pega tu API key de https://aistudio.google.com/apikey.
+     Si el modelo `gemini-2.5-flash` no aparece, elige otro *flash* de la lista.
+   - **Ollama** (alternativa): instala https://ollama.com, ejecuta `ollama pull llama3.2` e importa los archivos `-ollama`.
+4. **Activa** cada workflow con el botón **Publish** (arriba a la derecha). Sin publicar, los webhooks no responden.
+5. **Arranca Ex Libris** normalmente (`python manage.py runserver`). Por defecto busca n8n en
+   `http://localhost:5678/webhook`. Si usas otra dirección:
+   ```powershell
+   $env:N8N_URL = "http://localhost:5678/webhook"
+   $env:EXLIBRIS_API_URL = "http://localhost:8000"   # dirección con la que n8n llega a Django
+   python manage.py runserver
+   ```
+
+## Dónde aparece la IA en la app
+
+| Pantalla | Botón | Qué hace |
+|---|---|---|
+| Agregar / editar libro | **Sugerir con IA** (junto a Género) | Elige el género de la lista y propone etiquetas. Tú decides si lo dejas. |
+| Ficha del libro · Mi reseña | **Sugerir borrador con IA** | Escribe un borrador según tus anotaciones y tus estrellas. No se guarda hasta que pulses «Guardar reseña». |
+| Ficha del libro · Anotaciones | **Resumir con IA** | Agrupa tus notas por temas y guarda el resumen (con fecha). |
+| Menú · **Asistente IA** | Chat | Responde preguntas como «¿A quién le presté Rayuela?» consultando tu biblioteca con herramientas. |
+
+Si n8n está apagado, la app sigue funcionando y muestra «La IA no está disponible. ¿Está encendido n8n?».
+
+## Seguridad
+
+- El agente **solo puede leer** la biblioteca de quien pregunta: cada pregunta lleva un token firmado por Django
+  que identifica a la persona y **caduca a los 15 minutos**. Las rutas `/api/ia/` son de solo lectura (GET).
+- Opcional: define `N8N_SECRET` y Django enviará la cabecera `X-ExLibris-Secret`; en el nodo Webhook activa
+  *Authentication → Header Auth* con ese mismo valor.
+- La API key de Gemini vive solo en n8n (credenciales), nunca en el código ni en la app.
+
+## Cómo se probó
+
+- 24 pruebas automáticas en `biblioteca/tests/test_ia.py` (n8n simulado): normalización de respuestas, errores, límites
+  de texto, token caducado, aislamiento entre usuarios y que la API sea de solo lectura.
+- Los workflows se importaron en **n8n 2.49** sin errores de configuración (`docs/capturas/n8n/`).
+- Prueba de punta a punta con n8n real y un servidor que imita a Ollama: la app clasificó, resumió, generó el borrador
+  y el agente llamó a la herramienta `libros_compartidos`, que pidió `/api/ia/compartidos/` a Django con el token y
+  recibió los datos (`docs/capturas/desk-asistente-prueba.png`). Falta probarlo con la API key real de Gemini.

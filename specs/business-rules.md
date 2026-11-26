@@ -12,3 +12,6 @@
 | BR-08 | Si el catálogo no responde o no conoce el ISBN, el libro se puede completar a mano. | `services/catalogo.py`, `libro_nuevo` | `test_catalogo.py`, `test_libros.py` |
 | BR-09 | El género pertenece a una lista cerrada; la categoría del catálogo se traduce a esa lista o queda vacía. | `services/generos.py`, `Libro.genero` (choices), migración 0002 | `test_generos.py`, `test_catalogo.py` |
 | BR-10 | La portada subida debe ser JPG, PNG o WEBP de hasta 5 MB; se reduce a 900 px y tiene prioridad sobre el enlace. Al cambiarla, quitarla o borrar el libro se elimina el archivo anterior. | `LibroForm.clean_portada`, `libro_editar`, `libro_eliminar` | `test_portadas.py` |
+| BR-11 | La IA solo sugiere: el género sugerido debe pertenecer a la lista y la persona lo confirma; el borrador de reseña no se guarda sin pulsar «Guardar». | `services/ia.py`, `ia_clasificar`, `ia_resena` | `test_ia.py` |
+| BR-12 | El agente solo lee la biblioteca de quien pregunta, con un token firmado que caduca en 15 minutos; la API es de solo lectura. | `api_ia.py`, `services/ia.token_para` | `test_ia.py` |
+| BR-13 | Si n8n o el LLM no responden, la app sigue funcionando y lo informa; un resumen anterior no se borra. | `services/ia._llamar`, `ia_resumir` | `test_ia.py` |

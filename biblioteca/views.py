@@ -1,10 +1,14 @@
+import json
+
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView, PasswordChangeView
 from django.db.models import Count, Q
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.http import url_has_allowed_host_and_scheme, urlencode
 from django.views.decorators.http import require_POST
 
@@ -13,7 +17,7 @@ from .forms import (
     ResenaForm,
 )
 from .models import Anotacion, Libro, Perfil, PreferenciaLibrero, Prestamo, Resena
-from .services import catalogo, estadisticas
+from .services import catalogo, estadisticas, ia
 from .services.isbn import ISBNInvalido, normalizar
 from .services.prestamos import PrestamoError, devolver, prestar
 
@@ -427,3 +431,89 @@ class CambiarClaveView(PasswordChangeView):
     def form_valid(self, form):
         messages.success(self.request, "Tu contraseña se cambió.")
         return super().form_valid(form)
+
+
+# ------------------------------------------------------------------ IA (fase 2)
+def _json(request):
+    try:
+        datos = json.loads(request.body or b"{}")
+    except ValueError:
+        return None
+    return datos if isinstance(datos, dict) else None
+
+
+def _error_ia(exc, estado=503):
+    return JsonResponse({"error": str(exc)}, status=estado)
+
+
+@login_required
+@require_POST
+def ia_clasificar(request):
+    datos = _json(request)
+    if datos is None or not str(datos.get("titulo", "")).strip():
+        return JsonResponse({"error": "Escribe al menos el título del libro."}, status=400)
+    try:
+        resultado = ia.clasificar(datos["titulo"].strip(), str(datos.get("autores", "")), str(datos.get("descripcion", "")))
+    except ia.IANoDisponible as exc:
+        return _error_ia(exc)
+    return JsonResponse(resultado)
+
+
+@login_required
+@require_POST
+def ia_resena(request, pk):
+    libro = _libro_del_usuario(request, pk)
+    datos = _json(request) or {}
+    try:
+        calificacion = int(datos.get("calificacion") or 0) or None
+    except (TypeError, ValueError):
+        calificacion = None
+    try:
+        texto = ia.borrador_resena(libro, calificacion)
+    except ia.IANoDisponible as exc:
+        return _error_ia(exc)
+    return JsonResponse({"texto": texto})
+
+
+@login_required
+@require_POST
+def ia_resumir(request, pk):
+    libro = _libro_del_usuario(request, pk)
+    try:
+        libro.resumen_ia = ia.resumir(libro)
+    except ValueError as exc:
+        messages.error(request, str(exc))
+    except ia.IANoDisponible as exc:
+        messages.error(request, str(exc))
+    else:
+        libro.resumen_ia_fecha = timezone.now()
+        libro.save(update_fields=["resumen_ia", "resumen_ia_fecha"])
+        messages.success(request, "La IA resumió tus anotaciones.")
+    return redirect(f"{reverse('libro_detalle', args=[libro.pk])}#resumen-ia")
+
+
+@login_required
+def asistente(request):
+    return render(request, "biblioteca/asistente.html", {
+        "sugerencias": [
+            "¿Qué libros tengo compartidos y con quién?",
+            "¿Cuáles estoy leyendo y cuánto me falta?",
+            "Recomiéndame qué leer después según lo que ya leí.",
+            "¿Qué anoté sobre el tiempo o la memoria?",
+        ],
+    })
+
+
+@login_required
+@require_POST
+def ia_agente(request):
+    datos = _json(request)
+    mensaje = str((datos or {}).get("mensaje", "")).strip()
+    if not mensaje:
+        return JsonResponse({"error": "Escribe una pregunta."}, status=400)
+    sesion = str((datos or {}).get("sesion", ""))[:40] or "web"
+    try:
+        respuesta = ia.preguntar(request.user, mensaje, sesion)
+    except ia.IANoDisponible as exc:
+        return _error_ia(exc)
+    return JsonResponse({"respuesta": respuesta})

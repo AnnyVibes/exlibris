@@ -31,7 +31,7 @@ CONTENEDORES = {
     "g_acceso": (290, 110, 230, 430, "Acceso (HTTPS)", "acceso", False),
     "g_django": (550, 110, 560, 610, "Ex Libris · Django 5.2 (Python)", "django", False),
     "g_apis": (1150, 110, 420, 200, "APIs públicas de libros (gratis, sin key)", "externo", False),
-    "g_ia": (1150, 340, 420, 380, "IA generativa · fase 2", "ia", True),
+    "g_ia": (1150, 340, 420, 380, "IA generativa · fase 2 (n8n)", "ia", False),
     "g_dev": (30, 760, 1540, 190, "Ciclo de desarrollo asistido por IA", "dev", False),
 }
 NODOS = {
@@ -51,19 +51,19 @@ NODOS = {
     "modelos": (570, 445, 520, 70, "Modelos (ORM de Django)\nLibro · Reseña · Anotación · Compartido · Preferencia del librero", "capa", False),
     "sqlite": (570, 610, 160, 85, "SQLite\nbase de datos", "datos", False),
     "media": (750, 610, 160, 85, "Media\nportadas subidas\n(Pillow)", "datos", False),
-    "api": (930, 610, 160, 85, "API JSON\npara el agente", "datos", True),
+    "api": (930, 610, 160, 85, "API /api/ia/\nsolo lectura · token", "datos", False),
     "openlib": (1170, 170, 180, 90, "Open Library\ndatos y portada", "externo", False),
     "gbooks": (1370, 170, 180, 90, "Google Books\nrespaldo", "externo", False),
-    "n8n": (1170, 390, 380, 70, "n8n (instalado en local, gratis)\nWebhooks · workflows como el Lab 14", "ia", True),
-    "ia_agente": (1170, 480, 88, 70, "Agente\npreguntas", "ia", True),
-    "ia_clas": (1268, 480, 88, 70, "Clasificar\ngénero", "ia", True),
-    "ia_res": (1366, 480, 88, 70, "Resumir\nnotas", "ia", True),
-    "ia_borr": (1464, 480, 88, 70, "Borrador\nde reseña", "ia", True),
-    "llm": (1170, 590, 380, 100, "LLM gratuito\nGoogle Gemini (capa gratuita)\no Ollama (modelo local)", "ia", True),
+    "n8n": (1170, 390, 380, 70, "n8n (instalado en local, gratis)\nWebhooks · workflows como el Lab 14", "ia", False),
+    "ia_agente": (1170, 480, 88, 70, "Agente\npreguntas", "ia", False),
+    "ia_clas": (1268, 480, 88, 70, "Clasificar\ngénero", "ia", False),
+    "ia_res": (1366, 480, 88, 70, "Resumir\nnotas", "ia", False),
+    "ia_borr": (1464, 480, 88, 70, "Borrador\nde reseña", "ia", False),
+    "llm": (1170, 590, 380, 100, "LLM gratuito\nGoogle Gemini (capa gratuita)\no Ollama (modelo local)", "ia", False),
     "spec": (60, 815, 220, 100, "Especificación\nODD / SDD (specs/)\nrequisitos y reglas", "dev", False),
     "claude": (370, 815, 220, 100, "Claude Code\nagente de desarrollo\n(plan Pro)", "dev", False),
     "github": (680, 815, 220, 100, "GitHub\nrepositorio exlibris", "dev", False),
-    "ci": (990, 815, 220, 100, "GitHub Actions\nCI: 100 pruebas\nen cada push", "dev", False),
+    "ci": (990, 815, 220, 100, "GitHub Actions\nCI: 143 pruebas\nen cada push", "dev", False),
     "log": (1300, 815, 240, 100, "AI_LOG.md\nrevisión humana: qué se\naceptó, modificó o rechazó", "dev", False),
 }
 # (origen, destino, etiqueta, puntos de la línea en el SVG, discontinua)
@@ -80,10 +80,10 @@ FLECHAS = [
     ("modelos", "sqlite", "", [(650, 515), (650, 610)], False),
     ("modelos", "media", "", [(830, 515), (830, 610)], False),
     ("s_cat", "g_apis", "HTTPS · JSON por ISBN", [(1090, 382), (1115, 382), (1115, 215), (1150, 215)], False),
-    ("vistas", "n8n", "webhook", [(1090, 285), (1135, 285), (1135, 425), (1170, 425)], True),
-    ("n8n", "ia_res", "", [(1360, 460), (1360, 480)], True),
-    ("ia_res", "llm", "prompt / respuesta", [(1360, 550), (1360, 590)], True),
-    ("ia_agente", "api", "herramientas HTTP", [(1170, 515), (1130, 515), (1130, 652), (1090, 652)], True),
+    ("vistas", "n8n", "webhook", [(1090, 285), (1135, 285), (1135, 425), (1170, 425)], False),
+    ("n8n", "ia_res", "", [(1360, 460), (1360, 480)], False),
+    ("ia_res", "llm", "prompt / respuesta", [(1360, 550), (1360, 590)], False),
+    ("ia_agente", "api", "herramientas HTTP", [(1170, 515), (1130, 515), (1130, 652), (1090, 652)], False),
     ("spec", "claude", "guía", [(280, 865), (370, 865)], False),
     ("claude", "github", "commits", [(590, 865), (680, 865)], False),
     ("github", "ci", "push", [(900, 865), (990, 865)], False),
@@ -155,9 +155,9 @@ def svg():
     # Leyenda
     ly = 985
     p.append(f'<line x1="30" y1="{ly}" x2="80" y2="{ly}" stroke="#5b4a8a" stroke-width="2" marker-end="url(#f)"/>')
-    p.append(f'<text x="90" y="{ly + 5}" font-size="14" fill="#374151">Implementado (fase 1)</text>')
+    p.append(f'<text x="90" y="{ly + 5}" font-size="14" fill="#374151">Implementado</text>')
     p.append(f'<line x1="270" y1="{ly}" x2="320" y2="{ly}" stroke="#5b4a8a" stroke-width="2" stroke-dasharray="7 5" marker-end="url(#f)"/>')
-    p.append(f'<text x="330" y="{ly + 5}" font-size="14" fill="#374151">Planificado (fase 2: IA y despliegue)</text>')
+    p.append(f'<text x="330" y="{ly + 5}" font-size="14" fill="#374151">Planificado (despliegue)</text>')
     p.append(f'<text x="{W - 30}" y="{ly + 5}" font-size="14" fill="#6b7280" text-anchor="end">Costo total: $0 · software libre y capas gratuitas</text>')
     p.append("</svg>")
     return "\n".join(p)
@@ -195,7 +195,7 @@ def drawio():
     celdas.append('<mxCell id="titulo" value="&lt;b style=&quot;font-size:24px&quot;&gt;Ex Libris · Arquitectura de alto nivel&lt;/b&gt;&lt;br&gt;Biblioteca personal con IA" '
                   'style="text;html=1;align=left;verticalAlign=top;fontColor=#3b2a63;" vertex="1" parent="1">'
                   '<mxGeometry x="30" y="25" width="700" height="70" as="geometry"/></mxCell>')
-    celdas.append('<mxCell id="leyenda" value="Línea continua: implementado (fase 1) · Línea discontinua: planificado (fase 2: IA y despliegue) · Costo total: $0" '
+    celdas.append('<mxCell id="leyenda" value="Línea continua: implementado · Línea discontinua: planificado (despliegue) · Costo total: $0" '
                   'style="text;html=1;align=left;fontColor=#374151;fontSize=13;" vertex="1" parent="1">'
                   '<mxGeometry x="30" y="970" width="900" height="30" as="geometry"/></mxCell>')
     modelo = (f'<mxGraphModel dx="1600" dy="1030" grid="1" gridSize="10" page="1" pageWidth="{W}" pageHeight="{H}" background="#fbfaff">'
