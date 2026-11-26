@@ -453,15 +453,12 @@ a:focus-visible, button:focus-visible, select:focus-visible, input[type=file]:fo
 .separador::before, .separador::after { content: ""; flex: 1; height: 1px; background: var(--borde); }
 
 /* ---------- Acceso (login / registro) ----------
-   Fondo: librero calmado (4 estantes, lomos suaves) con una luz en el centro que destaca la tarjeta.
-   Tarjeta: blanca y sólida; jerarquía marca → subtítulo → bienvenida → formulario. */
-.acceso {
-  min-height: 100vh; min-height: 100dvh; display: grid; place-items: center; padding: 32px 16px;
-  position: relative; isolation: isolate; background: #c9cdef;
-}
-.acceso::before { content: ""; position: fixed; inset: 0; z-index: -2; background: var(--fondo-acceso) center / cover no-repeat; filter: saturate(.9); }
-.acceso::after { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
-  background: radial-gradient(ellipse 55% 70% at 50% 50%, rgba(250, 247, 255, .88) 0%, rgba(250, 247, 255, .55) 45%, rgba(250, 247, 255, 0) 80%); }
+   Dos columnas: ilustración del librero con dos gatos a la izquierda y la tarjeta de la marca a la derecha.
+   Tarjeta: blanca; jerarquía marca → subtítulo → bienvenida → formulario. */
+.acceso { min-height: 100vh; min-height: 100dvh; display: grid; grid-template-columns: 1.05fr 1fr; background: var(--fondo); }
+.acceso-arte { background-color: #a9b1e6; background-size: cover; background-position: center; }
+.acceso-lado { display: grid; place-items: center; padding: 40px 24px;
+  background: radial-gradient(circle at 70% 20%, #f3e8ff 0, transparent 45%), radial-gradient(circle at 20% 90%, #fdf2f8 0, transparent 40%), var(--fondo); }
 .acceso-tarjeta {
   width: min(420px, 100%); border-radius: 32px; background: #fff; border: 1px solid #efe9fb;
   box-shadow: 0 30px 70px rgba(76, 52, 150, .22), 0 2px 6px rgba(76, 52, 150, .06); padding: 38px 34px 30px;
@@ -533,11 +530,11 @@ a:focus-visible, button:focus-visible, select:focus-visible, input[type=file]:fo
   .estante-libros .portada-falsa small, .estante-libros .portada-falsa .adorno { display: none; }
   .titulo-pagina { font-size: 24px; }
   .tabla-envoltura { overflow-x: auto; }
-  .acceso { padding: 20px 14px; }
-  .acceso::before { background-position: 6% center; } /* en el celular se ve el lado izquierdo, con gatos */
-  .acceso-tarjeta { padding: 30px 22px 24px; border-radius: 28px; }
+  .acceso { grid-template-columns: 1fr; }
+  .acceso-arte { min-height: 260px; background-position: center 30%; } /* encuadre con el gato naranja */
+  .acceso-lado { padding: 0 14px 28px; place-items: start center; background: var(--fondo); }
+  .acceso-tarjeta { margin-top: -44px; position: relative; padding: 30px 22px 24px; border-radius: 28px; }
   .marca { font-size: 40px; }
-  .acceso::after { background: radial-gradient(ellipse 90% 60% at 50% 50%, rgba(250, 247, 255, .9) 0%, rgba(250, 247, 255, .5) 55%, rgba(250, 247, 255, 0) 90%); }
 
   /* Barra inferior como en la app de diario: blanca, el activo en lila con un punto encima */
   .nav-movil {

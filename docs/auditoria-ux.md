@@ -121,3 +121,7 @@ de él (p. ej. «Tu estante está vacío» → **Escanear**).
 | Encabezado de vidrio difuminado | Manchas de color detrás del texto blanco → baja legibilidad | Tarjeta blanca sólida |
 | Marca pequeña y a un lado | «Ex Libris» parecía una etiqueta, no el nombre del sitio | Marca centrada a 46 px, «Libris» con el degradado de marca y el subtítulo «Biblioteca personal» |
 | Íconos en burbujas separadas | Más elementos sueltos, más ruido | Íconos dentro de los campos |
+
+**Ajuste final del login (decisión de la autora):** dos columnas, ilustración a la izquierda y tarjeta de la marca a la derecha.
+Se usan solo **dos gatos**, ubicados en diagonal (arriba a la izquierda, abajo a la derecha) para que la mirada recorra el
+librero sin saturarse. Microcopy formal: «Iniciar sesión», «¿Aún no tienes una cuenta? Regístrate».

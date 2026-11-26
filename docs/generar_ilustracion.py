@@ -1,4 +1,4 @@
-"""Genera la ilustración panorámica del login: un librero acogedor (lila/periwinkle) con gatos en los estantes.
+"""Genera la ilustración del login (panel izquierdo): un librero acogedor (lila/periwinkle) con dos gatos.
 
 Uso (desde la raíz del proyecto):  python docs/generar_ilustracion.py
 Los gatos son PNG con transparencia en docs/gatos/ y se incrustan en el SVG (un SVG usado como fondo
@@ -14,7 +14,7 @@ from PIL import Image
 GATOS = Path(__file__).resolve().parent / "gatos"
 
 R = random.Random(7)
-W, H = 1200, 700
+W, H = 760, 900
 FONDO, FONDO2 = "#a9b1e6", "#9ea7df"
 TABLA, TABLA_SOMBRA = "#dfe3fa", "#8d96d4"
 LIBROS = ["#f4a7c0", "#ef8a6f", "#f7b267", "#3e8e6f", "#86cfae", "#8c6fd1", "#c7aef2",
@@ -24,7 +24,7 @@ def suavizar(hexa, t=0.28, hacia=(201, 205, 239)):
     return "#%02x%02x%02x" % tuple(round(c + (d - c) * t) for c, d in zip((r, g, b), hacia))
 
 
-LIBROS = [suavizar(c) for c in LIBROS]
+LIBROS = [suavizar(c, 0.12) for c in LIBROS]  # apenas suavizados: colores vivos pero armónicos
 partes = []
 add = partes.append
 
@@ -164,15 +164,16 @@ DECOS = [jarron_margaritas, maceta_planta, cuadro, lampara, taza_sobre_libros, t
 add(f'<rect width="{W}" height="{H}" fill="{FONDO}"/>')
 # (fondo liso: sin rayas verticales para reducir ruido visual)
 
-filas = [160, 330, 500, 670]
-# Composición calmada: 4 estantes, grupos cortos de libros con aire entre ellos y los gatos
-# a los costados (la tarjeta del login tapa el centro, ≈ 430–770 px de este dibujo).
-# «libros:N» = N libros; «aire:N» = N px vacíos; «hasta:N» = grupos con aire hasta la posición N.
+filas = [165, 345, 525, 705, 885]
+# Dos gatos como punto focal (naranja sentado arriba a la izquierda, blanco y negro acostado abajo a la derecha):
+# la vista entra por uno, recorre los estantes en diagonal y termina en el otro.
+# «libros:N» = N libros; «aire:N» = N px vacíos; «hasta:N» = grupos con algo de aire hasta la posición N.
 plan = [
-    [maceta_planta, "libros:4", gato_img("a0", 104), "aire:36", "libros:3", "hasta:800", "libros:4", gato_img("b0", 104), "aire:30", jarron_margaritas, "libros:3"],
-    ["libros:4", "aire:24", gato_img("a1", 80, .66), "aire:40", cuadro, "hasta:800", lampara, "libros:3", gato_img("b3", 74), "aire:24", "libros:3"],
-    [tulipanes, "libros:3", gato_img("a3", 104), "aire:30", "pila", "hasta:810", "libros:3", gato_img("b2", 106), "aire:24", maceta_planta, "libros:3"],
-    ["libros:4", gato_img("a4", 108), "aire:30", jarron_margaritas, "libros:3", "hasta:800", cuadro, "libros:3", gato_img("a2", 66), "aire:30", "libros:3"],
+    ["libros:4", jarron_margaritas, "libros:5", "aire:10", lampara, "libros:4"],
+    [maceta_planta, "libros:3", "aire:8", gato_img("a0", 112), "aire:10", "libros:4", cuadro, "libros:3"],
+    ["pila", "libros:5", taza_sobre_libros, "libros:4", tulipanes],
+    ["libros:4", cuadro, "libros:3", "aire:14", gato_img("a1", 84, .66), "aire:6", "libros:3"],
+    [jarron_margaritas, "libros:5", "aire:10", maceta_planta, "libros:4"],
 ]
 for base, fila in zip(filas, plan):
     x = 22
@@ -200,9 +201,9 @@ for base, fila in zip(filas, plan):
             x, _ = pila(x, base, 3)
         else:
             x = item(x, base) + 4
-    while x < W - 60:
-        n = max(1, min(R.randint(2, 4), int((W - 22 - x) // 18)))
-        x = grupo_libros(x, base, n) + R.randint(30, 60)
+    while x < W - 40:
+        n = max(1, min(R.randint(3, 5), int((W - 22 - x) // 18)))
+        x = grupo_libros(x, base, n) + R.randint(12, 26)
     add(f'<rect x="0" y="{base}" width="{W}" height="7" fill="{TABLA}"/>')
     add(f'<rect x="0" y="{base+7}" width="{W}" height="3" fill="{TABLA_SOMBRA}" opacity=".6"/>')
 

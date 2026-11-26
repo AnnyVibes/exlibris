@@ -1,8 +1,10 @@
 {% extends "base.html" %}
 {% load static exlibris %}
-{% block titulo %}Entrar{% endblock %}
+{% block titulo %}Iniciar sesión{% endblock %}
 {% block cuerpo %}
-<main class="acceso" style="--fondo-acceso: url('{% static 'biblioteca/img/librero-login.svg' %}')">
+<main class="acceso">
+  <div class="acceso-arte" style="background-image: url('{% static 'biblioteca/img/librero-login.svg' %}')" role="img" aria-label="Librero con libros de colores, plantas y dos gatos"></div>
+  <div class="acceso-lado">
   <div class="acceso-tarjeta">
     <header class="acceso-marca">
       <h1 class="marca"><span class="marca-ex">Ex</span> <span class="marca-libris">Libris</span></h1>
@@ -25,9 +27,10 @@
       </label>
       <label class="recordarme"><input type="checkbox" name="recordarme" checked> Recordarme en este equipo</label>
       <input type="hidden" name="next" value="{{ next }}">
-      <button class="boton boton-primario boton-ancho" type="submit">Entrar</button>
-      <p class="cambio">¿No tienes cuenta? <a href="{% url 'registro' %}">Crea una</a></p>
+      <button class="boton boton-primario boton-ancho" type="submit">Iniciar sesión</button>
+      <p class="cambio">¿Aún no tienes una cuenta? <a href="{% url 'registro' %}">Regístrate</a></p>
     </form>
+  </div>
   </div>
 </main>
 {% endblock %}
