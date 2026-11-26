@@ -153,3 +153,27 @@ class EstadosTests(ConUsuario):
         migracion.abandonados_a_por_leer(apps, None)
         libro.refresh_from_db()
         self.assertEqual(libro.estado, "por_leer")
+
+
+class AccesoPantallaTests(ConUsuario):
+    def test_login_con_recordarme_mantiene_la_sesion(self):
+        self.client.logout()
+        self.client.post(reverse("login"), {"username": "ana", "password": "clave-segura-123", "recordarme": "on"})
+        self.assertFalse(self.client.session.get_expire_at_browser_close())
+
+    def test_login_sin_recordarme_expira_al_cerrar(self):
+        self.client.logout()
+        self.client.post(reverse("login"), {"username": "ana", "password": "clave-segura-123"})
+        self.assertTrue(self.client.session.get_expire_at_browser_close())
+        self.assertEqual(self.client.get(reverse("inicio")).status_code, 200)
+
+    def test_login_incorrecto_muestra_error(self):
+        self.client.logout()
+        r = self.client.post(reverse("login"), {"username": "ana", "password": "mal"})
+        self.assertContains(r, "Usuario o contraseña incorrectos")
+
+    def test_registro_muestra_errores_por_campo(self):
+        self.client.logout()
+        r = self.client.post(reverse("registro"), {"username": "ana", "email": "x@example.com", "password1": "a", "password2": "b"})
+        self.assertContains(r, 'class="acceso-error-campo"')
+        self.assertContains(r, "Te damos la bienvenida", count=0)

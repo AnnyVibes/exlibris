@@ -2,23 +2,27 @@
 {% load static exlibris %}
 {% block titulo %}Crear cuenta{% endblock %}
 {% block cuerpo %}
-<div class="acceso">
-  <div class="acceso-arte" style="background-image: url('{% static 'biblioteca/img/librero-ilustrado.svg' %}')">
-    <div class="acceso-lema">
+<main class="acceso" style="--fondo-acceso: url('{% static 'biblioteca/img/librero-login.svg' %}')">
+  <div class="acceso-tarjeta">
+    <header class="acceso-bienvenida">
       <div class="logo">{% libro_icono 0 "EL" "logo-libro" %}<span class="logo-texto">Ex <em>Libris</em></span></div>
-      <h1>Tu biblioteca</h1>
+      <h1>Crea tu librero</h1>
       <p>Escanea, anota y comparte tus libros.</p>
-    </div>
-  </div>
-  <div class="acceso-forma"><div class="caja">
-    <h2>Crea tu cuenta</h2>
-    <p class="acceso-sub">Tu librero, siempre contigo.</p>
-    <form method="post" class="formulario">
+    </header>
+    <form method="post" class="acceso-formulario" novalidate>
       {% csrf_token %}
-      {% for campo in form %}{% include "biblioteca/_campo.html" %}{% endfor %}
+      <h2>Crear cuenta</h2>
+      {% for campo, icono, tipo, autocompletar in campos %}
+        <label class="campo-icono{% if campo.errors %} con-error{% endif %}">
+          <span class="burbuja">{% icono icono %}</span>
+          <span class="solo-lectores">{{ campo.label }}</span>
+          <input type="{{ tipo }}" name="{{ campo.html_name }}" {% if tipo != 'password' %}value="{{ campo.value|default:'' }}"{% endif %} placeholder="{{ campo.label }}" autocomplete="{{ autocompletar }}" {% if tipo == 'text' %}autocapitalize="none"{% endif %} required aria-describedby="err-{{ campo.html_name }}">
+        </label>
+        {% if campo.errors %}<p class="acceso-error-campo" id="err-{{ campo.html_name }}">{{ campo.errors|first }}</p>{% endif %}
+      {% endfor %}
       <button class="boton boton-primario boton-ancho" type="submit">Crear cuenta</button>
+      <p class="cambio">¿Ya tienes cuenta? <a href="{% url 'login' %}">Entra</a></p>
     </form>
-    <p class="cambio">¿Ya tienes cuenta? <a href="{% url 'login' %}">Entra</a></p>
-  </div></div>
-</div>
+  </div>
+</main>
 {% endblock %}

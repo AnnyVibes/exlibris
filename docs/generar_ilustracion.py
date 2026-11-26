@@ -1,8 +1,20 @@
-"""Genera la ilustración del login: un librero acogedor estilo plano (lila/periwinkle)."""
+"""Genera la ilustración panorámica del login: un librero acogedor (lila/periwinkle) con gatos en los estantes.
+
+Uso (desde la raíz del proyecto):  python docs/generar_ilustracion.py
+Los gatos son PNG con transparencia en docs/gatos/ y se incrustan en el SVG (un SVG usado como fondo
+no puede cargar archivos externos).
+"""
+import base64
+import io
 import random
+from pathlib import Path
+
+from PIL import Image
+
+GATOS = Path(__file__).resolve().parent / "gatos"
 
 R = random.Random(7)
-W, H = 600, 900
+W, H = 1500, 900
 FONDO, FONDO2 = "#a9b1e6", "#9ea7df"
 TABLA, TABLA_SOMBRA = "#dfe3fa", "#8d96d4"
 LIBROS = ["#f4a7c0", "#ef8a6f", "#f7b267", "#3e8e6f", "#86cfae", "#8c6fd1", "#c7aef2",
@@ -125,26 +137,50 @@ def gato(x, base):
     return x + 70
 
 
+encima = []
+
+
+def gato_img(nombre, alto, apoyo=1.0):
+    """Reserva espacio en el estante y dibuja el gato encima (apoyo = fracción de la altura que queda sobre la tabla)."""
+    def dibujar(x, base):
+        im = Image.open(GATOS / f"{nombre}.png")
+        ancho = round(im.width * alto / im.height)
+        im = im.resize((ancho * 2, alto * 2), Image.LANCZOS)
+        buf = io.BytesIO(); im.save(buf, "WEBP", quality=82)
+        datos = base64.b64encode(buf.getvalue()).decode()
+        y = base - alto * apoyo + 2
+        encima.append(f'<image href="data:image/webp;base64,{datos}" x="{x}" y="{y:.1f}" width="{ancho}" height="{alto}"/>')
+        return x + ancho + 8
+    return dibujar
+
+
 DECOS = [jarron_margaritas, maceta_planta, cuadro, lampara, taza_sobre_libros, tulipanes]
 add(f'<rect width="{W}" height="{H}" fill="{FONDO}"/>')
 for i in range(0, W, 46):
     add(f'<rect x="{i}" y="0" width="1.5" height="{H}" fill="{FONDO2}" opacity=".5"/>')
 
 filas = [120, 250, 380, 510, 640, 770, 890]
+# «hasta:N» rellena con libros hasta la posición N: así los gatos quedan a los costados
+# y no detrás de la tarjeta del login, que ocupa el centro (≈ 520–980 px).
 plan = [
-    ["libros", jarron_margaritas, "libros", lampara, "libros"],
-    [maceta_planta, "libros", cuadro, "libros", tulipanes],
-    ["pila", "libros", taza_sobre_libros, "libros", jarron_margaritas],
-    ["libros", gato, "libros", cuadro, "libros"],
-    [tulipanes, "libros", "pila", "libros", maceta_planta],
-    ["libros", cuadro, "libros", lampara, "libros"],
-    [jarron_margaritas, "libros", maceta_planta, "libros", "pila"],
+    ["libros", gato_img("a0", 104), "libros", jarron_margaritas, "libros", "hasta:540", lampara, "libros", tulipanes, "hasta:1010", "libros", gato_img("b0", 104), "libros", cuadro, "libros"],
+    [maceta_planta, "libros", gato_img("a1", 78, .66), "libros", "hasta:540", cuadro, "libros", jarron_margaritas, "hasta:1030", gato_img("b3", 74), "libros", maceta_planta, "libros"],
+    ["pila", "libros", gato_img("a3", 102), "libros", "hasta:540", taza_sobre_libros, "libros", cuadro, "hasta:1010", "libros", gato_img("a2", 64), "libros", lampara, "libros"],
+    ["libros", gato_img("a4", 106), "libros", cuadro, "libros", "hasta:540", maceta_planta, "libros", lampara, "hasta:1010", gato_img("b2", 104), "libros", jarron_margaritas, "libros"],
+    [tulipanes, "libros", gato_img("b1", 84), "libros", "hasta:540", "pila", "libros", jarron_margaritas, "hasta:1010", "libros", gato_img("a0", 100), "libros", maceta_planta, "libros"],
+    ["libros", cuadro, gato_img("a2", 62), "libros", "hasta:540", lampara, "libros", taza_sobre_libros, "hasta:1030", gato_img("a1", 78, .66), "libros", tulipanes, "libros"],
+    [jarron_margaritas, "libros", gato_img("b0", 102), "libros", "pila", "hasta:540", maceta_planta, "libros", cuadro, "hasta:1010", "libros", gato_img("a4", 104), "libros", "pila"],
 ]
 for base, fila in zip(filas, plan):
     x = 22
     for item in fila:
         if x > W - 40:
             break
+        if isinstance(item, str) and item.startswith("hasta:"):
+            meta = int(item.split(":")[1])
+            while x < meta - 20:
+                x = grupo_libros(x, base, max(1, min(R.randint(3, 6), int((meta - x) // 18))))
+            continue
         if item == "libros":
             restante = W - 22 - x
             n = R.randint(4, 7)
@@ -161,7 +197,8 @@ for base, fila in zip(filas, plan):
     add(f'<rect x="0" y="{base}" width="{W}" height="7" fill="{TABLA}"/>')
     add(f'<rect x="0" y="{base+7}" width="{W}" height="3" fill="{TABLA_SOMBRA}" opacity=".6"/>')
 
+partes.extend(encima)
 svg = (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" preserveAspectRatio="xMidYMid slice" '
-       f'role="img" aria-label="Librero con libros de colores, plantas, flores y un gato">' + "".join(partes) + "</svg>")
-open("biblioteca/static/biblioteca/img/librero-ilustrado.svg", "w").write(svg)
+       f'role="img" aria-label="Librero con libros de colores, plantas, flores y gatos">' + "".join(partes) + "</svg>")
+open(Path(__file__).resolve().parent.parent / "biblioteca/static/biblioteca/img/librero-login.svg", "w").write(svg)
 print(len(svg) // 1024, "KB")

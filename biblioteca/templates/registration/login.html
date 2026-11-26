@@ -2,26 +2,32 @@
 {% load static exlibris %}
 {% block titulo %}Entrar{% endblock %}
 {% block cuerpo %}
-<div class="acceso">
-  <div class="acceso-arte" style="background-image: url('{% static 'biblioteca/img/librero-ilustrado.svg' %}')">
-    <div class="acceso-lema">
+<main class="acceso" style="--fondo-acceso: url('{% static 'biblioteca/img/librero-login.svg' %}')">
+  <div class="acceso-tarjeta">
+    <header class="acceso-bienvenida">
       <div class="logo">{% libro_icono 0 "EL" "logo-libro" %}<span class="logo-texto">Ex <em>Libris</em></span></div>
-      <h1>Tu biblioteca</h1>
+      <h1>Te damos la bienvenida</h1>
       <p>Escanea, anota y comparte tus libros.</p>
-    </div>
-  </div>
-  <div class="acceso-forma"><div class="caja">
-    <h2>Te damos la bienvenida</h2>
-    <p class="acceso-sub">Entra para ver tu librero.</p>
-    <form method="post" class="formulario">
+    </header>
+    <form method="post" class="acceso-formulario" novalidate>
       {% csrf_token %}
-      {% if form.non_field_errors %}<p class="error">Usuario o contraseña incorrectos.</p>{% endif %}
-      {% include "biblioteca/_campo.html" with campo=form.username %}
-      {% include "biblioteca/_campo.html" with campo=form.password %}
+      <h2>Iniciar sesión</h2>
+      {% if form.non_field_errors %}<p class="acceso-error" role="alert">{% icono 'alerta' %} Usuario o contraseña incorrectos.</p>{% endif %}
+      <label class="campo-icono">
+        <span class="burbuja">{% icono 'usuario' %}</span>
+        <span class="solo-lectores">Nombre de usuario</span>
+        <input type="text" name="username" value="{{ form.username.value|default:'' }}" placeholder="Nombre de usuario" autocomplete="username" autocapitalize="none" required autofocus>
+      </label>
+      <label class="campo-icono">
+        <span class="burbuja">{% icono 'candado' %}</span>
+        <span class="solo-lectores">Contraseña</span>
+        <input type="password" name="password" placeholder="Contraseña" autocomplete="current-password" required>
+      </label>
+      <label class="recordarme"><input type="checkbox" name="recordarme" checked> Recordarme en este equipo</label>
       <input type="hidden" name="next" value="{{ next }}">
       <button class="boton boton-primario boton-ancho" type="submit">Entrar</button>
+      <p class="cambio">¿No tienes cuenta? <a href="{% url 'registro' %}">Crea una</a></p>
     </form>
-    <p class="cambio">¿No tienes cuenta? <a href="{% url 'registro' %}">Crea una</a></p>
-  </div></div>
-</div>
+  </div>
+</main>
 {% endblock %}

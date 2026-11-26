@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views import LoginView
 from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.http import url_has_allowed_host_and_scheme, urlencode
@@ -19,6 +20,18 @@ def _libro_del_usuario(request, pk):
     return get_object_or_404(Libro, pk=pk, propietario=request.user)
 
 
+class EntrarView(LoginView):
+    """Inicio de sesión. Sin «Recordarme», la sesión termina al cerrar el navegador."""
+
+    redirect_authenticated_user = True
+
+    def form_valid(self, form):
+        respuesta = super().form_valid(form)
+        if not self.request.POST.get("recordarme"):
+            self.request.session.set_expiry(0)
+        return respuesta
+
+
 def registro(request):
     if request.user.is_authenticated:
         return redirect("inicio")
@@ -28,7 +41,13 @@ def registro(request):
         login(request, usuario)
         messages.success(request, "¡Tu biblioteca está lista!")
         return redirect("inicio")
-    return render(request, "registration/registro.html", {"form": form})
+    campos = [
+        (form["username"], "usuario", "text", "username"),
+        (form["email"], "correo", "email", "email"),
+        (form["password1"], "candado", "password", "new-password"),
+        (form["password2"], "candado", "password", "new-password"),
+    ]
+    return render(request, "registration/registro.html", {"form": form, "campos": campos})
 
 
 @login_required

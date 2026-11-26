@@ -303,13 +303,13 @@ a:focus-visible, button:focus-visible, select:focus-visible, input[type=file]:fo
 
 /* ---------- Banner principal ---------- */
 .hero {
-  display: grid; grid-template-columns: 280px 1fr; gap: 32px; align-items: center;
+  display: grid; grid-template-columns: 210px 1fr; gap: 28px; align-items: center;
   background: var(--degradado-suave); border: 1px solid var(--borde); border-radius: var(--radio-xl);
-  padding: 14px 34px 14px 14px; margin-bottom: 8px; overflow: hidden; min-height: 210px;
+  padding: 26px 34px 0; margin-bottom: 8px; overflow: hidden;
 }
-.hero-arte { align-self: stretch; min-height: 182px; border-radius: calc(var(--radio-xl) - 10px); background-color: #a9b1e6; background-size: 420px auto; background-position: center 18%; }
 .hero-ilustracion { width: 100%; align-self: end; }
-.hero-texto { padding: 10px 0; }
+.hero-ilustracion { width: 100%; align-self: end; }
+.hero-texto { padding-bottom: 26px; }
 .hero h1 { font-size: 34px; line-height: 1.2; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 10px; color: #3b2a63; }
 .hero p { color: var(--texto-medio); margin-bottom: 20px; max-width: 46ch; }
 .hero-acciones { display: flex; gap: 12px; flex-wrap: wrap; }
@@ -452,26 +452,40 @@ a:focus-visible, button:focus-visible, select:focus-visible, input[type=file]:fo
 .separador { display: flex; align-items: center; gap: 12px; color: var(--texto-suave); font-size: 13px; margin: 22px 0; }
 .separador::before, .separador::after { content: ""; flex: 1; height: 1px; background: var(--borde); }
 
-/* ---------- Acceso (login / registro): ilustración de librero + tarjeta con el lema ---------- */
-.acceso { min-height: 100vh; display: grid; grid-template-columns: 1.1fr 1fr; background: var(--superficie); }
-.acceso-arte {
-  position: relative; display: flex; align-items: flex-end; padding: 40px;
-  background-color: #a9b1e6; background-size: cover; background-position: center top;
+/* ---------- Acceso (login / registro): librero de fondo + tarjeta translúcida centrada ---------- */
+.acceso {
+  min-height: 100vh; min-height: 100dvh; display: grid; place-items: center; padding: 32px 16px; position: relative;
+  background: #a9b1e6 var(--fondo-acceso) center / cover no-repeat;
 }
-.acceso-arte::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgba(43, 32, 90, .45), rgba(43, 32, 90, 0) 45%); pointer-events: none; }
-.acceso-lema {
-  position: relative; z-index: 1; max-width: 420px; padding: 24px 28px; border-radius: var(--radio-lg);
-  background: rgba(255, 255, 255, .88); backdrop-filter: blur(10px); box-shadow: 0 20px 40px rgba(43, 32, 90, .25);
+.acceso::before { content: ""; position: fixed; inset: 0; background: linear-gradient(160deg, rgba(91, 33, 182, .45), rgba(124, 58, 237, .25) 50%, rgba(192, 38, 211, .35)); pointer-events: none; }
+.acceso-tarjeta {
+  position: relative; width: min(420px, 100%); border-radius: 30px; overflow: hidden;
+  background: rgba(255, 255, 255, .22); border: 1px solid rgba(255, 255, 255, .55);
+  backdrop-filter: blur(14px) saturate(1.2); -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  box-shadow: 0 30px 70px rgba(46, 16, 101, .35);
 }
-.acceso-lema .logo { padding: 0; margin-bottom: 14px; }
-.acceso-lema h1 { font-size: 34px; font-weight: 700; letter-spacing: -0.6px; color: #3b2a63; line-height: 1.1; }
-.acceso-lema p { color: var(--texto-medio); margin-top: 6px; font-size: 16px; }
-.acceso-forma { display: flex; align-items: center; justify-content: center; padding: 40px 24px; }
-.acceso-forma .caja { width: 100%; max-width: 380px; }
-.acceso-forma h2 { font-size: 28px; letter-spacing: -0.4px; }
-.acceso-sub { color: var(--texto-suave); margin: 4px 0 24px; }
-.acceso-forma p.cambio { margin-top: 18px; text-align: center; color: var(--texto-suave); }
-.acceso-forma p.cambio a { color: var(--lila-600); font-weight: 600; }
+.acceso-bienvenida { padding: 26px 30px 22px; color: #fff; text-shadow: 0 1px 12px rgba(46, 16, 101, .35); }
+.acceso-bienvenida .logo { padding: 0; margin-bottom: 18px; }
+.acceso-bienvenida .logo-texto, .acceso-bienvenida .logo-texto em { color: #fff; }
+.acceso-bienvenida h1 { font-size: 32px; font-weight: 700; letter-spacing: -0.6px; line-height: 1.1; }
+.acceso-bienvenida p { margin-top: 8px; font-size: 16px; opacity: .95; }
+.acceso-formulario { display: grid; gap: 14px; padding: 24px 30px 26px; background: rgba(255, 255, 255, .9); }
+.acceso-formulario h2 { font-size: 14px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--primario-texto); text-align: center; }
+.campo-icono { display: flex; align-items: center; gap: 12px; }
+.campo-icono .burbuja { width: 44px; height: 44px; flex-shrink: 0; border-radius: 50%; display: grid; place-items: center; background: var(--lila-100); color: var(--primario-texto); }
+.campo-icono input {
+  flex: 1; min-width: 0; height: 46px; padding: 0 18px; border-radius: 999px; font: inherit; color: var(--texto);
+  border: 1px solid var(--lila-200); background: #fff; outline: 0; transition: border .15s, box-shadow .15s;
+}
+.campo-icono input::placeholder { color: #8b85a0; }
+.campo-icono input:focus { border-color: var(--lila-400); box-shadow: 0 0 0 4px var(--lila-100); }
+.campo-icono.con-error input { border-color: var(--peligro); }
+.recordarme { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--texto-medio); cursor: pointer; padding-left: 4px; }
+.recordarme input { width: 18px; height: 18px; accent-color: var(--primario); }
+.acceso-error { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: var(--radio-sm); background: var(--peligro-fondo); color: var(--peligro); font-size: 14px; font-weight: 500; }
+.acceso-error-campo { margin: -8px 0 0 56px; color: var(--peligro); font-size: 13px; }
+.acceso-formulario p.cambio { text-align: center; color: var(--texto-suave); font-size: 14px; }
+.acceso-formulario p.cambio a { color: var(--primario-texto); font-weight: 600; }
 
 /* ---------- Navegación inferior (móvil) ---------- */
 .nav-movil { display: none; }
@@ -499,10 +513,10 @@ a:focus-visible, button:focus-visible, select:focus-visible, input[type=file]:fo
   .barra .buscador { order: 3; flex-basis: 100%; height: 48px; }
   .barra .espaciador { flex: 1; }
   .boton-icono { width: 44px; height: 44px; }
-  .hero { grid-template-columns: 1fr; padding: 10px 10px 20px; gap: 16px; border-radius: var(--radio-lg); }
-  .hero-arte { min-height: 140px; background-size: 360px auto; }
-  .hero-texto { padding: 0 10px; }
+  .hero { grid-template-columns: 1fr; padding: 24px 22px 0; gap: 12px; border-radius: var(--radio-lg); }
+  .hero-texto { padding-bottom: 0; order: -1; }
   .hero h1 { font-size: 26px; }
+  .hero-ilustracion { width: 150px; margin: 0 auto; }
   .resumen-tarjetas { grid-template-columns: 1fr; gap: 10px; }
   .leyendo { grid-template-columns: 90px 1fr; }
   .detalle-cabecera { grid-template-columns: 1fr; padding: 22px; border-radius: var(--radio-lg); gap: 20px; }
@@ -515,12 +529,10 @@ a:focus-visible, button:focus-visible, select:focus-visible, input[type=file]:fo
   .estante-libros .portada-falsa small, .estante-libros .portada-falsa .adorno { display: none; }
   .titulo-pagina { font-size: 24px; }
   .tabla-envoltura { overflow-x: auto; }
-  .acceso { grid-template-columns: 1fr; }
-  .acceso-arte { min-height: 300px; padding: 16px; }
-  .acceso-lema { padding: 16px 18px; }
-  .acceso-lema h1 { font-size: 26px; }
-  .acceso-lema p { font-size: 15px; }
-  .acceso-forma { padding: 28px 20px 40px; align-items: flex-start; }
+  .acceso { padding: 20px 14px; }
+  .acceso-bienvenida { padding: 22px 22px 18px; }
+  .acceso-bienvenida h1 { font-size: 27px; }
+  .acceso-formulario { padding: 20px 20px 22px; }
 
   /* Barra inferior como en la app de diario: blanca, el activo en lila con un punto encima */
   .nav-movil {
