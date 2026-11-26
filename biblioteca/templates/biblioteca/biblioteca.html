@@ -142,6 +142,8 @@
       const max = fila.scrollWidth - fila.clientWidth - 2;
       ant.hidden = fila.scrollLeft <= 2;
       sig.hidden = fila.scrollLeft >= max;
+      c.classList.toggle("hay-antes", !ant.hidden);
+      c.classList.toggle("hay-despues", !sig.hidden);
     };
     const mover = (dir) => fila.scrollBy({ left: dir * fila.clientWidth * 0.9, behavior: "smooth" });
     ant.addEventListener("click", () => mover(-1));

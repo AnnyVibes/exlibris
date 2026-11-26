@@ -691,7 +691,7 @@ a:focus-visible, button:focus-visible, select:focus-visible, input[type=file]:fo
   radial-gradient(circle at 40px calc(100% - 5px), var(--clavo) 0 2.6px, transparent 3.2px) 0 0 / 80px var(--fila) repeat,
   linear-gradient(to bottom, transparent calc(100% - var(--tabla)), var(--tabla-sup) calc(100% - var(--tabla)),
     var(--tabla-sup) calc(100% - var(--tabla) + 5px), var(--tabla-frente) calc(100% - var(--tabla) + 5px)) 0 0 / 100% var(--fila) repeat-y; }
-.estilo-mueble { max-width: 860px; margin-inline: auto; }
+.estilo-mueble { max-width: 980px; margin-inline: auto; }
 .estilo-mueble .estante-seccion + .estante-seccion { margin-top: 4px; }
 .estilo-mueble.librero-color-noche .estante-cabecera h2 span { background: rgba(255,255,255,.15); }
 
@@ -859,7 +859,7 @@ html { overflow-y: scroll; scrollbar-width: auto; scrollbar-color: rgba(147, 51,
 .carrusel { position: relative; }
 .librero .repisa.en-fila {
   display: grid; grid-auto-flow: column; grid-template-columns: none;
-  grid-auto-columns: calc((100% - 9 * 12px) / 10); column-gap: 12px;
+  grid-auto-columns: calc((100% - 6 * 16px) / 7); column-gap: 16px;
   overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; scroll-padding: 0 22px;
   padding-top: 10px; scrollbar-width: none; grid-auto-rows: auto;
   background-size: 100% 100%; background-repeat: no-repeat;
@@ -868,20 +868,31 @@ html { overflow-y: scroll; scrollbar-width: auto; scrollbar-color: rgba(147, 51,
 .librero .repisa.en-fila::-webkit-scrollbar { display: none; }
 .librero .repisa.en-fila:focus-visible { outline: none; box-shadow: inset 0 0 0 3px var(--lila-300); border-radius: 12px; }
 .repisa.en-fila .libro-repisa, .repisa.en-fila .adorno-repisa { height: auto; aspect-ratio: 2 / 3; scroll-snap-align: start; }
-.repisa.en-fila .tapa-repisa .portada-falsa strong { font-size: 10px; }
-.repisa.en-fila .tapa-repisa .portada-falsa small { display: none; }
+.repisa.en-fila .tapa-repisa .portada-falsa strong { font-size: 12px; }
+.repisa.en-fila .tapa-repisa .portada-falsa small { font-size: 9px; }
 .carrusel-flecha {
-  position: absolute; top: 50%; z-index: 3; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--lila-200);
-  display: grid; place-items: center; cursor: pointer; color: var(--primario-texto);
-  background: rgba(255, 255, 255, .92); box-shadow: 0 6px 16px rgba(76, 52, 150, .22); transform: translateY(-60%);
-  transition: background .15s, transform .15s;
+  position: absolute; top: calc(50% - 4px); z-index: 4; width: 46px; height: 46px; border-radius: 50%; border: 3px solid #fff;
+  display: grid; place-items: center; cursor: pointer; color: #fff; background: var(--primario);
+  box-shadow: 0 8px 20px rgba(76, 52, 150, .35); transform: translateY(-50%); transition: background .15s, transform .15s, opacity .2s;
 }
-.carrusel-flecha:hover { background: #fff; transform: translateY(-60%) scale(1.06); }
-.carrusel-flecha.anterior { left: 4px; } .carrusel-flecha.siguiente { right: 4px; }
-.carrusel-flecha .icono { width: 20px; height: 20px; stroke-width: 2.4; }
+.carrusel-flecha:hover { background: var(--primario-hover); transform: translateY(-50%) scale(1.08); }
+.carrusel-flecha:active { transform: translateY(-50%) scale(.96); }
+.carrusel-flecha:focus-visible { outline: none; box-shadow: var(--foco), 0 8px 20px rgba(76, 52, 150, .35); }
+.carrusel-flecha.anterior { left: 6px; } .carrusel-flecha.siguiente { right: 6px; }
+.carrusel-flecha .icono { width: 22px; height: 22px; stroke-width: 2.6; }
+/* Degradado en el borde: indica que hay más libros hacia ese lado */
+.carrusel::before, .carrusel::after {
+  content: ""; position: absolute; top: 10px; bottom: 18px; width: 70px; z-index: 3; pointer-events: none; opacity: 0; transition: opacity .2s;
+}
+.carrusel::before { left: 0; background: linear-gradient(90deg, var(--interior), transparent); }
+.carrusel::after { right: 0; background: linear-gradient(270deg, var(--interior), transparent); }
+.carrusel.hay-antes::before, .carrusel.hay-despues::after { opacity: 1; }
+.estilo-repisas .carrusel::before { background: linear-gradient(90deg, var(--interior-suave), transparent); }
+.estilo-repisas .carrusel::after { background: linear-gradient(270deg, var(--interior-suave), transparent); }
 @media (max-width: 860px) {
-  .librero .repisa.en-fila { grid-auto-columns: calc((100% - 3 * 10px) / 4.3); column-gap: 10px; }
-  .carrusel-flecha { width: 34px; height: 34px; }
+  .librero .repisa.en-fila { grid-auto-columns: calc((100% - 2 * 12px) / 3.3); column-gap: 12px; }
+  .carrusel-flecha { width: 40px; height: 40px; }
+  .carrusel::before, .carrusel::after { width: 40px; }
 }
 /* El carrusel no debe ensanchar la página: los contenedores de la cuadrícula pueden encogerse */
 .mueble-interior { grid-template-columns: minmax(0, 1fr); }
