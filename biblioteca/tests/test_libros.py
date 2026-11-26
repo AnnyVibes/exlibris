@@ -185,3 +185,11 @@ class CacheEstaticosTests(ConUsuario):
         self.client.logout()
         html = self.client.get(reverse("login")).content.decode()
         self.assertRegex(html, r'exlibris\.css\?v=\d+')
+
+
+class CacheImagenesTests(ConUsuario):
+    def test_imagenes_con_version(self):
+        self.client.logout()
+        html = self.client.get(reverse("login")).content.decode()
+        self.assertRegex(html, r'librero-login\.svg\?v=\d+')
+        self.assertNotRegex(html, r'\.(svg|css)["\')]')  # ningún estático sin versión

@@ -38,7 +38,7 @@
 </div>
 {% else %}
 <div class="vacio">
-  <img src="{% static 'biblioteca/img/libros.svg' %}" alt="">
+  <img src="{% estatico 'biblioteca/img/libros.svg' %}" alt="">
   <h3>Todavía no hay géneros</h3>
   <p>Cuando agregues libros y elijas su género, aquí verás un estante por cada uno.</p>
   <div class="acciones"><a class="boton boton-primario" href="{% url 'escanear' %}">{% icono 'camara' %} Escanear</a><a class="boton boton-secundario" href="{% url 'libro_nuevo' %}">Agregar a mano</a></div>

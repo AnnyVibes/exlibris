@@ -4,7 +4,7 @@
 {% block contenido %}
 
 <section class="hero">
-  <img class="hero-ilustracion" src="{% static 'biblioteca/img/libros.svg' %}" alt="">
+  <img class="hero-ilustracion" src="{% estatico 'biblioteca/img/libros.svg' %}" alt="">
   <div class="hero-texto">
     <h1>Tu biblioteca</h1>
     <p>Escanea, anota y comparte tus libros.</p>
@@ -50,7 +50,7 @@
       </div></div>
     {% else %}
       <div class="vacio" style="box-shadow:none;padding:20px 10px">
-        <img src="{% static 'biblioteca/img/libros.svg' %}" alt="" style="width:110px">
+        <img src="{% estatico 'biblioteca/img/libros.svg' %}" alt="" style="width:110px">
         <h3>Tu estante está vacío</h3>
         <p>Empieza escaneando el código de barras de tu primer libro.</p>
         <div class="acciones"><a class="boton boton-primario boton-mini" href="{% url 'escanear' %}">{% icono 'camara' %} Escanear</a></div>

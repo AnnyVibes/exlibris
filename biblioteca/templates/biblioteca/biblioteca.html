@@ -112,7 +112,7 @@
 </div>
 {% else %}
 <div class="vacio" style="margin-top:20px">
-  <img src="{% static 'biblioteca/img/libros.svg' %}" alt="">
+  <img src="{% estatico 'biblioteca/img/libros.svg' %}" alt="">
   <h3>{% if q or estado or genero %}No hay libros con estos filtros{% else %}Tu estante está vacío{% endif %}</h3>
   <p>{% if q or estado or genero %}Prueba quitando algún filtro.{% else %}Escanea el código de barras de un libro con la cámara o escribe su ISBN.{% endif %}</p>
   <div class="acciones">
