@@ -135,6 +135,19 @@ class Prestamo(models.Model):
     def vencido(self):
         return self.activo and self.devolver_el is not None and self.devolver_el < timezone.localdate()
 
+    @property
+    def dias(self):
+        """Días que lleva compartido (o que duró, si ya volvió)."""
+        fin = self.devuelto_el or timezone.localdate()
+        return max(0, (fin - self.prestado_el).days)
+
+    @property
+    def dias_para_devolver(self):
+        """Días hasta la fecha acordada (negativo si ya pasó). None si no hay fecha o ya volvió."""
+        if not self.activo or self.devolver_el is None:
+            return None
+        return (self.devolver_el - timezone.localdate()).days
+
 
 class PreferenciaLibrero(models.Model):
     """Cómo quiere ver cada persona su librero (se guarda en la cuenta, no en el navegador)."""

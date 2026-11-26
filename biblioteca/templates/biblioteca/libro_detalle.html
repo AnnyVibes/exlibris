@@ -19,24 +19,44 @@
     </div>
     {% if libro.descripcion %}<p class="descripcion">{{ libro.descripcion }}</p>{% endif %}
     <div class="acciones-fila">
-      <a class="boton boton-secundario boton-mini" href="{% url 'libro_editar' libro.pk %}">{% icono 'editar' %} Editar</a>
+      <a class="boton-accion" href="{% url 'libro_editar' libro.pk %}" title="Editar libro" aria-label="Editar libro">{% icono 'editar' %}</a>
       <form method="post" action="{% url 'libro_eliminar' libro.pk %}" onsubmit="return confirm('¿Eliminar «{{ libro.titulo|escapejs }}» y todas sus anotaciones?');">
-        {% csrf_token %}<button class="boton boton-peligro boton-mini" type="submit">{% icono 'basura' %} Eliminar</button>
+        {% csrf_token %}<button class="boton-accion peligro" type="submit" title="Eliminar libro" aria-label="Eliminar libro">{% icono 'basura' %}</button>
       </form>
     </div>
   </div>
 </section>
 
 <div class="detalle-rejilla">
-  <article class="tarjeta">
-    <div class="tarjeta-titulo"><h2>Progreso</h2><span class="contador">{{ libro.progreso }}%</span></div>
-    <div class="barra-progreso"><span style="width: {{ libro.progreso }}%"></span></div>
-    <form method="post" action="{% url 'progreso_actualizar' libro.pk %}" class="formulario dos">
-      {% csrf_token %}
-      {% include "biblioteca/_campo.html" with campo=progreso_form.estado %}
-      {% include "biblioteca/_campo.html" with campo=progreso_form.pagina_actual %}
-      <div class="ancho"><button class="boton boton-primario" type="submit">Actualizar</button></div>
-    </form>
+  <article class="tarjeta progreso-tarjeta">
+    <div class="tarjeta-titulo"><h2>Progreso</h2><span class="insignia-estado estado-{{ libro.estado }}">{{ libro.get_estado_display }}</span></div>
+    <div class="progreso-cuerpo">
+      <div class="anillo" style="--p: {{ libro.progreso }}" role="img" aria-label="{{ libro.progreso }} % leído">
+        <span><strong>{{ libro.progreso }}%</strong></span>
+      </div>
+      <div class="progreso-resumen">
+        {% if libro.estado == "leido" %}<strong>¡Terminado!</strong><p>Lo leíste completo{% if libro.paginas %}: {{ libro.paginas }} páginas{% endif %}.</p>
+        {% elif libro.paginas %}<strong>Página {{ libro.pagina_actual }} de {{ libro.paginas }}</strong><p>Te faltan {{ libro.paginas|sub:libro.pagina_actual }} página{{ libro.paginas|sub:libro.pagina_actual|pluralize }}.</p>
+        {% else %}<strong>Sin número de páginas</strong><p>Agrégalo al editar el libro para ver tu avance.</p>{% endif %}
+      </div>
+      <form method="post" action="{% url 'progreso_actualizar' libro.pk %}" class="progreso-form" id="form-progreso">
+        {% csrf_token %}
+        <fieldset class="segmentado">
+          <legend>Estado</legend>
+          {% for opcion in progreso_form.estado %}
+            <label class="segmento segmento-{{ opcion.data.value }}">{{ opcion.tag }}<span>{{ opcion.choice_label }}</span></label>
+          {% endfor %}
+        </fieldset>
+        <div class="campo campo-pagina">
+          <label for="{{ progreso_form.pagina_actual.id_for_label }}">Página actual</label>
+          <div class="pagina-fila">
+            <input type="number" name="pagina_actual" id="{{ progreso_form.pagina_actual.id_for_label }}" value="{{ libro.pagina_actual }}" min="0" {% if libro.paginas %}max="{{ libro.paginas }}" data-total="{{ libro.paginas }}"{% endif %} inputmode="numeric">
+            {% if libro.paginas %}<span class="pagina-total">de {{ libro.paginas }}</span>{% endif %}
+            <button class="boton boton-primario" type="submit">{% icono 'check' %} Guardar</button>
+          </div>
+        </div>
+      </form>
+    </div>
   </article>
 
   <article class="tarjeta">
@@ -60,11 +80,13 @@
   <article class="tarjeta ancho">
     <div class="tarjeta-titulo"><h2>Compartir</h2>{% if prestamo_activo %}<span class="etiqueta {% if prestamo_activo.vencido %}vencido{% endif %}">{% if prestamo_activo.vencido %}Vencido{% else %}Compartido{% endif %}</span>{% else %}<span class="etiqueta gris">En casa</span>{% endif %}</div>
     {% if prestamo_activo %}
-      <p style="margin-bottom:14px">Lo tiene <strong>{{ prestamo_activo.persona }}</strong>{% if prestamo_activo.contacto %} ({{ prestamo_activo.contacto }}){% endif %} desde el {{ prestamo_activo.prestado_el|date:"j \d\e F" }}{% if prestamo_activo.devolver_el %}; acordaron devolverlo el {{ prestamo_activo.devolver_el|date:"j \d\e F" }}{% endif %}.</p>
+      <p style="margin-bottom:14px">Lo tiene <strong>{{ prestamo_activo.persona }}</strong>{% if prestamo_activo.contacto %} ({{ prestamo_activo.contacto }}){% endif %} desde el {{ prestamo_activo.prestado_el|date:"j \d\e F" }} ({{ prestamo_activo.dias|dias_texto|lower }}).</p>
+      <p style="margin-bottom:14px">{% include "biblioteca/_plazo.html" with p=prestamo_activo %}</p>
       {% if prestamo_activo.notas %}<p class="ayuda" style="margin-bottom:14px">{{ prestamo_activo.notas }}</p>{% endif %}
-      <form method="post" action="{% url 'prestamo_devolver' prestamo_activo.pk %}">
+      <p class="pregunta-devuelto">¿Ya te lo devolvieron?</p>
+      <form method="post" action="{% url 'prestamo_devolver' prestamo_activo.pk %}" onsubmit="return confirm('¿Confirmas que te devolvieron «{{ libro.titulo|escapejs }}»?');">
         {% csrf_token %}<input type="hidden" name="siguiente" value="{{ request.path }}">
-        <button class="boton boton-verde" type="submit">{% icono 'check' %} Ya me lo devolvió</button>
+        <button class="boton boton-arcoiris" type="submit">{% icono 'check' %} Sí, ya me lo devolvió</button>
       </form>
     {% else %}
       <form method="post" action="{% url 'prestamo_crear' libro.pk %}" class="formulario dos">
@@ -103,4 +125,20 @@
   </article>
 
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+/* Al marcar «Leído» se completa la página; «Por leer» la deja en 0 (el servidor también lo valida). */
+(function () {
+  const form = document.getElementById("form-progreso");
+  if (!form) return;
+  const pagina = form.querySelector("input[name=pagina_actual]");
+  form.addEventListener("change", (e) => {
+    if (e.target.name !== "estado") return;
+    if (e.target.value === "leido" && pagina.dataset.total) pagina.value = pagina.dataset.total;
+    if (e.target.value === "por_leer") pagina.value = 0;
+  });
+})();
+</script>
 {% endblock %}

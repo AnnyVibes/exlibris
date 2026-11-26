@@ -93,6 +93,7 @@ class ProgresoForm(forms.ModelForm):
     class Meta:
         model = Libro
         fields = ["estado", "pagina_actual"]
+        widgets = {"estado": forms.RadioSelect}
 
     def clean(self):
         datos = super().clean()

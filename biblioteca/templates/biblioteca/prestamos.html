@@ -8,16 +8,16 @@
 <article class="tarjeta" style="margin-bottom:20px">
   <div class="tarjeta-titulo"><h2>Compartidos ahora</h2><span class="contador">{{ activos|length }}</span></div>
   {% if activos %}
-  <div class="tabla-envoltura"><table class="tabla">
-    <thead><tr><th>Libro</th><th>Con quién</th><th>Desde</th><th>Devolver</th><th></th></tr></thead>
+  <div class="tabla-envoltura"><table class="tabla tabla-compartidos">
+    <thead><tr><th>Libro</th><th>Con quién</th><th>Compartido</th><th>Devolución</th><th>¿Ya lo devolvió?</th></tr></thead>
     <tbody>
     {% for p in activos %}
       <tr>
         <td><a href="{% url 'libro_detalle' p.libro_id %}"><strong>{{ p.libro.titulo|truncatechars:40 }}</strong></a></td>
         <td>{{ p.persona }}{% if p.contacto %}<br><small style="color:var(--texto-suave)">{{ p.contacto }}</small>{% endif %}</td>
-        <td>{{ p.prestado_el|date:"d/m/Y" }}</td>
-        <td>{% if p.devolver_el %}<span class="etiqueta {% if p.vencido %}vencido{% endif %}">{{ p.devolver_el|date:"d/m/Y" }}</span>{% else %}—{% endif %}</td>
-        <td><form method="post" action="{% url 'prestamo_devolver' p.pk %}">{% csrf_token %}<button class="boton boton-verde boton-mini" type="submit">Devuelto</button></form></td>
+        <td><span class="contador-dias"><strong>{{ p.dias }}</strong> día{{ p.dias|pluralize }}</span><small class="plazo-fecha">desde el {{ p.prestado_el|date:"j M" }}</small></td>
+        <td>{% include "biblioteca/_plazo.html" %}</td>
+        <td><form method="post" action="{% url 'prestamo_devolver' p.pk %}" onsubmit="return confirm('¿Confirmas que te devolvieron «{{ p.libro.titulo|escapejs }}»?');">{% csrf_token %}<button class="boton boton-arcoiris boton-mini" type="submit">{% icono 'check' %} Sí, devuelto</button></form></td>
       </tr>
     {% endfor %}
     </tbody>
@@ -29,8 +29,8 @@
   <div class="tarjeta-titulo"><h2>Historial</h2></div>
   {% if historial %}
   <div class="tabla-envoltura"><table class="tabla">
-    <thead><tr><th>Libro</th><th>Con quién</th><th>Compartido</th><th>Devuelto</th></tr></thead>
-    <tbody>{% for p in historial %}<tr><td>{{ p.libro.titulo|truncatechars:40 }}</td><td>{{ p.persona }}</td><td>{{ p.prestado_el|date:"d/m/Y" }}</td><td>{{ p.devuelto_el|date:"d/m/Y" }}</td></tr>{% endfor %}</tbody>
+    <thead><tr><th>Libro</th><th>Con quién</th><th>Compartido</th><th>Devuelto</th><th>Duró</th></tr></thead>
+    <tbody>{% for p in historial %}<tr><td>{{ p.libro.titulo|truncatechars:40 }}</td><td>{{ p.persona }}</td><td>{{ p.prestado_el|date:"d/m/Y" }}</td><td>{{ p.devuelto_el|date:"d/m/Y" }}</td><td>{{ p.dias|dias_texto }}</td></tr>{% endfor %}</tbody>
   </table></div>
   {% else %}<p class="vacio-panel">Aún no te han devuelto ningún libro.</p>{% endif %}
 </article>

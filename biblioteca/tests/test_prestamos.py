@@ -68,3 +68,32 @@ class PrestamoVistasTests(ConUsuario):
         from biblioteca.models import Libro
         p = prestar(Libro.objects.create(propietario=self.otro, titulo="Ajeno"), "X")
         self.assertEqual(self.client.post(reverse("prestamo_devolver", args=[p.pk])).status_code, 404)
+
+
+class ConteoDiasTests(ConUsuario):
+    def test_dias_compartido_y_plazo(self):
+        hoy = timezone.localdate()
+        p = prestar(self.libro(), "Lucía", devolver_el=hoy + timedelta(days=5))
+        Prestamo.objects.filter(pk=p.pk).update(prestado_el=hoy - timedelta(days=3))
+        p.refresh_from_db()
+        self.assertEqual((p.dias, p.dias_para_devolver), (3, 5))
+        r = self.client.get(reverse("prestamos"))
+        self.assertContains(r, "Faltan 5 días")
+        self.assertContains(r, "¿Ya lo devolvió?")
+        self.assertContains(r, "Sí, devuelto")
+
+    def test_vencido_y_hoy(self):
+        hoy = timezone.localdate()
+        p = prestar(self.libro(), "Lucía", devolver_el=hoy)
+        self.assertContains(self.client.get(reverse("prestamos")), "Vence hoy")
+        Prestamo.objects.filter(pk=p.pk).update(devolver_el=hoy - timedelta(days=2))
+        self.assertContains(self.client.get(reverse("prestamos")), "Vencido hace 2 días")
+
+    def test_duracion_en_historial(self):
+        hoy = timezone.localdate()
+        p = prestar(self.libro(), "Lucía")
+        Prestamo.objects.filter(pk=p.pk).update(prestado_el=hoy - timedelta(days=7))
+        p.refresh_from_db(); devolver(p); p.refresh_from_db()
+        self.assertEqual(p.dias, 7)
+        self.assertIsNone(p.dias_para_devolver)
+        self.assertContains(self.client.get(reverse("prestamos")), "7 días")

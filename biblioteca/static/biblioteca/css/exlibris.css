@@ -211,9 +211,10 @@ a:focus-visible, button:focus-visible, select:focus-visible, input[type=file]:fo
 }
 .chip-tag .icono { width: 14px; height: 14px; }
 .insignia-estado { display: inline-block; padding: 3px 12px; border-radius: 999px; font-size: 13px; font-weight: 600; white-space: nowrap; }
-.estado-leyendo { background: #dbeafe; color: #1d4ed8; }
-.estado-leido { background: #dcfce7; color: #15803d; }
-.estado-por_leer { background: #fef3c7; color: #92400e; }
+/* Estados en pastel: por leer = amarillo, leyendo = morado, leído = rosado (texto oscuro del mismo tono: contraste AA) */
+.estado-por_leer { background: #fef3c7; color: #8a4b0f; }
+.estado-leyendo { background: #ede9fe; color: #6d28d9; }
+.estado-leido { background: #fce7f3; color: #be185d; }
 .fecha { display: flex; align-items: center; gap: 6px; color: var(--texto-suave); font-size: 13px; }
 .fecha .icono { width: 15px; height: 15px; }
 
@@ -748,3 +749,80 @@ a:focus-visible, button:focus-visible, select:focus-visible, input[type=file]:fo
 .aviso-modal h2 { font-size: 21px; margin-bottom: 8px; }
 .aviso-modal p { color: var(--texto-medio); margin-bottom: 6px; }
 .aviso-modal form { margin-top: 18px; }
+
+/* ---------- Ficha del libro: acciones con ícono ---------- */
+.boton-accion {
+  width: 44px; height: 44px; border-radius: 50%; display: inline-grid; place-items: center; cursor: pointer;
+  background: #fff; color: var(--primario-texto); border: 1px solid var(--lila-200); transition: background .15s, border-color .15s, transform .1s;
+}
+.boton-accion:hover { background: var(--lila-50); border-color: var(--lila-400); }
+.boton-accion:active { transform: scale(.95); }
+.boton-accion.peligro { color: var(--peligro); border-color: var(--peligro-borde); }
+.boton-accion.peligro:hover { background: var(--peligro-fondo); border-color: var(--peligro); }
+.boton-accion .icono { width: 19px; height: 19px; }
+
+/* ---------- Tarjeta de progreso: anillo + estado segmentado ---------- */
+.progreso-cuerpo { display: grid; grid-template-columns: 116px minmax(0, 1fr); gap: 18px 20px; align-items: center; }
+.progreso-resumen strong { font-size: 17px; color: #3b2a63; }
+.progreso-resumen p { color: var(--texto-suave); font-size: 14px; }
+.anillo {
+  --p: 0; width: 116px; aspect-ratio: 1; border-radius: 50%; display: grid; place-items: center;
+  background: conic-gradient(from -90deg, #a78bfa 0, #c026d3 calc(var(--p) * 1%), var(--lila-100) calc(var(--p) * 1%));
+}
+.anillo span { width: 90px; aspect-ratio: 1; border-radius: 50%; background: #fff; display: grid; place-content: center; text-align: center; box-shadow: inset 0 2px 6px rgba(76, 52, 150, .08); }
+.anillo strong { font-size: 24px; line-height: 1; color: #3b2a63; }
+.anillo small { font-size: 12px; color: var(--texto-suave); margin-top: 4px; }
+.progreso-form { display: grid; gap: 14px; grid-column: 1 / -1; }
+.segmentado { border: 0; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.segmentado legend { font-size: 14px; font-weight: 500; color: var(--texto-medio); margin-bottom: 6px; padding: 0; }
+.segmento { position: relative; cursor: pointer; }
+.segmento input { position: absolute; opacity: 0; pointer-events: none; }
+.segmento span { white-space: nowrap; display: grid; place-items: center; min-height: 42px; padding: 6px 8px; border-radius: 12px; border: 1px solid var(--borde); background: #fbfaff; font-size: 14px; font-weight: 500; color: var(--texto-medio); text-align: center; transition: background .15s, border-color .15s, color .15s; }
+.segmento:hover span { border-color: var(--lila-300); }
+.segmento input:focus-visible + span { box-shadow: var(--foco); }
+.segmento-por_leer input:checked + span { background: #fef3c7; border-color: #f6d27a; color: #8a4b0f; font-weight: 600; }
+.segmento-leyendo input:checked + span { background: #ede9fe; border-color: #c4b5fd; color: #6d28d9; font-weight: 600; }
+.segmento-leido input:checked + span { background: #fce7f3; border-color: #f9a8d4; color: #be185d; font-weight: 600; }
+.pagina-fila { display: flex; align-items: center; gap: 10px; }
+.pagina-fila input { max-width: 110px; }
+.pagina-fila .boton { margin-left: auto; }
+.pagina-total { color: var(--texto-suave); font-size: 14px; white-space: nowrap; }
+
+
+/* ---------- Biblioteca: filtros compactos (una fila por tipo) ---------- */
+.filtros-compactos { display: grid; gap: 10px; margin-bottom: 22px; }
+.chips-fila { display: flex; gap: 8px; align-items: center; overflow-x: auto; padding: 2px 2px 6px; scrollbar-width: thin; }
+.chip-filtro {
+  flex: 0 0 auto; display: inline-flex; align-items: center; gap: 7px; min-height: 36px; padding: 0 14px; border-radius: 999px;
+  background: #fff; border: 1px solid var(--borde); color: var(--texto-medio); font-size: 14px; font-weight: 500; white-space: nowrap;
+}
+.chip-filtro small { font-size: 12px; font-weight: 600; color: var(--texto-suave); }
+.chip-filtro:hover { border-color: var(--lila-300); background: var(--lila-50); }
+.chip-filtro.activo { background: var(--primario); border-color: var(--primario); color: #fff; }
+.chip-filtro.activo small { color: rgba(255, 255, 255, .85); }
+.punto { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.punto-por_leer { background: #f6c453; } .punto-leyendo { background: #a78bfa; } .punto-leido { background: #f472b6; }
+.chip-filtro.activo .punto { box-shadow: 0 0 0 2px #fff; }
+.chips-etiqueta { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--texto-suave); margin-right: 2px; }
+.chips-etiqueta .icono { width: 16px; height: 16px; }
+.chips-generos .chip-filtro { min-height: 32px; font-size: 13px; }
+
+/* ---------- Barra de desplazamiento lila translúcida ---------- */
+html { scrollbar-width: thin; scrollbar-color: rgba(168, 85, 247, .45) transparent; }
+::-webkit-scrollbar { width: 10px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(168, 85, 247, .35); border-radius: 999px; border: 2px solid transparent; background-clip: padding-box; }
+::-webkit-scrollbar-thumb:hover { background: rgba(147, 51, 234, .55); border: 2px solid transparent; background-clip: padding-box; }
+
+/* ---------- Compartidos: conteo de días y plazos ---------- */
+.contador-dias { display: block; font-size: 14px; color: var(--texto-medio); }
+.contador-dias strong { font-size: 20px; color: #3b2a63; }
+.plazo { display: inline-block; padding: 3px 12px; border-radius: 999px; font-size: 13px; font-weight: 600; white-space: nowrap; }
+.plazo-ok { background: #ede9fe; color: #6d28d9; }
+.plazo-hoy { background: #fef3c7; color: #8a4b0f; }
+.plazo-vencido { background: #fee4e2; color: #b42318; }
+.plazo-libre { background: #f3f4f6; color: var(--texto-medio); }
+.plazo-fecha { display: block; margin-top: 4px; font-size: 12px; color: var(--texto-suave); }
+.tabla-compartidos td { vertical-align: middle; }
+.tabla-compartidos .boton { white-space: nowrap; }
+.pregunta-devuelto { font-weight: 600; color: #3b2a63; margin-bottom: 8px; }

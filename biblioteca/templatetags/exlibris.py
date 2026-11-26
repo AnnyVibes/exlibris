@@ -103,3 +103,30 @@ def estatico(ruta):
         import os
         url += f"?v={int(os.path.getmtime(archivo))}"
     return url
+
+
+@register.filter
+def sub(a, b):
+    """Resta para plantillas (p. ej. páginas que faltan)."""
+    try:
+        return max(0, int(a) - int(b))
+    except (TypeError, ValueError):
+        return ""
+
+
+@register.filter
+def dias_texto(n):
+    """0 → «Hoy», 1 → «1 día», 5 → «5 días»."""
+    try:
+        n = int(n)
+    except (TypeError, ValueError):
+        return ""
+    return "Hoy" if n == 0 else f"{n} día{'s' if n != 1 else ''}"
+
+
+@register.filter
+def absoluto(n):
+    try:
+        return abs(int(n))
+    except (TypeError, ValueError):
+        return n

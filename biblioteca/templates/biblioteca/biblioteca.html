@@ -48,24 +48,21 @@
 </div>
 
 {% if estados_nav.0.1 %}
-<section class="filtro-bloque" aria-labelledby="t-estado">
-  <h2 id="t-estado">Estado de lectura</h2>
-  <nav class="categorias" aria-label="Filtrar por estado">
+<div class="filtros-compactos">
+  <nav class="chips-fila" aria-label="Filtrar por estado">
     {% for etiqueta, n, url, activo in estados_nav %}
-      <a class="categoria {% if activo %}activo{% endif %}" href="{{ url }}" {% if activo %}aria-current="true"{% endif %}>{% cycle '★' '+' '▶' '✓' as simbolo silent %}{% libro_icono forloop.counter0 simbolo %}{{ etiqueta }}<small>{{ n }} libro{{ n|pluralize }}</small></a>
+      <a class="chip-filtro{% if activo %} activo{% endif %}" href="{{ url }}" {% if activo %}aria-current="true"{% endif %}>{% if forloop.counter == 2 %}<span class="punto punto-por_leer"></span>{% elif forloop.counter == 3 %}<span class="punto punto-leyendo"></span>{% elif forloop.counter == 4 %}<span class="punto punto-leido"></span>{% endif %}{{ etiqueta }} <small>{{ n }}</small></a>
     {% endfor %}
   </nav>
-</section>
-
-<section class="filtro-bloque" aria-labelledby="t-generos">
-  <h2 id="t-generos">Géneros</h2>
   {% if generos_nav %}
-    {% include "biblioteca/_categorias.html" %}
-  {% else %}
-    <p class="filtro-vacio">Cuando elijas el género de tus libros, aparecerán aquí como estantes para filtrar.</p>
+  <nav class="chips-fila chips-generos" aria-label="Filtrar por género">
+    <span class="chips-etiqueta">{% icono 'etiqueta' %} Géneros</span>
+    {% for nombre, n, url, activo in generos_nav %}
+      <a class="chip-filtro{% if activo %} activo{% endif %}" href="{{ url }}" {% if activo %}aria-current="true" title="Quitar filtro de género"{% endif %}>{{ nombre }} <small>{{ n }}</small>{% if activo %} <span aria-hidden="true">×</span>{% endif %}</a>
+    {% endfor %}
+  </nav>
   {% endif %}
-  {% if sin_genero and generos_nav %}<p class="filtro-vacio" style="margin-top:6px">{{ sin_genero }} libro{{ sin_genero|pluralize }} sin género.</p>{% endif %}
-</section>
+</div>
 {% endif %}
 
 {% if vista == 'librero' and libros or vista == 'librero' and not q and not genero %}
