@@ -84,10 +84,3 @@ exlibris/
 ├── specs/                  ODD / SDD
 └── AI_LOG.md
 ```
-
-## Créditos de las ilustraciones
-
-- Librero del login, pila de libros, íconos y adornos: dibujados en SVG para este proyecto
-  (la ilustración del login se genera con `python docs/generar_ilustracion.py`).
-- Gatos de la estantería: imágenes aportadas por la autora como referencia visual (`docs/gatos/`),
-  recortadas del fondo para usarlas en la ilustración.

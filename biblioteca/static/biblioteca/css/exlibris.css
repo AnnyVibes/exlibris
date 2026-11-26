@@ -456,37 +456,63 @@ a:focus-visible, button:focus-visible, select:focus-visible, input[type=file]:fo
 .separador { display: flex; align-items: center; gap: 12px; color: var(--texto-suave); font-size: 13px; margin: 22px 0; }
 .separador::before, .separador::after { content: ""; flex: 1; height: 1px; background: var(--borde); }
 
-/* ---------- Acceso (login / registro) ----------
-   Dos columnas: ilustración del librero con dos gatos a la izquierda y la tarjeta de la marca a la derecha.
-   Tarjeta: blanca; jerarquía marca → subtítulo → bienvenida → formulario. */
-.acceso { min-height: 100vh; min-height: 100dvh; display: grid; grid-template-columns: 1.05fr 1fr; background: var(--fondo); }
-.acceso-arte { background-color: #a9b1e6; background-size: cover; background-position: center; }
-.acceso-lado { display: grid; place-items: center; padding: 40px 24px;
-  background: radial-gradient(circle at 70% 20%, #f3e8ff 0, transparent 45%), radial-gradient(circle at 20% 90%, #fdf2f8 0, transparent 40%), var(--fondo); }
-.acceso-tarjeta {
-  width: min(420px, 100%); border-radius: 32px; background: #fff; border: 1px solid #efe9fb;
-  box-shadow: 0 30px 70px rgba(76, 52, 150, .22), 0 2px 6px rgba(76, 52, 150, .06); padding: 38px 34px 30px;
+/* ---------- Acceso (login / registro): cartel geométrico de bloques-libro + formulario en un «lomo» ----------
+   Inspirado en carteles suizos: rectángulos y píldoras que son libros, con la paleta de la app. */
+.acceso { min-height: 100vh; min-height: 100dvh; display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(380px, 1fr); gap: 12px; padding: 12px; background: #fbfaff; }
+.cartel {
+  display: grid; gap: 12px; height: calc(100dvh - 24px); min-height: 620px;
+  grid-template-columns: repeat(6, minmax(0, 1fr)); grid-template-rows: 1.9fr 1.4fr 1fr 1fr 1fr 0.9fr;
+  grid-template-areas:
+    "marca marca marca marca marca marca"
+    "lila  rosa  amar  cod   cod   cod"
+    "lila  rosa  amar  cod   cod   cod"
+    "lila  rosa  amar  der   der   der"
+    "pie   pie   pie   pie   pie   pie"
+    "pie   pie   pie   pie   pie   pie";
 }
-.acceso-marca { text-align: center; margin-bottom: 24px; }
-.marca { font-size: 46px; font-weight: 800; letter-spacing: -1.5px; line-height: 1; }
-.marca-ex { color: #3b2a63; }
-.marca-libris { background: linear-gradient(90deg, #7c3aed 0%, #c026d3 55%, #f07167 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
-.marca-sub { margin-top: 8px; font-size: 13px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--primario-texto); }
-.marca-adorno { display: block; width: 44px; height: 4px; margin: 18px auto 16px; border-radius: 999px; background: var(--degradado-arcoiris); }
-.marca-texto { color: var(--texto-medio); font-size: 15px; max-width: 30ch; margin: 0 auto; }
+.bloque { position: relative; overflow: hidden; display: flex; }
+.b-marca { grid-area: marca; flex-direction: column; justify-content: flex-end; padding: clamp(20px, 3vw, 40px);
+  background: #7c3aed; color: #fff; border-radius: 0 999px 999px 0; }
+.cartel-marca { font-size: clamp(48px, 7.2vw, 112px); font-weight: 800; letter-spacing: -0.045em; line-height: .9; }
+.cartel-sub { margin-top: 12px; font-size: clamp(13px, 1.1vw, 16px); font-weight: 700; letter-spacing: .35em; text-transform: uppercase; opacity: .9; }
+.b-lomo { border-radius: 999px 999px 0 0; align-items: flex-end; justify-content: center; padding-bottom: 18px; }
+.b-lomo span { writing-mode: vertical-rl; transform: rotate(180deg); font-size: clamp(18px, 1.8vw, 26px); font-weight: 800; letter-spacing: .02em; color: #3b2a63; }
+.b-lila { grid-area: lila; background: #c4b5fd; }
+.b-rosa { grid-area: rosa; background: #f9a8d4; }
+.b-amarillo { grid-area: amar; background: #fde68a; }
+.b-codigo { grid-area: cod; flex-direction: column; justify-content: center; align-items: center; gap: 10px;
+  background: #fff; border: 4px solid #7c3aed; border-radius: 999px 0 0 999px; }
+.codigo-barras { width: 46%; height: 42%;
+  background: repeating-linear-gradient(90deg, #3b2a63 0 3px, transparent 3px 6px, #3b2a63 6px 7px, transparent 7px 11px, #3b2a63 11px 15px, transparent 15px 17px, #3b2a63 17px 18px, transparent 18px 22px); }
+.b-codigo small { font-size: 12px; font-weight: 700; letter-spacing: .3em; color: #3b2a63; }
+.b-derecha { grid-area: der; background: #c4b5fd; border-radius: 0 999px 999px 0; }
+.b-pie { grid-area: pie; align-items: flex-end; padding: clamp(18px, 2.4vw, 32px); background: #f9a8d4; border-radius: 999px 0 0 999px; justify-content: flex-end; }
+.b-pie p { font-size: clamp(20px, 2.4vw, 34px); font-weight: 800; letter-spacing: -0.02em; color: #3b2a63; max-width: 14ch; text-align: right; line-height: 1.05; }
+
+/* Formulario dentro de un «lomo» con la parte de arriba en arco */
+.acceso-lado { display: grid; place-items: stretch; }
+.acceso-tarjeta {
+  display: flex; flex-direction: column; justify-content: center; gap: 22px; padding: clamp(32px, 4vw, 56px) clamp(24px, 3vw, 48px);
+  background: #fff; border: 4px solid #7c3aed; border-radius: 999px 999px 28px 28px;
+}
+.acceso-marca { text-align: left; }
+.marca-chica { font-size: 13px; font-weight: 700; letter-spacing: .3em; text-transform: uppercase; color: var(--primario-texto); margin-bottom: 10px; }
+.acceso-marca h2 { font-size: clamp(28px, 2.6vw, 36px); font-weight: 800; letter-spacing: -0.03em; color: #3b2a63; line-height: 1.05; }
+.marca-texto { color: var(--texto-medio); font-size: 15px; margin-top: 8px; }
 .acceso-formulario { display: grid; gap: 14px; }
 .campo-icono { position: relative; display: block; }
 .campo-icono .icono-campo { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--primario-texto); display: grid; pointer-events: none; }
 .campo-icono .icono-campo .icono { width: 19px; height: 19px; }
 .campo-icono input {
-  width: 100%; height: 50px; padding: 0 18px 0 46px; border-radius: 999px; font: inherit; color: var(--texto);
-  border: 1px solid var(--lila-200); background: #fbf9ff; outline: 0; transition: border .15s, box-shadow .15s, background .15s;
+  width: 100%; height: 52px; padding: 0 18px 0 46px; border-radius: 999px; font: inherit; color: var(--texto);
+  border: 2px solid var(--lila-200); background: #fbf9ff; outline: 0; transition: border .15s, box-shadow .15s, background .15s;
 }
 .campo-icono input::placeholder { color: #8b85a0; }
-.campo-icono input:focus { border-color: var(--lila-400); background: #fff; box-shadow: 0 0 0 4px var(--lila-100); }
+.campo-icono input:focus { border-color: #7c3aed; background: #fff; box-shadow: 0 0 0 4px var(--lila-100); }
 .campo-icono.con-error input { border-color: var(--peligro); }
 .recordarme { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--texto-medio); cursor: pointer; padding-left: 6px; }
 .recordarme input { width: 18px; height: 18px; accent-color: var(--primario); }
+.acceso-formulario .boton-ancho { min-height: 52px; }
 .acceso-error { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: var(--radio-sm); background: var(--peligro-fondo); color: var(--peligro); font-size: 14px; font-weight: 500; }
 .acceso-error-campo { margin: -8px 0 0 18px; color: var(--peligro); font-size: 13px; }
 .acceso-formulario p.cambio { text-align: center; color: var(--texto-suave); font-size: 14px; margin-top: 4px; }
@@ -534,11 +560,16 @@ a:focus-visible, button:focus-visible, select:focus-visible, input[type=file]:fo
   .estante-libros .portada-falsa small, .estante-libros .portada-falsa .adorno { display: none; }
   .titulo-pagina { font-size: 24px; }
   .tabla-envoltura { overflow-x: auto; }
-  .acceso { grid-template-columns: 1fr; }
-  .acceso-arte { min-height: 260px; background-position: center 30%; } /* encuadre con el gato naranja */
-  .acceso-lado { padding: 0 14px 28px; place-items: start center; background: var(--fondo); }
-  .acceso-tarjeta { margin-top: -44px; position: relative; padding: 30px 22px 24px; border-radius: 28px; }
-  .marca { font-size: 40px; }
+  .acceso { grid-template-columns: 1fr; gap: 8px; padding: 8px; }
+  .cartel { height: auto; min-height: 0; gap: 8px; grid-template-rows: 120px 110px;
+    grid-template-areas: "marca marca marca marca marca marca" "lila lila rosa rosa amar amar"; }
+  .b-codigo, .b-derecha, .b-pie { display: none; }
+  .b-lomo { border-radius: 999px 999px 0 0; padding-bottom: 12px; }
+  .b-lomo span { writing-mode: horizontal-tb; transform: none; font-size: 16px; }
+  .b-marca { border-radius: 0 999px 999px 0; padding: 18px 22px; }
+  .cartel-marca { font-size: 46px; }
+  .cartel-sub { font-size: 11px; margin-top: 6px; }
+  .acceso-tarjeta { border-radius: 28px; padding: 28px 20px; gap: 18px; }
 
   /* Barra inferior como en la app de diario: blanca, el activo en lila con un punto encima */
   .nav-movil {

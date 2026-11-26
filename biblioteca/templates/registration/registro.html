@@ -3,14 +3,13 @@
 {% block titulo %}Registro{% endblock %}
 {% block cuerpo %}
 <main class="acceso">
-  <div class="acceso-arte" style="background-image: url('{% estatico 'biblioteca/img/librero-login.svg' %}')" role="img" aria-label="Librero con libros de colores, plantas y dos gatos"></div>
+  {% include "registration/_cartel.html" %}
   <div class="acceso-lado">
   <div class="acceso-tarjeta">
     <header class="acceso-marca">
-      <h1 class="marca"><span class="marca-ex">Ex</span> <span class="marca-libris">Libris</span></h1>
-      <p class="marca-sub">Biblioteca personal</p>
-      <span class="marca-adorno" aria-hidden="true"></span>
-      <p class="marca-texto">Crea tu cuenta y empieza tu librero: escanea, anota y comparte tus libros.</p>
+      <p class="marca-chica">Ex Libris</p>
+      <h2>Crea tu cuenta</h2>
+      <p class="marca-texto">Empieza tu librero en un minuto.</p>
     </header>
     <form method="post" class="acceso-formulario" novalidate>
       {% csrf_token %}
