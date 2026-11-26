@@ -61,7 +61,7 @@ class PrestamoVistasTests(ConUsuario):
         libro = self.libro()
         prestar(libro, "Lucía")
         r = self.client.post(reverse("prestamo_crear", args=[libro.pk]), {"persona": "Pedro"}, follow=True)
-        self.assertContains(r, "ya está prestado")
+        self.assertContains(r, "ya está compartido")
         self.assertEqual(libro.prestamos.count(), 1)
 
     def test_no_devuelve_prestamo_ajeno(self):

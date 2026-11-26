@@ -104,16 +104,17 @@ class Prestamo(models.Model):
     """Registro de a quién se prestó un libro y cuándo volvió."""
 
     libro = models.ForeignKey(Libro, on_delete=models.CASCADE, related_name="prestamos")
-    persona = models.CharField("prestado a", max_length=120)
+    persona = models.CharField("compartido con", max_length=120)
     contacto = models.CharField(max_length=120, blank=True)
-    prestado_el = models.DateField("fecha de préstamo", default=timezone.localdate)
+    prestado_el = models.DateField("compartido el", default=timezone.localdate)
     devolver_el = models.DateField("fecha acordada de devolución", null=True, blank=True)
     devuelto_el = models.DateField("fecha de devolución", null=True, blank=True)
     notas = models.CharField(max_length=255, blank=True)
 
     class Meta:
         ordering = ["-prestado_el", "-id"]
-        verbose_name = "préstamo"
+        verbose_name = "libro compartido"
+        verbose_name_plural = "libros compartidos"
         constraints = [
             # Un libro solo puede tener un préstamo sin devolver a la vez.
             models.UniqueConstraint(

@@ -4,12 +4,12 @@
 {% block contenido %}
 
 <section class="hero">
-  <img class="hero-ilustracion" src="{% static 'biblioteca/img/libros.svg' %}" alt="">
+  <div class="hero-arte" style="background-image: url('{% static 'biblioteca/img/librero-ilustrado.svg' %}')" role="img" aria-label="Librero ilustrado"></div>
   <div class="hero-texto">
-    <h1>Tu biblioteca, página a página</h1>
-    <p>Escanea el código de barras de un libro y sus datos aparecen solos. Anota tus ideas, reseña lo que lees y lleva la cuenta de lo que prestas.</p>
+    <h1>Tu biblioteca</h1>
+    <p>Escanea, anota y comparte tus libros.</p>
     <div class="hero-acciones">
-      <a class="boton boton-primario" href="{% url 'escanear' %}">{% icono 'camara' %} Escanear libro</a>
+      <a class="boton boton-arcoiris" href="{% url 'escanear' %}">{% icono 'camara' %} Escanear libro</a>
       <a class="boton boton-secundario" href="{% url 'libro_nuevo' %}">{% icono 'mas' %} Agregar a mano</a>
     </div>
   </div>
@@ -18,7 +18,7 @@
 <div class="resumen-tarjetas">
   <a class="resumen" href="{% url 'biblioteca' %}"><span class="burbuja-icono bg-libros">{% icono 'libros' %}</span><div><strong>{{ resumen.total }}</strong><small>libro{{ resumen.total|pluralize }} en tu estante</small></div></a>
   <a class="resumen" href="{% url 'anotaciones' %}"><span class="burbuja-icono bg-notas">{% icono 'nota' %}</span><div><strong>{{ resumen.anotaciones }}</strong><small>anotaci{{ resumen.anotaciones|pluralize:"ón,ones" }}</small></div></a>
-  <a class="resumen" href="{% url 'prestamos' %}"><span class="burbuja-icono bg-prestamo">{% icono 'prestamo' %}</span><div><strong>{{ resumen.prestados }}</strong><small>en préstamo</small></div></a>
+  <a class="resumen" href="{% url 'prestamos' %}"><span class="burbuja-icono bg-prestamo">{% icono 'prestamo' %}</span><div><strong>{{ resumen.prestados }}</strong><small>compartido{{ resumen.prestados|pluralize }}</small></div></a>
 </div>
 
 <div class="inicio-rejilla">

@@ -8,7 +8,7 @@
   <div class="kpi" style="--c:#7c3aed"><small>Libros</small><strong>{{ resumen.total }}</strong></div>
   <div class="kpi" style="--c:#ec4899"><small>Leídos</small><strong>{{ resumen.leidos }}</strong></div>
   <div class="kpi" style="--c:#c026d3"><small>Anotaciones</small><strong>{{ resumen.anotaciones }}</strong></div>
-  <div class="kpi" style="--c:#a78bfa"><small>En préstamo</small><strong>{{ resumen.prestados }}</strong></div>
+  <div class="kpi" style="--c:#a78bfa"><small>Compartidos</small><strong>{{ resumen.prestados }}</strong></div>
   <div class="kpi" style="--c:#f472b6"><small>Páginas leídas</small><strong>{{ resumen.paginas_leidas }}</strong></div>
   <div class="kpi" style="--c:#8b5cf6"><small>Calificación media</small><strong>{% if resumen.calificacion_media %}{{ resumen.calificacion_media|floatformat:1 }}★{% else %}—{% endif %}</strong></div>
   <div class="kpi" style="--c:#e879f9"><small>Leyendo</small><strong>{{ resumen.leyendo }}</strong></div>

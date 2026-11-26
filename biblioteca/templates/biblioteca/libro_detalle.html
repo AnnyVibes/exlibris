@@ -58,7 +58,7 @@
   </article>
 
   <article class="tarjeta ancho">
-    <div class="tarjeta-titulo"><h2>Préstamo</h2>{% if prestamo_activo %}<span class="etiqueta {% if prestamo_activo.vencido %}vencido{% endif %}">{% if prestamo_activo.vencido %}Vencido{% else %}En préstamo{% endif %}</span>{% else %}<span class="etiqueta gris">En casa</span>{% endif %}</div>
+    <div class="tarjeta-titulo"><h2>Compartir</h2>{% if prestamo_activo %}<span class="etiqueta {% if prestamo_activo.vencido %}vencido{% endif %}">{% if prestamo_activo.vencido %}Vencido{% else %}Compartido{% endif %}</span>{% else %}<span class="etiqueta gris">En casa</span>{% endif %}</div>
     {% if prestamo_activo %}
       <p style="margin-bottom:14px">Lo tiene <strong>{{ prestamo_activo.persona }}</strong>{% if prestamo_activo.contacto %} ({{ prestamo_activo.contacto }}){% endif %} desde el {{ prestamo_activo.prestado_el|date:"j \d\e F" }}{% if prestamo_activo.devolver_el %}; acordaron devolverlo el {{ prestamo_activo.devolver_el|date:"j \d\e F" }}{% endif %}.</p>
       {% if prestamo_activo.notas %}<p class="ayuda" style="margin-bottom:14px">{{ prestamo_activo.notas }}</p>{% endif %}
@@ -73,7 +73,7 @@
         {% include "biblioteca/_campo.html" with campo=prestamo_form.contacto %}
         {% include "biblioteca/_campo.html" with campo=prestamo_form.devolver_el %}
         {% include "biblioteca/_campo.html" with campo=prestamo_form.notas %}
-        <div class="ancho"><button class="boton boton-primario" type="submit">{% icono 'prestamo' %} Prestar</button></div>
+        <div class="ancho"><button class="boton boton-primario" type="submit">{% icono 'prestamo' %} Compartir</button></div>
       </form>
     {% endif %}
     {% if prestamos %}

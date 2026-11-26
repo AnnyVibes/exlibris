@@ -17,7 +17,7 @@ Versión 0.1. Estado: ✅ implementado en la fase 1 · ⏳ pendiente.
 | RF-07 | Estado de lectura (por leer, leyendo, leído) y página actual con porcentaje. | ✅ |
 | RF-08 | Una reseña por libro con calificación de 1 a 5 estrellas. | ✅ |
 | RF-09 | Anotaciones por libro (texto y página opcional), con conteo por libro y búsqueda global. | ✅ |
-| RF-10 | Préstamos: a quién, contacto, fecha de préstamo, fecha acordada, devolución e historial. | ✅ |
+| RF-10 | Compartidos (préstamos): con quién, contacto, fecha, fecha acordada, devolución e historial. | ✅ |
 | RF-11 | Panel de inicio y estadísticas (totales, por estado, por género, páginas leídas, calificación media, libros con más anotaciones). | ✅ |
 | RF-12 | IA: clasificar el género y etiquetas de un libro. | ⏳ |
 | RF-13 | IA: resumir las anotaciones de un libro. | ⏳ |

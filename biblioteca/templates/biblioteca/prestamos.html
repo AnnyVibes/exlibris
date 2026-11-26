@@ -1,15 +1,15 @@
 {% extends "base.html" %}
 {% load exlibris %}
-{% block titulo %}Préstamos{% endblock %}
+{% block titulo %}Compartidos{% endblock %}
 {% block contenido %}
-<h1 class="titulo-pagina">Préstamos</h1>
-<p class="subtitulo">Quién tiene tus libros y desde cuándo. Para prestar uno, ábrelo desde tu biblioteca.</p>
+<h1 class="titulo-pagina">Compartidos</h1>
+<p class="subtitulo">Quién tiene tus libros y desde cuándo. Para compartir uno, ábrelo desde tu biblioteca.</p>
 
 <article class="tarjeta" style="margin-bottom:20px">
-  <div class="tarjeta-titulo"><h2>En préstamo</h2><span class="contador">{{ activos|length }}</span></div>
+  <div class="tarjeta-titulo"><h2>Compartidos ahora</h2><span class="contador">{{ activos|length }}</span></div>
   {% if activos %}
   <div class="tabla-envoltura"><table class="tabla">
-    <thead><tr><th>Libro</th><th>Persona</th><th>Desde</th><th>Devolver</th><th></th></tr></thead>
+    <thead><tr><th>Libro</th><th>Con quién</th><th>Desde</th><th>Devolver</th><th></th></tr></thead>
     <tbody>
     {% for p in activos %}
       <tr>
@@ -29,9 +29,9 @@
   <div class="tarjeta-titulo"><h2>Historial</h2></div>
   {% if historial %}
   <div class="tabla-envoltura"><table class="tabla">
-    <thead><tr><th>Libro</th><th>Persona</th><th>Prestado</th><th>Devuelto</th></tr></thead>
+    <thead><tr><th>Libro</th><th>Con quién</th><th>Compartido</th><th>Devuelto</th></tr></thead>
     <tbody>{% for p in historial %}<tr><td>{{ p.libro.titulo|truncatechars:40 }}</td><td>{{ p.persona }}</td><td>{{ p.prestado_el|date:"d/m/Y" }}</td><td>{{ p.devuelto_el|date:"d/m/Y" }}</td></tr>{% endfor %}</tbody>
   </table></div>
-  {% else %}<p class="vacio-panel">Aún no hay préstamos devueltos.</p>{% endif %}
+  {% else %}<p class="vacio-panel">Aún no te han devuelto ningún libro.</p>{% endif %}
 </article>
 {% endblock %}

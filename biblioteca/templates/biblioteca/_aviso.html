@@ -1,0 +1,10 @@
+{% load exlibris %}{% if messages %}{% for m in messages %}{% if forloop.first %}
+<dialog id="aviso" class="aviso-modal aviso-{% if m.level_tag == 'error' %}error{% elif m.level_tag == 'success' %}exito{% else %}info{% endif %}" aria-labelledby="aviso-titulo" open>
+  <div class="aviso-icono" aria-hidden="true">{% if m.level_tag == 'error' %}{% icono 'alerta' %}{% elif m.level_tag == 'success' %}{% icono 'check' %}{% else %}{% icono 'info' %}{% endif %}</div>
+  <h2 id="aviso-titulo">{% if m.level_tag == 'error' %}No se pudo completar{% elif 'eliminado' in m.extra_tags %}Eliminado con éxito{% elif m.level_tag == 'success' %}¡Guardado con éxito!{% else %}Aviso{% endif %}</h2>
+{% endif %}
+  <p>{{ m }}</p>
+{% if forloop.last %}
+  <form method="dialog"><button class="boton boton-primario boton-ancho" type="submit">Aceptar</button></form>
+</dialog>
+{% endif %}{% endfor %}{% endif %}

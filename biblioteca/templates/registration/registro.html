@@ -3,10 +3,16 @@
 {% block titulo %}Crear cuenta{% endblock %}
 {% block cuerpo %}
 <div class="acceso">
-  <div class="acceso-arte"><img src="{% static 'biblioteca/img/libros.svg' %}" alt=""><h1>Empieza tu estante</h1><p>Tu biblioteca personal, siempre en el bolsillo.</p></div>
+  <div class="acceso-arte" style="background-image: url('{% static 'biblioteca/img/librero-ilustrado.svg' %}')">
+    <div class="acceso-lema">
+      <div class="logo">{% libro_icono 0 "EL" "logo-libro" %}<span class="logo-texto">Ex <em>Libris</em></span></div>
+      <h1>Tu biblioteca</h1>
+      <p>Escanea, anota y comparte tus libros.</p>
+    </div>
+  </div>
   <div class="acceso-forma"><div class="caja">
-    <div class="logo">{% libro_icono 0 "EL" "logo-libro" %}<span class="logo-texto">Ex <em>Libris</em></span></div>
-    <h2 style="margin-bottom:18px">Crear cuenta</h2>
+    <h2>Crea tu cuenta</h2>
+    <p class="acceso-sub">Tu librero, siempre contigo.</p>
     <form method="post" class="formulario">
       {% csrf_token %}
       {% for campo in form %}{% include "biblioteca/_campo.html" %}{% endfor %}

@@ -56,7 +56,7 @@
       </div>
       {% include "biblioteca/_campo.html" with campo=form.descripcion clase="ancho" %}
       <details class="ancho">
-        <summary style="cursor:pointer;color:var(--primario-texto);font-weight:500">Usar el enlace de una imagen en lugar de subirla</summary>
+        <summary class="enlace-plegable">{% icono 'imagen' %} Usar el enlace de una imagen en lugar de subirla</summary>
         <div style="margin-top:10px">{% include "biblioteca/_campo.html" with campo=form.portada_url %}</div>
       </details>
       <div class="acciones-fila ancho">

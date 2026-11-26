@@ -14,9 +14,9 @@ class PrestamoError(ValueError):
 def prestar(libro, persona, contacto="", devolver_el=None, notas=""):
     persona = (persona or "").strip()
     if not persona:
-        raise PrestamoError("Indica a quién le prestas el libro.")
+        raise PrestamoError("Indica con quién compartes el libro.")
     if libro.prestamos.select_for_update().filter(devuelto_el__isnull=True).exists():
-        raise PrestamoError("Este libro ya está prestado. Registra la devolución primero.")
+        raise PrestamoError("Este libro ya está compartido con alguien. Registra la devolución primero.")
     hoy = timezone.localdate()
     if devolver_el and devolver_el < hoy:
         raise PrestamoError("La fecha de devolución no puede estar en el pasado.")
@@ -28,7 +28,7 @@ def prestar(libro, persona, contacto="", devolver_el=None, notas=""):
 
 def devolver(prestamo):
     if not prestamo.activo:
-        raise PrestamoError("Este préstamo ya fue devuelto.")
+        raise PrestamoError("Este libro ya fue devuelto.")
     prestamo.devuelto_el = timezone.localdate()
     prestamo.save(update_fields=["devuelto_el"])
     return prestamo

@@ -22,7 +22,7 @@
       <a href="{% url 'generos' %}" class="{% if url == 'generos' %}activo{% endif %}">{% icono 'etiqueta' %} Géneros</a>
       <a href="{% url 'libro_nuevo' %}" class="{% if url == 'libro_nuevo' %}activo{% endif %}">{% icono 'mas' %} Agregar libro</a>
       <a href="{% url 'anotaciones' %}" class="{% if url == 'anotaciones' %}activo{% endif %}">{% icono 'nota' %} Anotaciones</a>
-      <a href="{% url 'prestamos' %}" class="{% if url == 'prestamos' %}activo{% endif %}">{% icono 'prestamo' %} Préstamos</a>
+      <a href="{% url 'prestamos' %}" class="{% if url == 'prestamos' %}activo{% endif %}">{% icono 'prestamo' %} Compartidos</a>
       <a href="{% url 'estadisticas' %}" class="{% if url == 'estadisticas' %}activo{% endif %}">{% icono 'grafico' %} Estadísticas</a>
       <hr>
     </nav>
@@ -45,9 +45,7 @@
       <a class="boton-icono" href="{% url 'escanear' %}" title="Escanear código" aria-label="Escanear código de barras">{% icono 'camara' %}</a>
     </header>
 
-    {% if messages %}
-      <ul class="mensajes" role="status">{% for m in messages %}<li class="{{ m.tags }}">{% if m.tags == 'error' %}{% icono 'alerta' %}{% elif m.tags == 'info' or m.tags == 'warning' %}{% icono 'info' %}{% else %}{% icono 'check' %}{% endif %}<span>{{ m }}</span><button type="button" class="cerrar-mensaje" aria-label="Cerrar mensaje">&times;</button></li>{% endfor %}</ul>
-    {% endif %}
+    {% include "biblioteca/_aviso.html" %}
 
     {% block contenido %}{% endblock %}
   </main>
@@ -58,7 +56,7 @@
         <div class="avatar">{{ user.username|slice:":1" }}</div>
         <div><h4>{{ user.get_full_name|default:user.username }}</h4><small>@{{ user.username }}</small></div>
       </div>
-      <div class="tarjeta-titulo"><h3>En préstamo</h3><a href="{% url 'prestamos' %}" aria-label="Ver préstamos">{% icono 'puntos' %}</a></div>
+      <div class="tarjeta-titulo"><h3>Compartidos</h3><a href="{% url 'prestamos' %}" aria-label="Ver compartidos">{% icono 'puntos' %}</a></div>
       <div class="lista-panel">
         {% for p in panel_prestamos %}
           <a class="item-panel" href="{% url 'libro_detalle' p.libro_id %}">
@@ -69,7 +67,7 @@
             </div>
           </a>
         {% empty %}
-          <p class="vacio-panel">Ningún libro en préstamo. Todos están en casa.</p>
+          <p class="vacio-panel">Ningún libro compartido. Todos están en casa.</p>
         {% endfor %}
       </div>
     </div>
@@ -90,18 +88,18 @@
   <a href="{% url 'biblioteca' %}" class="{% if url == 'biblioteca' or url == 'libro_detalle' %}activo{% endif %}">{% icono 'libros' %}Biblioteca</a>
   <a href="{% url 'escanear' %}" class="central">{% icono 'escanear' %}Escanear</a>
   <a href="{% url 'anotaciones' %}" class="{% if url == 'anotaciones' %}activo{% endif %}">{% icono 'nota' %}Notas</a>
-  <a href="{% url 'prestamos' %}" class="{% if url == 'prestamos' %}activo{% endif %}">{% icono 'prestamo' %}Préstamos</a>
+  <a href="{% url 'prestamos' %}" class="{% if url == 'prestamos' %}activo{% endif %}">{% icono 'prestamo' %}Compartidos</a>
 </nav>
 {% endwith %}
 {% endblock %}
 <script>
-/* Mensajes: se cierran con la ×; los de confirmación se van solos a los 6 s (los errores se quedan). */
+/* Tarjeta de confirmación: se abre como ventana modal y se cierra con «Aceptar» o Esc. */
 (function () {
-  document.querySelectorAll(".mensajes li").forEach((li) => {
-    const cerrar = () => { li.classList.add("saliendo"); setTimeout(() => li.remove(), 250); };
-    li.querySelector(".cerrar-mensaje").addEventListener("click", cerrar);
-    if (!li.classList.contains("error")) setTimeout(cerrar, 6000);
-  });
+  const aviso = document.getElementById("aviso");
+  if (!aviso || typeof aviso.showModal !== "function") return;
+  aviso.removeAttribute("open");
+  aviso.showModal();
+  aviso.querySelector("button").focus();
 })();
 </script>
 {% block scripts %}{% endblock %}

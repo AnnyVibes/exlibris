@@ -32,4 +32,22 @@ class MensajesTests(ConUsuario):
     def test_mensaje_con_boton_cerrar(self):
         libro = self.libro()
         r = self.client.post(reverse("anotacion_crear", args=[libro.pk]), {"texto": "Idea"}, follow=True)
-        self.assertContains(r, 'class="cerrar-mensaje"')
+        self.assertContains(r, 'id="aviso"')
+        self.assertContains(r, "¡Guardado con éxito!")
+        self.assertContains(r, ">Aceptar<")
+
+    def test_eliminar_usa_su_propio_titulo(self):
+        libro = self.libro()
+        r = self.client.post(reverse("libro_eliminar", args=[libro.pk]), follow=True)
+        self.assertContains(r, "Eliminado con éxito")
+
+    def test_cambiar_diseno_del_librero_no_muestra_aviso(self):
+        r = self.client.post(reverse("librero_preferencias"), {"estilo": "repisas", "color": "rosa"}, follow=True)
+        self.assertNotContains(r, 'id="aviso"')
+
+    def test_error_con_titulo_de_error(self):
+        from biblioteca.services.prestamos import prestar
+        libro = self.libro()
+        prestar(libro, "Lucía")
+        r = self.client.post(reverse("prestamo_crear", args=[libro.pk]), {"persona": "Pedro"}, follow=True)
+        self.assertContains(r, "No se pudo completar")

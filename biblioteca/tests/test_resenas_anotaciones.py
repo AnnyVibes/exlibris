@@ -51,3 +51,13 @@ class AnotacionTests(ConUsuario):
         self.assertEqual(self.client.post(reverse("anotacion_eliminar", args=[nota.pk])).status_code, 404)
         self.assertNotContains(self.client.get(reverse("anotaciones")), "privada")
         self.assertTrue(Anotacion.objects.filter(pk=nota.pk).exists())
+
+
+class IdsUnicosTests(ConUsuario):
+    def test_ficha_del_libro_sin_ids_repetidos(self):
+        import re
+        libro = self.libro()
+        html = self.client.get(reverse("libro_detalle", args=[libro.pk])).content.decode()
+        ids = re.findall(r'\sid="([^"]+)"', html)
+        repetidos = {i for i in ids if ids.count(i) > 1}
+        self.assertEqual(repetidos, set())

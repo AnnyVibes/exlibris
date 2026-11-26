@@ -104,8 +104,7 @@ def biblioteca(request):
 def librero_preferencias(request):
     form = PreferenciaLibreroForm(request.POST, instance=PreferenciaLibrero.de(request.user))
     if form.is_valid():
-        form.save()
-        messages.success(request, "Guardamos el diseño de tu librero.")
+        form.save()  # Sin aviso: el cambio de diseño ya se ve en el librero
     else:
         messages.error(request, "Elige un diseño y un color de la lista.")
     siguiente = request.POST.get("siguiente", "")
@@ -182,8 +181,8 @@ def libro_detalle(request, pk):
         "progreso_form": ProgresoForm(instance=libro),
         "resena_form": ResenaForm(instance=resena),
         "resena": resena,
-        "anotacion_form": AnotacionForm(),
-        "prestamo_form": PrestamoForm(),
+        "anotacion_form": AnotacionForm(auto_id="anotacion_%s"),  # ids únicos: la reseña también tiene «texto»
+        "prestamo_form": PrestamoForm(auto_id="compartir_%s"),
     })
 
 
@@ -209,7 +208,7 @@ def libro_eliminar(request, pk):
     if libro.portada:
         libro.portada.delete(save=False)
     libro.delete()
-    messages.success(request, f"«{titulo}» se eliminó de tu biblioteca.")
+    messages.success(request, f"«{titulo}» se eliminó de tu biblioteca.", extra_tags="eliminado")
     return redirect("biblioteca")
 
 
@@ -265,7 +264,7 @@ def anotacion_eliminar(request, pk):
     anotacion = get_object_or_404(Anotacion, pk=pk, libro__propietario=request.user)
     libro_id = anotacion.libro_id
     anotacion.delete()
-    messages.success(request, "Anotación eliminada.")
+    messages.success(request, "La anotación se eliminó.", extra_tags="eliminado")
     return redirect("libro_detalle", pk=libro_id)
 
 
@@ -292,9 +291,9 @@ def prestamo_crear(request, pk):
         except PrestamoError as exc:
             messages.error(request, str(exc))
         else:
-            messages.success(request, f"Prestaste «{libro.titulo}» a {form.cleaned_data['persona']}.")
+            messages.success(request, f"Compartiste «{libro.titulo}» con {form.cleaned_data['persona']}.")
     else:
-        messages.error(request, "Revisa los datos del préstamo.")
+        messages.error(request, "Revisa los datos para compartir el libro.")
     return redirect("libro_detalle", pk=libro.pk)
 
 

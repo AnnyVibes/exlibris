@@ -198,6 +198,8 @@ a:focus-visible, button:focus-visible, select:focus-visible, input[type=file]:fo
 .boton-verde:hover { background: #dcfce7; }
 .boton-peligro { background: #fff; color: var(--peligro); border-color: var(--peligro-borde); }
 .boton-peligro:hover { background: var(--peligro-fondo); border-color: var(--peligro); }
+.boton-arcoiris { background: var(--degradado-arcoiris); color: #fff; box-shadow: 0 8px 20px rgba(240, 113, 103, 0.28); }
+.boton-arcoiris:hover { filter: brightness(0.95); }
 .boton-ancho { width: 100%; padding: 13px; font-size: 16px; }
 .boton-mini { min-height: 36px; padding: 6px 14px; font-size: 14px; }
 
@@ -301,13 +303,14 @@ a:focus-visible, button:focus-visible, select:focus-visible, input[type=file]:fo
 
 /* ---------- Banner principal ---------- */
 .hero {
-  display: grid; grid-template-columns: 210px 1fr; gap: 28px; align-items: center;
+  display: grid; grid-template-columns: 280px 1fr; gap: 32px; align-items: center;
   background: var(--degradado-suave); border: 1px solid var(--borde); border-radius: var(--radio-xl);
-  padding: 26px 34px 0; margin-bottom: 8px; overflow: hidden;
+  padding: 14px 34px 14px 14px; margin-bottom: 8px; overflow: hidden; min-height: 210px;
 }
+.hero-arte { align-self: stretch; min-height: 182px; border-radius: calc(var(--radio-xl) - 10px); background-color: #a9b1e6; background-size: 420px auto; background-position: center 18%; }
 .hero-ilustracion { width: 100%; align-self: end; }
-.hero-texto { padding-bottom: 26px; }
-.hero h1 { font-size: 30px; line-height: 1.2; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 10px; color: #3b2a63; }
+.hero-texto { padding: 10px 0; }
+.hero h1 { font-size: 34px; line-height: 1.2; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 10px; color: #3b2a63; }
 .hero p { color: var(--texto-medio); margin-bottom: 20px; max-width: 46ch; }
 .hero-acciones { display: flex; gap: 12px; flex-wrap: wrap; }
 
@@ -449,16 +452,24 @@ a:focus-visible, button:focus-visible, select:focus-visible, input[type=file]:fo
 .separador { display: flex; align-items: center; gap: 12px; color: var(--texto-suave); font-size: 13px; margin: 22px 0; }
 .separador::before, .separador::after { content: ""; flex: 1; height: 1px; background: var(--borde); }
 
-/* ---------- Acceso (login / registro) ---------- */
-.acceso { min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr; }
-.acceso-arte { background: var(--degradado-suave); display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px; text-align: center; gap: 18px; }
-.acceso-arte img { width: min(300px, 70%); }
-.acceso-arte h1 { font-size: 30px; font-weight: 700; color: #3b2a63; letter-spacing: -0.5px; }
-.acceso-arte p { color: var(--texto-medio); }
-.acceso-forma { display: flex; align-items: center; justify-content: center; padding: 40px 24px; background: var(--superficie); }
+/* ---------- Acceso (login / registro): ilustración de librero + tarjeta con el lema ---------- */
+.acceso { min-height: 100vh; display: grid; grid-template-columns: 1.1fr 1fr; background: var(--superficie); }
+.acceso-arte {
+  position: relative; display: flex; align-items: flex-end; padding: 40px;
+  background-color: #a9b1e6; background-size: cover; background-position: center top;
+}
+.acceso-arte::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgba(43, 32, 90, .45), rgba(43, 32, 90, 0) 45%); pointer-events: none; }
+.acceso-lema {
+  position: relative; z-index: 1; max-width: 420px; padding: 24px 28px; border-radius: var(--radio-lg);
+  background: rgba(255, 255, 255, .88); backdrop-filter: blur(10px); box-shadow: 0 20px 40px rgba(43, 32, 90, .25);
+}
+.acceso-lema .logo { padding: 0; margin-bottom: 14px; }
+.acceso-lema h1 { font-size: 34px; font-weight: 700; letter-spacing: -0.6px; color: #3b2a63; line-height: 1.1; }
+.acceso-lema p { color: var(--texto-medio); margin-top: 6px; font-size: 16px; }
+.acceso-forma { display: flex; align-items: center; justify-content: center; padding: 40px 24px; }
 .acceso-forma .caja { width: 100%; max-width: 380px; }
-.acceso-forma .logo { padding: 0; margin-bottom: 30px; }
-.acceso-forma h2 { font-size: 24px; }
+.acceso-forma h2 { font-size: 28px; letter-spacing: -0.4px; }
+.acceso-sub { color: var(--texto-suave); margin: 4px 0 24px; }
 .acceso-forma p.cambio { margin-top: 18px; text-align: center; color: var(--texto-suave); }
 .acceso-forma p.cambio a { color: var(--lila-600); font-weight: 600; }
 
@@ -488,10 +499,10 @@ a:focus-visible, button:focus-visible, select:focus-visible, input[type=file]:fo
   .barra .buscador { order: 3; flex-basis: 100%; height: 48px; }
   .barra .espaciador { flex: 1; }
   .boton-icono { width: 44px; height: 44px; }
-  .hero { grid-template-columns: 1fr; padding: 24px 22px 0; gap: 12px; border-radius: var(--radio-lg); }
-  .hero-texto { padding-bottom: 0; order: -1; }
-  .hero h1 { font-size: 24px; }
-  .hero-ilustracion { width: 150px; margin: 0 auto; }
+  .hero { grid-template-columns: 1fr; padding: 10px 10px 20px; gap: 16px; border-radius: var(--radio-lg); }
+  .hero-arte { min-height: 140px; background-size: 360px auto; }
+  .hero-texto { padding: 0 10px; }
+  .hero h1 { font-size: 26px; }
   .resumen-tarjetas { grid-template-columns: 1fr; gap: 10px; }
   .leyendo { grid-template-columns: 90px 1fr; }
   .detalle-cabecera { grid-template-columns: 1fr; padding: 22px; border-radius: var(--radio-lg); gap: 20px; }
@@ -505,9 +516,11 @@ a:focus-visible, button:focus-visible, select:focus-visible, input[type=file]:fo
   .titulo-pagina { font-size: 24px; }
   .tabla-envoltura { overflow-x: auto; }
   .acceso { grid-template-columns: 1fr; }
-  .acceso-arte { padding: 28px 20px; gap: 10px; }
-  .acceso-arte img { width: 150px; }
-  .acceso-arte h1 { font-size: 22px; }
+  .acceso-arte { min-height: 300px; padding: 16px; }
+  .acceso-lema { padding: 16px 18px; }
+  .acceso-lema h1 { font-size: 26px; }
+  .acceso-lema p { font-size: 15px; }
+  .acceso-forma { padding: 28px 20px 40px; align-items: flex-start; }
 
   /* Barra inferior como en la app de diario: blanca, el activo en lila con un punto encima */
   .nav-movil {
@@ -696,3 +709,28 @@ a:focus-visible, button:focus-visible, select:focus-visible, input[type=file]:fo
 .mini-tapa img { width: 100%; height: 100%; object-fit: cover; }
 .mini-tapa span { font-family: var(--fuente-libro); font-size: 7px; color: #fff; text-align: center; padding: 3px; text-transform: uppercase; line-height: 1.2; }
 .genero-ver { font-size: 14px; font-weight: 600; color: var(--primario-texto); }
+
+/* ---------- Enlace plegable sin triángulo ---------- */
+.enlace-plegable { list-style: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; color: var(--primario-texto); font-weight: 500; }
+.enlace-plegable::-webkit-details-marker { display: none; }
+.enlace-plegable .icono { width: 18px; height: 18px; }
+.enlace-plegable:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+/* ---------- Tarjeta de confirmación (ventana modal con «Aceptar») ---------- */
+.aviso-modal {
+  width: min(380px, calc(100vw - 32px)); border: 0; border-radius: 28px; padding: 30px 26px 24px; text-align: center;
+  background: var(--superficie); color: var(--texto); box-shadow: 0 30px 60px rgba(43, 32, 90, .28);
+  position: fixed; inset: 0; margin: auto; height: fit-content; z-index: 50;
+}
+.aviso-modal::backdrop { background: rgba(31, 24, 60, .45); backdrop-filter: blur(3px); }
+.aviso-modal[open] { animation: aviso-entra .22s ease-out; }
+@keyframes aviso-entra { from { opacity: 0; transform: translateY(10px) scale(.96); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .aviso-modal[open] { animation: none; } }
+.aviso-icono { width: 68px; height: 68px; margin: 0 auto 16px; border-radius: 50%; display: grid; place-items: center; color: #fff;
+  background: linear-gradient(135deg, #c026d3, #7c3aed); box-shadow: 0 10px 24px rgba(192, 38, 211, .35), 0 0 0 8px #fdf4ff; }
+.aviso-icono .icono { width: 34px; height: 34px; stroke-width: 2.4; }
+.aviso-error .aviso-icono { background: #dc2626; box-shadow: 0 10px 24px rgba(220, 38, 38, .3), 0 0 0 8px #fef2f2; }
+.aviso-info .aviso-icono { background: var(--primario); box-shadow: 0 10px 24px rgba(124, 58, 237, .3), 0 0 0 8px var(--lila-50); }
+.aviso-modal h2 { font-size: 21px; margin-bottom: 8px; }
+.aviso-modal p { color: var(--texto-medio); margin-bottom: 6px; }
+.aviso-modal form { margin-top: 18px; }

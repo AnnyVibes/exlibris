@@ -97,3 +97,16 @@ de él (p. ej. «Tu estante está vacío» → **Escanear**).
   siluetas punteadas (indican qué va ahí) y una acción concreta en lugar de solo texto.
 - **Géneros** pasa a ser una sección propia en la navegación lateral, con una tarjeta por género. En el celular se llega
   desde los filtros de Mi biblioteca (la barra inferior se mantiene en 5 accesos para no saturarla).
+
+## 9. Cuarta ronda
+
+- **Avisos**: en lugar de una barra arriba, una **ventana modal** centrada (ícono, título y botón «Aceptar»), porque la
+  autora quiere que la persona confirme que vio el resultado. Se muestra solo cuando se **modifica** algo (guardar, editar,
+  eliminar, compartir, devolver). Títulos claros según el caso: «¡Guardado con éxito!», «Eliminado con éxito» o
+  «No se pudo completar». Se puede cerrar con teclado (Esc) y el foco va al botón.
+- **Lenguaje**: «Compartidos» reemplaza a «Préstamos» en toda la app; los mensajes usan «Compartiste… con…».
+- **Microcopy**: textos más cortos y directos: «Tu biblioteca» / «Escanea, anota y comparte tus libros.».
+- **Login**: ilustración propia de librero (paleta lila/periwinkle) con una tarjeta translúcida para el lema; en el celular
+  la ilustración queda como encabezado y el formulario debajo.
+- **Consistencia**: los estados de lectura se ven como libros (igual que los géneros) y se quitaron las flechas «→» de los
+  enlaces y el triángulo del enlace plegable.

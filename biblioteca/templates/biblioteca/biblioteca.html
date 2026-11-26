@@ -50,9 +50,9 @@
 {% if estados_nav.0.1 %}
 <section class="filtro-bloque" aria-labelledby="t-estado">
   <h2 id="t-estado">Estado de lectura</h2>
-  <nav class="filtros" aria-label="Filtrar por estado" style="margin:0">
+  <nav class="categorias" aria-label="Filtrar por estado">
     {% for etiqueta, n, url, activo in estados_nav %}
-      <a class="chip {% if activo %}activo{% endif %}" href="{{ url }}" {% if activo %}aria-current="true"{% endif %}>{{ etiqueta }} <small>{{ n }}</small></a>
+      <a class="categoria {% if activo %}activo{% endif %}" href="{{ url }}" {% if activo %}aria-current="true"{% endif %}>{% cycle '★' '+' '▶' '✓' as simbolo silent %}{% libro_icono forloop.counter0 simbolo %}{{ etiqueta }}<small>{{ n }} libro{{ n|pluralize }}</small></a>
     {% endfor %}
   </nav>
 </section>
@@ -76,7 +76,7 @@
       <div class="estante-seccion">
         <div class="estante-cabecera">
           <h2>{{ seccion.titulo }} <span>{{ seccion.libros|length }}</span></h2>
-          {% if seccion.libros and not estado %}<a href="?estado={{ seccion.valor }}&amp;vista=lista">Ver todos →</a>{% endif %}
+          {% if seccion.libros and not estado %}<a href="?estado={{ seccion.valor }}&amp;vista=lista">Ver todos</a>{% endif %}
         </div>
         <div class="repisa{% if seccion.libros|length >= 4 %} muchos{% endif %}">
           {% for libro in seccion.libros %}
@@ -84,7 +84,7 @@
               <span class="tapa-repisa c{{ libro|color_libro }}">
                 {% if libro.imagen_portada %}<img src="{{ libro.imagen_portada }}" alt="{{ libro.titulo }}" loading="lazy">
                 {% else %}<span class="portada-falsa"><strong>{{ libro.titulo|truncatechars:34 }}</strong><small>{{ libro.autores|truncatechars:22 }}</small></span>{% endif %}
-                {% if libro.prestamo_activo %}<span class="marca-prestamo" title="En préstamo"><span class="solo-lectores">En préstamo</span></span>{% endif %}
+                {% if libro.prestamo_activo %}<span class="marca-prestamo" title="Compartido"><span class="solo-lectores">Compartido</span></span>{% endif %}
               </span>
               {% if libro.estado == "leyendo" %}<span class="progreso-repisa"><span style="width: {{ libro.progreso }}%"></span></span>{% endif %}
             </a>
@@ -92,7 +92,7 @@
             <span class="hueco" aria-hidden="true"></span><span class="hueco" aria-hidden="true"></span><span class="hueco" aria-hidden="true"></span>
             <div class="repisa-vacia">
               <p>{% if seccion.valor == "leyendo" %}Nada en lectura todavía.{% elif seccion.valor == "por_leer" %}Aquí irán los libros que tienes pendientes.{% else %}Aquí irán los libros que terminaste.{% endif %}</p>
-              {% if seccion.valor == "leyendo" %}<a href="?estado=por_leer&amp;vista=lista">Elegir uno de «Por leer» →</a>{% else %}<a href="{% url 'libro_nuevo' %}">Agregar libro →</a>{% endif %}
+              {% if seccion.valor == "leyendo" %}<a href="?estado=por_leer&amp;vista=lista">Elegir uno de «Por leer»</a>{% else %}<a href="{% url 'libro_nuevo' %}">Agregar libro</a>{% endif %}
             </div>
           {% endfor %}
           <span class="adorno-repisa">{% include "biblioteca/_adorno.html" with nombre=seccion.adorno %}</span>
