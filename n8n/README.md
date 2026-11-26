@@ -19,7 +19,7 @@ Ex Libris (Django) ──POST──▶ n8n /webhook/exlibris-tarea  ──▶ Sw
 
 ## Puesta en marcha (gratis)
 
-1. **Instala y abre n8n** en tu PC (necesita Node.js 20 o superior):
+1. **Instala y abre n8n** en tu PC (n8n 2.x necesita **Node.js 24 o superior**; revisa con `node -v`):
    ```powershell
    npx n8n
    ```
