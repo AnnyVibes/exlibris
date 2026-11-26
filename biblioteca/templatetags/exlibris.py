@@ -1,4 +1,6 @@
 from django import template
+from django.contrib.staticfiles import finders
+from django.templatetags.static import static
 from django.utils.safestring import mark_safe
 
 register = template.Library()
@@ -87,3 +89,17 @@ def libro_icono(color=0, simbolo="", clase=""):
         f'<path d="M10 43h34v8H13a3 3 0 0 1-3-3z" fill="#fffdf8" stroke="{c}" stroke-width="3"/>'
         f'<path d="M32 43v12l3.5-3 3.5 3V43z" fill="#f4b942"/></svg>'
     )
+
+
+@register.simple_tag
+def estatico(ruta):
+    """URL de un archivo estático con su versión (fecha de modificación) para evitar la caché vieja.
+
+    Cuando el archivo cambia, cambia la URL y el navegador lo descarga de nuevo.
+    """
+    url = static(ruta)
+    archivo = finders.find(ruta)
+    if archivo:
+        import os
+        url += f"?v={int(os.path.getmtime(archivo))}"
+    return url

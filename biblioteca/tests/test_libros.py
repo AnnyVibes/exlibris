@@ -177,3 +177,11 @@ class AccesoPantallaTests(ConUsuario):
         r = self.client.post(reverse("registro"), {"username": "ana", "email": "x@example.com", "password1": "a", "password2": "b"})
         self.assertContains(r, 'class="acceso-error-campo"')
         self.assertContains(r, "Te damos la bienvenida", count=0)
+
+
+class CacheEstaticosTests(ConUsuario):
+    def test_css_con_version_para_evitar_cache_vieja(self):
+        import re
+        self.client.logout()
+        html = self.client.get(reverse("login")).content.decode()
+        self.assertRegex(html, r'exlibris\.css\?v=\d+')
