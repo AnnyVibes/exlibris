@@ -4,17 +4,17 @@
 {% block cuerpo %}
 <main class="acceso" style="--fondo-acceso: url('{% static 'biblioteca/img/librero-login.svg' %}')">
   <div class="acceso-tarjeta">
-    <header class="acceso-bienvenida">
-      <div class="logo">{% libro_icono 0 "EL" "logo-libro" %}<span class="logo-texto">Ex <em>Libris</em></span></div>
-      <h1>Crea tu librero</h1>
-      <p>Escanea, anota y comparte tus libros.</p>
+    <header class="acceso-marca">
+      <h1 class="marca"><span class="marca-ex">Ex</span> <span class="marca-libris">Libris</span></h1>
+      <p class="marca-sub">Biblioteca personal</p>
+      <span class="marca-adorno" aria-hidden="true"></span>
+      <p class="marca-texto">Crea tu cuenta y empieza tu librero: escanea, anota y comparte tus libros.</p>
     </header>
     <form method="post" class="acceso-formulario" novalidate>
       {% csrf_token %}
-      <h2>Crear cuenta</h2>
-      {% for campo, icono, tipo, autocompletar in campos %}
+            {% for campo, icono, tipo, autocompletar in campos %}
         <label class="campo-icono{% if campo.errors %} con-error{% endif %}">
-          <span class="burbuja">{% icono icono %}</span>
+          <span class="icono-campo">{% icono icono %}</span>
           <span class="solo-lectores">{{ campo.label }}</span>
           <input type="{{ tipo }}" name="{{ campo.html_name }}" {% if tipo != 'password' %}value="{{ campo.value|default:'' }}"{% endif %} placeholder="{{ campo.label }}" autocomplete="{{ autocompletar }}" {% if tipo == 'text' %}autocapitalize="none"{% endif %} required aria-describedby="err-{{ campo.html_name }}">
         </label>

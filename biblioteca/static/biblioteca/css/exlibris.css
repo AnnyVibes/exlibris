@@ -452,39 +452,43 @@ a:focus-visible, button:focus-visible, select:focus-visible, input[type=file]:fo
 .separador { display: flex; align-items: center; gap: 12px; color: var(--texto-suave); font-size: 13px; margin: 22px 0; }
 .separador::before, .separador::after { content: ""; flex: 1; height: 1px; background: var(--borde); }
 
-/* ---------- Acceso (login / registro): librero de fondo + tarjeta translúcida centrada ---------- */
+/* ---------- Acceso (login / registro) ----------
+   Fondo: librero calmado (4 estantes, lomos suaves) con una luz en el centro que destaca la tarjeta.
+   Tarjeta: blanca y sólida; jerarquía marca → subtítulo → bienvenida → formulario. */
 .acceso {
-  min-height: 100vh; min-height: 100dvh; display: grid; place-items: center; padding: 32px 16px; position: relative;
-  background: #a9b1e6 var(--fondo-acceso) center / cover no-repeat;
+  min-height: 100vh; min-height: 100dvh; display: grid; place-items: center; padding: 32px 16px;
+  position: relative; isolation: isolate; background: #c9cdef;
 }
-.acceso::before { content: ""; position: fixed; inset: 0; background: linear-gradient(160deg, rgba(91, 33, 182, .45), rgba(124, 58, 237, .25) 50%, rgba(192, 38, 211, .35)); pointer-events: none; }
+.acceso::before { content: ""; position: fixed; inset: 0; z-index: -2; background: var(--fondo-acceso) center / cover no-repeat; filter: saturate(.9); }
+.acceso::after { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background: radial-gradient(ellipse 55% 70% at 50% 50%, rgba(250, 247, 255, .88) 0%, rgba(250, 247, 255, .55) 45%, rgba(250, 247, 255, 0) 80%); }
 .acceso-tarjeta {
-  position: relative; width: min(420px, 100%); border-radius: 30px; overflow: hidden;
-  background: rgba(255, 255, 255, .22); border: 1px solid rgba(255, 255, 255, .55);
-  backdrop-filter: blur(14px) saturate(1.2); -webkit-backdrop-filter: blur(14px) saturate(1.2);
-  box-shadow: 0 30px 70px rgba(46, 16, 101, .35);
+  width: min(420px, 100%); border-radius: 32px; background: #fff; border: 1px solid #efe9fb;
+  box-shadow: 0 30px 70px rgba(76, 52, 150, .22), 0 2px 6px rgba(76, 52, 150, .06); padding: 38px 34px 30px;
 }
-.acceso-bienvenida { padding: 26px 30px 22px; color: #fff; text-shadow: 0 1px 12px rgba(46, 16, 101, .35); }
-.acceso-bienvenida .logo { padding: 0; margin-bottom: 18px; }
-.acceso-bienvenida .logo-texto, .acceso-bienvenida .logo-texto em { color: #fff; }
-.acceso-bienvenida h1 { font-size: 32px; font-weight: 700; letter-spacing: -0.6px; line-height: 1.1; }
-.acceso-bienvenida p { margin-top: 8px; font-size: 16px; opacity: .95; }
-.acceso-formulario { display: grid; gap: 14px; padding: 24px 30px 26px; background: rgba(255, 255, 255, .9); }
-.acceso-formulario h2 { font-size: 14px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--primario-texto); text-align: center; }
-.campo-icono { display: flex; align-items: center; gap: 12px; }
-.campo-icono .burbuja { width: 44px; height: 44px; flex-shrink: 0; border-radius: 50%; display: grid; place-items: center; background: var(--lila-100); color: var(--primario-texto); }
+.acceso-marca { text-align: center; margin-bottom: 24px; }
+.marca { font-size: 46px; font-weight: 800; letter-spacing: -1.5px; line-height: 1; }
+.marca-ex { color: #3b2a63; }
+.marca-libris { background: linear-gradient(90deg, #7c3aed 0%, #c026d3 55%, #f07167 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.marca-sub { margin-top: 8px; font-size: 13px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--primario-texto); }
+.marca-adorno { display: block; width: 44px; height: 4px; margin: 18px auto 16px; border-radius: 999px; background: var(--degradado-arcoiris); }
+.marca-texto { color: var(--texto-medio); font-size: 15px; max-width: 30ch; margin: 0 auto; }
+.acceso-formulario { display: grid; gap: 14px; }
+.campo-icono { position: relative; display: block; }
+.campo-icono .icono-campo { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--primario-texto); display: grid; pointer-events: none; }
+.campo-icono .icono-campo .icono { width: 19px; height: 19px; }
 .campo-icono input {
-  flex: 1; min-width: 0; height: 46px; padding: 0 18px; border-radius: 999px; font: inherit; color: var(--texto);
-  border: 1px solid var(--lila-200); background: #fff; outline: 0; transition: border .15s, box-shadow .15s;
+  width: 100%; height: 50px; padding: 0 18px 0 46px; border-radius: 999px; font: inherit; color: var(--texto);
+  border: 1px solid var(--lila-200); background: #fbf9ff; outline: 0; transition: border .15s, box-shadow .15s, background .15s;
 }
 .campo-icono input::placeholder { color: #8b85a0; }
-.campo-icono input:focus { border-color: var(--lila-400); box-shadow: 0 0 0 4px var(--lila-100); }
+.campo-icono input:focus { border-color: var(--lila-400); background: #fff; box-shadow: 0 0 0 4px var(--lila-100); }
 .campo-icono.con-error input { border-color: var(--peligro); }
-.recordarme { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--texto-medio); cursor: pointer; padding-left: 4px; }
+.recordarme { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--texto-medio); cursor: pointer; padding-left: 6px; }
 .recordarme input { width: 18px; height: 18px; accent-color: var(--primario); }
 .acceso-error { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: var(--radio-sm); background: var(--peligro-fondo); color: var(--peligro); font-size: 14px; font-weight: 500; }
-.acceso-error-campo { margin: -8px 0 0 56px; color: var(--peligro); font-size: 13px; }
-.acceso-formulario p.cambio { text-align: center; color: var(--texto-suave); font-size: 14px; }
+.acceso-error-campo { margin: -8px 0 0 18px; color: var(--peligro); font-size: 13px; }
+.acceso-formulario p.cambio { text-align: center; color: var(--texto-suave); font-size: 14px; margin-top: 4px; }
 .acceso-formulario p.cambio a { color: var(--primario-texto); font-weight: 600; }
 
 /* ---------- Navegación inferior (móvil) ---------- */
@@ -530,9 +534,10 @@ a:focus-visible, button:focus-visible, select:focus-visible, input[type=file]:fo
   .titulo-pagina { font-size: 24px; }
   .tabla-envoltura { overflow-x: auto; }
   .acceso { padding: 20px 14px; }
-  .acceso-bienvenida { padding: 22px 22px 18px; }
-  .acceso-bienvenida h1 { font-size: 27px; }
-  .acceso-formulario { padding: 20px 20px 22px; }
+  .acceso::before { background-position: 6% center; } /* en el celular se ve el lado izquierdo, con gatos */
+  .acceso-tarjeta { padding: 30px 22px 24px; border-radius: 28px; }
+  .marca { font-size: 40px; }
+  .acceso::after { background: radial-gradient(ellipse 90% 60% at 50% 50%, rgba(250, 247, 255, .9) 0%, rgba(250, 247, 255, .5) 55%, rgba(250, 247, 255, 0) 90%); }
 
   /* Barra inferior como en la app de diario: blanca, el activo en lila con un punto encima */
   .nav-movil {

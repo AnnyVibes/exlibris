@@ -4,22 +4,22 @@
 {% block cuerpo %}
 <main class="acceso" style="--fondo-acceso: url('{% static 'biblioteca/img/librero-login.svg' %}')">
   <div class="acceso-tarjeta">
-    <header class="acceso-bienvenida">
-      <div class="logo">{% libro_icono 0 "EL" "logo-libro" %}<span class="logo-texto">Ex <em>Libris</em></span></div>
-      <h1>Te damos la bienvenida</h1>
-      <p>Escanea, anota y comparte tus libros.</p>
+    <header class="acceso-marca">
+      <h1 class="marca"><span class="marca-ex">Ex</span> <span class="marca-libris">Libris</span></h1>
+      <p class="marca-sub">Biblioteca personal</p>
+      <span class="marca-adorno" aria-hidden="true"></span>
+      <p class="marca-texto">Te damos la bienvenida. Escanea, anota y comparte tus libros.</p>
     </header>
     <form method="post" class="acceso-formulario" novalidate>
       {% csrf_token %}
-      <h2>Iniciar sesión</h2>
-      {% if form.non_field_errors %}<p class="acceso-error" role="alert">{% icono 'alerta' %} Usuario o contraseña incorrectos.</p>{% endif %}
+            {% if form.non_field_errors %}<p class="acceso-error" role="alert">{% icono 'alerta' %} Usuario o contraseña incorrectos.</p>{% endif %}
       <label class="campo-icono">
-        <span class="burbuja">{% icono 'usuario' %}</span>
+        <span class="icono-campo">{% icono 'usuario' %}</span>
         <span class="solo-lectores">Nombre de usuario</span>
         <input type="text" name="username" value="{{ form.username.value|default:'' }}" placeholder="Nombre de usuario" autocomplete="username" autocapitalize="none" required autofocus>
       </label>
       <label class="campo-icono">
-        <span class="burbuja">{% icono 'candado' %}</span>
+        <span class="icono-campo">{% icono 'candado' %}</span>
         <span class="solo-lectores">Contraseña</span>
         <input type="password" name="password" placeholder="Contraseña" autocomplete="current-password" required>
       </label>

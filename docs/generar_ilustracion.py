@@ -14,11 +14,17 @@ from PIL import Image
 GATOS = Path(__file__).resolve().parent / "gatos"
 
 R = random.Random(7)
-W, H = 1500, 900
+W, H = 1200, 700
 FONDO, FONDO2 = "#a9b1e6", "#9ea7df"
 TABLA, TABLA_SOMBRA = "#dfe3fa", "#8d96d4"
 LIBROS = ["#f4a7c0", "#ef8a6f", "#f7b267", "#3e8e6f", "#86cfae", "#8c6fd1", "#c7aef2",
           "#2f4b8f", "#e8607a", "#fbe3a1", "#f9f4ec", "#5aa9c9", "#f6c6d8"]
+def suavizar(hexa, t=0.28, hacia=(201, 205, 239)):
+    r, g, b = (int(hexa[i:i + 2], 16) for i in (1, 3, 5))
+    return "#%02x%02x%02x" % tuple(round(c + (d - c) * t) for c, d in zip((r, g, b), hacia))
+
+
+LIBROS = [suavizar(c) for c in LIBROS]
 partes = []
 add = partes.append
 
@@ -156,20 +162,17 @@ def gato_img(nombre, alto, apoyo=1.0):
 
 DECOS = [jarron_margaritas, maceta_planta, cuadro, lampara, taza_sobre_libros, tulipanes]
 add(f'<rect width="{W}" height="{H}" fill="{FONDO}"/>')
-for i in range(0, W, 46):
-    add(f'<rect x="{i}" y="0" width="1.5" height="{H}" fill="{FONDO2}" opacity=".5"/>')
+# (fondo liso: sin rayas verticales para reducir ruido visual)
 
-filas = [120, 250, 380, 510, 640, 770, 890]
-# «hasta:N» rellena con libros hasta la posición N: así los gatos quedan a los costados
-# y no detrás de la tarjeta del login, que ocupa el centro (≈ 520–980 px).
+filas = [160, 330, 500, 670]
+# Composición calmada: 4 estantes, grupos cortos de libros con aire entre ellos y los gatos
+# a los costados (la tarjeta del login tapa el centro, ≈ 430–770 px de este dibujo).
+# «libros:N» = N libros; «aire:N» = N px vacíos; «hasta:N» = grupos con aire hasta la posición N.
 plan = [
-    ["libros", gato_img("a0", 104), "libros", jarron_margaritas, "libros", "hasta:540", lampara, "libros", tulipanes, "hasta:1010", "libros", gato_img("b0", 104), "libros", cuadro, "libros"],
-    [maceta_planta, "libros", gato_img("a1", 78, .66), "libros", "hasta:540", cuadro, "libros", jarron_margaritas, "hasta:1030", gato_img("b3", 74), "libros", maceta_planta, "libros"],
-    ["pila", "libros", gato_img("a3", 102), "libros", "hasta:540", taza_sobre_libros, "libros", cuadro, "hasta:1010", "libros", gato_img("a2", 64), "libros", lampara, "libros"],
-    ["libros", gato_img("a4", 106), "libros", cuadro, "libros", "hasta:540", maceta_planta, "libros", lampara, "hasta:1010", gato_img("b2", 104), "libros", jarron_margaritas, "libros"],
-    [tulipanes, "libros", gato_img("b1", 84), "libros", "hasta:540", "pila", "libros", jarron_margaritas, "hasta:1010", "libros", gato_img("a0", 100), "libros", maceta_planta, "libros"],
-    ["libros", cuadro, gato_img("a2", 62), "libros", "hasta:540", lampara, "libros", taza_sobre_libros, "hasta:1030", gato_img("a1", 78, .66), "libros", tulipanes, "libros"],
-    [jarron_margaritas, "libros", gato_img("b0", 102), "libros", "pila", "hasta:540", maceta_planta, "libros", cuadro, "hasta:1010", "libros", gato_img("a4", 104), "libros", "pila"],
+    [maceta_planta, "libros:4", gato_img("a0", 104), "aire:36", "libros:3", "hasta:800", "libros:4", gato_img("b0", 104), "aire:30", jarron_margaritas, "libros:3"],
+    ["libros:4", "aire:24", gato_img("a1", 80, .66), "aire:40", cuadro, "hasta:800", lampara, "libros:3", gato_img("b3", 74), "aire:24", "libros:3"],
+    [tulipanes, "libros:3", gato_img("a3", 104), "aire:30", "pila", "hasta:810", "libros:3", gato_img("b2", 106), "aire:24", maceta_planta, "libros:3"],
+    ["libros:4", gato_img("a4", 108), "aire:30", jarron_margaritas, "libros:3", "hasta:800", cuadro, "libros:3", gato_img("a2", 66), "aire:30", "libros:3"],
 ]
 for base, fila in zip(filas, plan):
     x = 22
@@ -178,8 +181,14 @@ for base, fila in zip(filas, plan):
             break
         if isinstance(item, str) and item.startswith("hasta:"):
             meta = int(item.split(":")[1])
-            while x < meta - 20:
-                x = grupo_libros(x, base, max(1, min(R.randint(3, 6), int((meta - x) // 18))))
+            while x < meta - 40:
+                x = grupo_libros(x, base, max(1, min(R.randint(2, 4), int((meta - x) // 18)))) + R.randint(26, 56)
+            continue
+        if isinstance(item, str) and item.startswith("aire:"):
+            x += int(item.split(":")[1])
+            continue
+        if isinstance(item, str) and item.startswith("libros:"):
+            x = grupo_libros(x, base, int(item.split(":")[1]))
             continue
         if item == "libros":
             restante = W - 22 - x
@@ -191,9 +200,9 @@ for base, fila in zip(filas, plan):
             x, _ = pila(x, base, 3)
         else:
             x = item(x, base) + 4
-    while x < W - 36:
-        n = max(1, min(R.randint(3, 6), int((W - 22 - x) // 18)))
-        x = grupo_libros(x, base, n)
+    while x < W - 60:
+        n = max(1, min(R.randint(2, 4), int((W - 22 - x) // 18)))
+        x = grupo_libros(x, base, n) + R.randint(30, 60)
     add(f'<rect x="0" y="{base}" width="{W}" height="7" fill="{TABLA}"/>')
     add(f'<rect x="0" y="{base+7}" width="{W}" height="3" fill="{TABLA_SOMBRA}" opacity=".6"/>')
 

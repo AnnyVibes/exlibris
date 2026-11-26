@@ -110,3 +110,14 @@ de él (p. ej. «Tu estante está vacío» → **Escanear**).
   la ilustración queda como encabezado y el formulario debajo.
 - **Consistencia**: los estados de lectura se ven como libros (igual que los géneros) y se quitaron las flechas «→» de los
   enlaces y el triángulo del enlace plegable.
+
+## 10. Login: análisis de diseño gráfico
+
+| Problema | Por qué molesta | Solución |
+|---|---|---|
+| 7 estantes llenos de libros | Patrón muy denso, la vista no descansa y compite con la tarjeta | 4 estantes, grupos cortos con espacio entre ellos |
+| Todo igual de saturado | No hay punto focal; los gatos se pierden | Lomos suavizados hacia el lila del fondo; los gatos conservan su color y son el foco |
+| Velo morado sobre todo el fondo | Apaga la ilustración y la vuelve turbia | Luz radial clara solo detrás de la tarjeta |
+| Encabezado de vidrio difuminado | Manchas de color detrás del texto blanco → baja legibilidad | Tarjeta blanca sólida |
+| Marca pequeña y a un lado | «Ex Libris» parecía una etiqueta, no el nombre del sitio | Marca centrada a 46 px, «Libris» con el degradado de marca y el subtítulo «Biblioteca personal» |
+| Íconos en burbujas separadas | Más elementos sueltos, más ruido | Íconos dentro de los campos |
