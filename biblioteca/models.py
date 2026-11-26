@@ -177,3 +177,28 @@ class PreferenciaLibrero(models.Model):
     @classmethod
     def de(cls, usuario):
         return cls.objects.get_or_create(usuario=usuario)[0]
+
+
+class Perfil(models.Model):
+    """Datos personales que no están en el usuario de Django: foto y cómo prefiere que la app se refiera a la persona."""
+
+    class Tratamiento(models.TextChoices):
+        LECTORA = "lectora", "Lectora"
+        LECTOR = "lector", "Lector"
+        NEUTRO = "neutro", "Persona lectora"
+
+    usuario = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="perfil")
+    foto = models.ImageField("foto de perfil", upload_to="perfiles/", blank=True)
+    tratamiento = models.CharField(
+        "¿cómo prefieres que te llamemos?", max_length=10, choices=Tratamiento.choices, default=Tratamiento.NEUTRO
+    )
+
+    class Meta:
+        verbose_name = "perfil"
+
+    def __str__(self):
+        return f"Perfil de {self.usuario}"
+
+    @classmethod
+    def de(cls, usuario):
+        return cls.objects.get_or_create(usuario=usuario)[0]

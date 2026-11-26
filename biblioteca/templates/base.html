@@ -27,7 +27,7 @@
       <hr>
     </nav>
     <nav class="nav nav-pie" aria-label="Cuenta">
-      <a href="{% url 'admin:index' %}">{% icono 'usuario' %} Mi cuenta</a>
+      <a href="{% url 'cuenta' %}" class="{% if url == 'cuenta' or url == 'cambiar_clave' %}activo{% endif %}">{% icono 'usuario' %} Mi cuenta</a>
       <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button type="submit">{% icono 'salir' %} Cerrar sesión</button></form>
     </nav>
   </aside>
@@ -43,6 +43,7 @@
       </form>
       <a class="boton-icono" href="{% url 'libro_nuevo' %}" title="Agregar a mano" aria-label="Agregar libro a mano">{% icono 'mas' %}</a>
       <a class="boton-icono" href="{% url 'escanear' %}" title="Escanear código" aria-label="Escanear código de barras">{% icono 'camara' %}</a>
+      <a class="avatar-movil" href="{% url 'cuenta' %}" aria-label="Mi cuenta">{% include "biblioteca/_avatar.html" %}</a>
     </header>
 
     {% include "biblioteca/_aviso.html" %}
@@ -52,10 +53,10 @@
 
   <aside class="panel" aria-label="Resumen">
     <div>
-      <div class="perfil">
-        <div class="avatar">{{ user.username|slice:":1" }}</div>
-        <div><h4>{{ user.get_full_name|default:user.username }}</h4><small>@{{ user.username }}</small></div>
-      </div>
+      <a class="perfil" href="{% url 'cuenta' %}" title="Mi cuenta">
+        {% include "biblioteca/_avatar.html" %}
+        <div><h4>{{ user.get_full_name|default:user.username }}</h4><small>{{ perfil_usuario.get_tratamiento_display }} · @{{ user.username }}</small></div>
+      </a>
       <div class="tarjeta-titulo"><h3>Compartidos</h3><a href="{% url 'prestamos' %}" aria-label="Ver compartidos">{% icono 'puntos' %}</a></div>
       <div class="lista-panel">
         {% for p in panel_prestamos %}

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load exlibris %}
+{% block titulo %}Cambiar contraseña{% endblock %}
+{% block contenido %}
+<h1 class="titulo-pagina">Cambiar contraseña</h1>
+<p class="subtitulo">Por seguridad, primero escribe tu contraseña actual.</p>
+<form method="post" class="tarjeta formulario formulario-estrecho">
+  {% csrf_token %}
+  {% include "biblioteca/_campo.html" with campo=form.old_password %}
+  {% include "biblioteca/_campo.html" with campo=form.new_password1 %}
+  {% include "biblioteca/_campo.html" with campo=form.new_password2 %}
+  <div class="acciones-fila">
+    <button class="boton boton-primario" type="submit">Cambiar contraseña</button>
+    <a class="boton boton-secundario" href="{% url 'cuenta' %}">Cancelar</a>
+  </div>
+</form>
+{% endblock %}

@@ -11,6 +11,8 @@
     <p id="estado" class="escaner-estado" role="status">Preparando la cámara…</p>
     <div class="acciones-fila">
       <button id="iniciar" type="button" class="boton boton-primario">{% icono 'camara' %} Activar cámara</button>
+      <button id="linterna" type="button" class="boton boton-secundario" aria-pressed="false" hidden>{% icono 'linterna' %} <span>Encender linterna</span></button>
+      <button id="espejo" type="button" class="boton boton-secundario" aria-pressed="false" hidden>{% icono 'espejo' %} Voltear imagen</button>
       <button id="detener" type="button" class="boton boton-suave" hidden>Detener</button>
     </div>
 
@@ -18,7 +20,7 @@
     <form method="get" action="{% url 'libro_nuevo' %}" class="campo">
       <label for="isbn-manual">ISBN</label>
       <div class="fila-busqueda">
-        <input id="isbn-manual" name="isbn" inputmode="numeric" autocomplete="off" placeholder="978-84-376-0494-7" required>
+        <input id="isbn-manual" name="isbn" inputmode="numeric" autocomplete="off" placeholder="Ej.: 978-84-376-0494-7" required>
         <button class="boton boton-secundario" type="submit">Buscar</button>
       </div>
     </form>
@@ -32,6 +34,41 @@
   const estado = document.getElementById("estado");
   const btnIniciar = document.getElementById("iniciar");
   const btnDetener = document.getElementById("detener");
+  const btnLinterna = document.getElementById("linterna");
+  const btnEspejo = document.getElementById("espejo");
+  const caja = document.getElementById("lector");
+  let linternaEncendida = false;
+
+  /* Espejo: las cámaras frontales (laptop) se ven invertidas; se voltea la vista para que se lea de izquierda a derecha. */
+  function aplicarEspejo(activo) {
+    caja.classList.toggle("espejo", activo);
+    btnEspejo.setAttribute("aria-pressed", String(activo));
+  }
+  btnEspejo.addEventListener("click", () => aplicarEspejo(!caja.classList.contains("espejo")));
+
+  /* Linterna: solo aparece si el teléfono la permite (Android con Chrome; Safari en iPhone no la expone). */
+  btnLinterna.addEventListener("click", async () => {
+    try {
+      await lector.applyVideoConstraints({ advanced: [{ torch: !linternaEncendida }] });
+      linternaEncendida = !linternaEncendida;
+      btnLinterna.setAttribute("aria-pressed", String(linternaEncendida));
+      btnLinterna.querySelector("span").textContent = linternaEncendida ? "Apagar linterna" : "Encender linterna";
+    } catch (e) {
+      mostrar("No se pudo usar la linterna en este dispositivo.");
+      btnLinterna.hidden = true;
+    }
+  });
+
+  function revisarCamara() {
+    let ajustes = {}, capacidades = {};
+    try { ajustes = lector.getRunningTrackSettings() || {}; } catch (e) {}
+    try { capacidades = lector.getRunningTrackCapabilities() || {}; } catch (e) {}
+    // Sin «facingMode» suele ser una webcam de laptop (frontal): se voltea por defecto.
+    const frontal = ajustes.facingMode === "user" || !ajustes.facingMode;
+    aplicarEspejo(frontal);
+    btnEspejo.hidden = false;
+    btnLinterna.hidden = !capacidades.torch;
+  }
   const destino = "{% url 'libro_nuevo' %}?isbn=";
   let lector = null;
   let leido = false;
@@ -61,6 +98,8 @@
     lector = lector || new Html5Qrcode("lector", {
       formatsToSupport: [Html5QrcodeSupportedFormats.EAN_13, Html5QrcodeSupportedFormats.EAN_8, Html5QrcodeSupportedFormats.UPC_A],
       verbose: false,
+      // Usa el lector de códigos nativo del navegador cuando existe (más rápido y preciso).
+      experimentalFeatures: { useBarCodeDetectorIfSupported: true },
     });
     try {
       await lector.start(
@@ -78,6 +117,7 @@
         () => {}
       );
       btnIniciar.hidden = true; btnDetener.hidden = false;
+      revisarCamara();
       mostrar("Buscando un código de barras…");
     } catch (e) {
       mostrar("No se pudo abrir la cámara (" + (e && e.name ? e.name : e) + "). Revisa los permisos o escribe el ISBN.");
@@ -87,7 +127,8 @@
   btnIniciar.addEventListener("click", iniciar);
   btnDetener.addEventListener("click", async () => {
     if (lector) { await lector.stop().catch(() => {}); }
-    btnIniciar.hidden = false; btnDetener.hidden = true;
+    btnIniciar.hidden = false; btnDetener.hidden = true; btnLinterna.hidden = true; btnEspejo.hidden = true;
+    linternaEncendida = false; btnLinterna.setAttribute("aria-pressed", "false"); btnLinterna.querySelector("span").textContent = "Encender linterna";
     mostrar("Cámara detenida.");
   });
 })();

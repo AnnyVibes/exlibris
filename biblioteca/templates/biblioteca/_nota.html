@@ -12,6 +12,7 @@
   {% endif %}
   <div class="nota-pie">
     <span class="fecha">{% icono 'calendario' %}{{ n.creado|date:"l j \d\e F \a \l\a\s H:i" }}</span>
-    {% if borrar %}<form method="post" action="{% url 'anotacion_eliminar' n.pk %}" onsubmit="return confirm('¿Eliminar esta anotación?');">{% csrf_token %}<button class="boton-texto" type="submit" aria-label="Eliminar anotación">{% icono 'basura' %}</button></form>{% endif %}
+    <span class="nota-acciones"><a class="boton-texto" href="{% url 'anotacion_editar' n.pk %}?siguiente={{ request.get_full_path|urlencode }}" title="Editar anotación" aria-label="Editar anotación">{% icono 'editar' %}</a>
+    {% if borrar %}<form method="post" action="{% url 'anotacion_eliminar' n.pk %}" onsubmit="return confirm('¿Eliminar esta anotación?');">{% csrf_token %}<button class="boton-texto" type="submit" aria-label="Eliminar anotación">{% icono 'basura' %}</button></form>{% endif %}</span>
   </div>
 </article>

@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% load exlibris %}
+{% block titulo %}Mi cuenta{% endblock %}
+{% block contenido %}
+<h1 class="titulo-pagina">Mi cuenta</h1>
+<p class="subtitulo">Tu foto, tu nombre y cómo quieres que te llamemos.</p>
+
+<form method="post" enctype="multipart/form-data" class="cuenta-rejilla">
+  {% csrf_token %}
+  <article class="tarjeta cuenta-perfil">
+    <div class="cuenta-foto">
+      <img id="vista-foto" src="{% if perfil.foto %}{{ perfil.foto.url }}{% endif %}" alt="Tu foto de perfil" {% if not perfil.foto %}hidden{% endif %}>
+      <span id="sin-foto" class="avatar avatar-grande" {% if perfil.foto %}hidden{% endif %}>{{ user.first_name|default:user.username|slice:":1" }}</span>
+    </div>
+    <h2>{{ user.get_full_name|default:user.username }}</h2>
+    <p class="cuenta-tratamiento">{{ perfil.get_tratamiento_display }} · @{{ user.username }}</p>
+    <label class="subir">
+      <span class="boton boton-secundario boton-mini" style="width:100%">{% icono 'camara' %} {% if perfil.foto %}Cambiar foto{% else %}Subir foto{% endif %}</span>
+      <input type="file" name="foto" id="id_foto" accept="image/jpeg,image/png,image/webp">
+    </label>
+    <p class="ayuda" style="font-size:12px;color:var(--texto-suave);text-align:center">JPG, PNG o WEBP, hasta 5 MB. Se recorta en cuadrado.</p>
+    {% for e in perfil_form.foto.errors %}<p class="error" role="alert" style="color:var(--peligro);font-size:13px">{{ e }}</p>{% endfor %}
+    {% if perfil.foto %}<label class="quitar-portada" style="justify-content:center"><input type="checkbox" name="foto-clear" id="foto-clear_id"> Quitar la foto</label>{% endif %}
+    <div class="cuenta-numeros">
+      <span><strong>{{ resumen.total }}</strong>libros</span>
+      <span><strong>{{ resumen.leidos }}</strong>leídos</span>
+      <span><strong>{{ resumen.anotaciones }}</strong>notas</span>
+    </div>
+  </article>
+
+  <article class="tarjeta">
+    <div class="tarjeta-titulo"><h2>Datos personales</h2></div>
+    <div class="formulario dos">
+      {% include "biblioteca/_campo.html" with campo=cuenta_form.first_name %}
+      {% include "biblioteca/_campo.html" with campo=cuenta_form.last_name %}
+      {% include "biblioteca/_campo.html" with campo=cuenta_form.email clase="ancho" %}
+      <div class="campo ancho">
+        <label>Nombre de usuario</label>
+        <input type="text" value="{{ user.username }}" disabled aria-describedby="ayuda-usuario">
+        <div class="ayuda" id="ayuda-usuario">Es el que usas para iniciar sesión; no se puede cambiar.</div>
+      </div>
+    </div>
+
+    <fieldset class="segmentado tratamiento" style="margin-top:20px">
+      <legend>¿Cómo prefieres que te llamemos?</legend>
+      {% for opcion in perfil_form.tratamiento %}
+        <label class="segmento">{{ opcion.tag }}<span>{{ opcion.choice_label }}</span></label>
+      {% endfor %}
+    </fieldset>
+
+    <div class="acciones-fila" style="margin-top:22px">
+      <button class="boton boton-primario" type="submit">Guardar cambios</button>
+      <a class="boton boton-secundario" href="{% url 'cambiar_clave' %}">{% icono 'candado' %} Cambiar contraseña</a>
+    </div>
+  </article>
+</form>
+{% endblock %}
+{% block scripts %}
+<script>
+(function () {
+  const entrada = document.getElementById("id_foto"), vista = document.getElementById("vista-foto"), letra = document.getElementById("sin-foto");
+  entrada.addEventListener("change", () => {
+    const f = entrada.files && entrada.files[0];
+    if (!f) return;
+    if (f.size > 5 * 1024 * 1024) { alert("La imagen pesa más de 5 MB."); entrada.value = ""; return; }
+    vista.src = URL.createObjectURL(f); vista.hidden = false; letra.hidden = true;
+  });
+})();
+</script>
+{% endblock %}

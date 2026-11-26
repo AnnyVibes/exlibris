@@ -35,7 +35,7 @@
   {% endif %}
   {% if vista == 'librero' %}
   <details class="personalizar">
-    <summary class="boton-accion" title="Personalizar librero" aria-label="Personalizar librero">{% icono 'flor' %}</summary>
+    <summary class="boton boton-secundario boton-mini">{% icono 'flor' %} Personalizar</summary>
     <form method="post" action="{% url 'librero_preferencias' %}" class="personalizar-panel" id="form-librero">
       {% csrf_token %}
       <input type="hidden" name="siguiente" value="{{ request.get_full_path }}">
@@ -71,7 +71,11 @@
         <div class="estante-cabecera">
           <h2>{{ seccion.titulo }} <span>{{ seccion.libros|length }}</span></h2>
         </div>
-        <div class="repisa{% if seccion.libros|length >= 4 %} muchos{% endif %}">
+        {% if seccion.libros %}
+        <div class="carrusel" data-carrusel>
+          <button type="button" class="carrusel-flecha anterior" aria-label="Ver libros anteriores de «{{ seccion.titulo }}»" hidden>{% icono 'flecha-izq' %}</button>
+        {% endif %}
+        <div class="repisa{% if seccion.libros %} en-fila{% endif %}" {% if seccion.libros %}tabindex="0" aria-label="{{ seccion.titulo }}: {{ seccion.libros|length }} libro{{ seccion.libros|length|pluralize }}, desliza para ver más"{% endif %}>
           {% for libro in seccion.libros %}
             <a class="libro-repisa" href="{% url 'libro_detalle' libro.pk %}" title="{{ libro.titulo }} · {{ libro.autores }}">
               <span class="tapa-repisa c{{ libro|color_libro }}">
@@ -90,6 +94,10 @@
           {% endfor %}
           <span class="adorno-repisa">{% include "biblioteca/_adorno.html" with nombre=seccion.adorno %}</span>
         </div>
+        {% if seccion.libros %}
+          <button type="button" class="carrusel-flecha siguiente" aria-label="Ver más libros de «{{ seccion.titulo }}»" hidden>{% icono 'flecha-der' %}</button>
+        </div>
+        {% endif %}
       </div>
     {% endfor %}
   </div>
@@ -124,6 +132,26 @@
 {% endblock %}
 
 {% block scripts %}
+<script>
+/* Carrusel de cada estante: flechas que aparecen solo si hay más libros a un lado. */
+(function () {
+  document.querySelectorAll("[data-carrusel]").forEach((c) => {
+    const fila = c.querySelector(".repisa");
+    const ant = c.querySelector(".anterior"), sig = c.querySelector(".siguiente");
+    const actualizar = () => {
+      const max = fila.scrollWidth - fila.clientWidth - 2;
+      ant.hidden = fila.scrollLeft <= 2;
+      sig.hidden = fila.scrollLeft >= max;
+    };
+    const mover = (dir) => fila.scrollBy({ left: dir * fila.clientWidth * 0.9, behavior: "smooth" });
+    ant.addEventListener("click", () => mover(-1));
+    sig.addEventListener("click", () => mover(1));
+    fila.addEventListener("scroll", actualizar, { passive: true });
+    window.addEventListener("resize", actualizar);
+    actualizar();
+  });
+})();
+</script>
 <script>
 /* Los filtros se aplican al elegir una opción (sin botón extra). */
 (function () {

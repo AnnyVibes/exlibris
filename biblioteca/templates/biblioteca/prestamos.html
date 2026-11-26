@@ -17,7 +17,7 @@
         <td>{{ p.persona }}{% if p.contacto %}<br><small style="color:var(--texto-suave)">{{ p.contacto }}</small>{% endif %}</td>
         <td><span class="contador-dias"><strong>{{ p.dias }}</strong> día{{ p.dias|pluralize }}</span><small class="plazo-fecha">desde el {{ p.prestado_el|date:"j M" }}</small></td>
         <td>{% if p.devolver_el %}<span class="fecha-devolucion{% if p.vencido %} vencida{% endif %}">{{ p.devolver_el|date:"j M Y" }}</span>{% else %}—{% endif %}</td>
-        <td><form method="post" action="{% url 'prestamo_devolver' p.pk %}" onsubmit="return confirm('¿Confirmas que te devolvieron «{{ p.libro.titulo|escapejs }}»?');">{% csrf_token %}<button class="boton boton-primario boton-mini" type="submit">Devuelto</button></form></td>
+        <td class="acciones-celda"><a class="boton-accion mini" href="{% url 'prestamo_editar' p.pk %}" title="Editar" aria-label="Editar «{{ p.libro.titulo }}»">{% icono 'editar' %}</a><form method="post" action="{% url 'prestamo_devolver' p.pk %}" onsubmit="return confirm('¿Confirmas que te devolvieron «{{ p.libro.titulo|escapejs }}»?');">{% csrf_token %}<button class="boton boton-primario boton-mini" type="submit">Devuelto</button></form></td>
       </tr>
     {% endfor %}
     </tbody>
@@ -29,8 +29,8 @@
   <div class="tarjeta-titulo"><h2>Historial</h2></div>
   {% if historial %}
   <div class="tabla-envoltura"><table class="tabla">
-    <thead><tr><th>Libro</th><th>Con quién</th><th>Compartido</th><th>Devuelto</th><th>Duró</th></tr></thead>
-    <tbody>{% for p in historial %}<tr><td>{{ p.libro.titulo|truncatechars:40 }}</td><td>{{ p.persona }}</td><td>{{ p.prestado_el|date:"d/m/Y" }}</td><td>{{ p.devuelto_el|date:"d/m/Y" }}</td><td>{{ p.dias|dias_texto }}</td></tr>{% endfor %}</tbody>
+    <thead><tr><th>Libro</th><th>Con quién</th><th>Compartido</th><th>Devuelto</th><th>Duró</th><th></th></tr></thead>
+    <tbody>{% for p in historial %}<tr><td>{{ p.libro.titulo|truncatechars:40 }}</td><td>{{ p.persona }}</td><td>{{ p.prestado_el|date:"d/m/Y" }}</td><td>{{ p.devuelto_el|date:"d/m/Y" }}</td><td>{{ p.dias|dias_texto }}</td><td><a class="boton-accion mini" href="{% url 'prestamo_editar' p.pk %}" title="Editar" aria-label="Editar «{{ p.libro.titulo }}»">{% icono 'editar' %}</a></td></tr>{% endfor %}</tbody>
   </table></div>
   {% else %}<p class="vacio-panel">Aún no te han devuelto ningún libro.</p>{% endif %}
 </article>

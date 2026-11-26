@@ -854,3 +854,85 @@ html { overflow-y: scroll; scrollbar-width: auto; scrollbar-color: rgba(147, 51,
 }
 .fecha-devolucion { font-weight: 500; }
 .fecha-devolucion.vencida { color: var(--peligro); font-weight: 600; }
+
+/* ---------- Librero: cada estante es un carrusel (≈10 libros visibles en PC, ≈4 en el celular) ---------- */
+.carrusel { position: relative; }
+.librero .repisa.en-fila {
+  display: grid; grid-auto-flow: column; grid-template-columns: none;
+  grid-auto-columns: calc((100% - 9 * 12px) / 10); column-gap: 12px;
+  overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; scroll-padding: 0 22px;
+  padding-top: 10px; scrollbar-width: none; grid-auto-rows: auto;
+  background-size: 100% 100%; background-repeat: no-repeat;
+}
+.librero.estilo-mueble .repisa.en-fila { background-size: 80px 100%, 100% 100%; background-repeat: repeat-x, no-repeat; }
+.librero .repisa.en-fila::-webkit-scrollbar { display: none; }
+.librero .repisa.en-fila:focus-visible { outline: none; box-shadow: inset 0 0 0 3px var(--lila-300); border-radius: 12px; }
+.repisa.en-fila .libro-repisa, .repisa.en-fila .adorno-repisa { height: auto; aspect-ratio: 2 / 3; scroll-snap-align: start; }
+.repisa.en-fila .tapa-repisa .portada-falsa strong { font-size: 10px; }
+.repisa.en-fila .tapa-repisa .portada-falsa small { display: none; }
+.carrusel-flecha {
+  position: absolute; top: 50%; z-index: 3; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--lila-200);
+  display: grid; place-items: center; cursor: pointer; color: var(--primario-texto);
+  background: rgba(255, 255, 255, .92); box-shadow: 0 6px 16px rgba(76, 52, 150, .22); transform: translateY(-60%);
+  transition: background .15s, transform .15s;
+}
+.carrusel-flecha:hover { background: #fff; transform: translateY(-60%) scale(1.06); }
+.carrusel-flecha.anterior { left: 4px; } .carrusel-flecha.siguiente { right: 4px; }
+.carrusel-flecha .icono { width: 20px; height: 20px; stroke-width: 2.4; }
+@media (max-width: 860px) {
+  .librero .repisa.en-fila { grid-auto-columns: calc((100% - 3 * 10px) / 4.3); column-gap: 10px; }
+  .carrusel-flecha { width: 34px; height: 34px; }
+}
+/* El carrusel no debe ensanchar la página: los contenedores de la cuadrícula pueden encogerse */
+.mueble-interior { grid-template-columns: minmax(0, 1fr); }
+.estante-seccion, .carrusel, .librero { min-width: 0; }
+
+/* ---------- Campos de formulario uniformes ----------
+   Mismo alto (46 px), mismo radio, mismo relleno y mismo color de texto de ejemplo en todos los tipos. */
+.campo input:not([type=radio]):not([type=checkbox]):not([type=file]), .campo select, .fila-busqueda input, .pagina-fila input {
+  height: 46px; padding: 0 14px; border-radius: var(--radio-sm); font-size: 15px; line-height: normal;
+}
+.campo textarea { padding: 12px 14px; font-size: 15px; min-height: 96px; }
+.campo select {
+  appearance: none; -webkit-appearance: none; padding-right: 38px; cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236d28d9' stroke-width='2.2' stroke-linecap='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 14px center; background-size: 14px;
+}
+.campo input::placeholder, .campo textarea::placeholder, .fila-busqueda input::placeholder { color: #9a95ab; opacity: 1; }
+.campo input[type=date] { color: var(--texto); }
+.fila-busqueda .boton { min-height: 46px; }
+
+.nota-acciones { display: inline-flex; align-items: center; gap: 10px; }
+.boton-texto:hover { color: var(--primario-texto); }
+.nota-acciones form .boton-texto:hover { color: #b42318; }
+.boton-accion.mini { width: 36px; height: 36px; }
+.boton-accion.mini .icono { width: 16px; height: 16px; }
+.acciones-celda { display: flex; align-items: center; gap: 8px; }
+.formulario-estrecho { max-width: 720px; }
+
+/* ---------- Mi cuenta ---------- */
+.avatar-foto { object-fit: cover; padding: 0; }
+a.perfil { transition: box-shadow .15s; } a.perfil:hover { box-shadow: var(--sombra-fuerte); }
+.avatar-movil { display: none; }
+.cuenta-rejilla { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 20px; align-items: start; }
+.cuenta-perfil { display: grid; gap: 12px; justify-items: center; text-align: center; }
+.cuenta-foto { width: 140px; height: 140px; border-radius: 50%; overflow: hidden; box-shadow: 0 0 0 6px var(--lila-100), var(--sombra); }
+.cuenta-foto img { width: 100%; height: 100%; object-fit: cover; }
+.avatar-grande { width: 100%; height: 100%; font-size: 56px; border-radius: 50%; }
+.cuenta-perfil h2 { font-size: 20px; }
+.cuenta-tratamiento { color: var(--texto-suave); font-size: 14px; margin-top: -8px; }
+.cuenta-perfil .subir { width: 100%; }
+.cuenta-numeros { display: grid; grid-template-columns: repeat(3, 1fr); width: 100%; border-top: 1px solid var(--borde); padding-top: 14px; }
+.cuenta-numeros span { display: grid; font-size: 12px; color: var(--texto-suave); }
+.cuenta-numeros strong { font-size: 20px; color: #3b2a63; }
+.tratamiento .segmento-lectora input:checked + span, .tratamiento .segmento input:checked + span { background: var(--lila-100); border-color: var(--lila-300); color: var(--primario-texto); font-weight: 600; }
+.campo input:disabled { background: #f3f4f6; color: var(--texto-suave); cursor: not-allowed; }
+@media (max-width: 860px) {
+  .cuenta-rejilla { grid-template-columns: 1fr; }
+  .avatar-movil { display: block; } .avatar-movil .avatar { width: 44px; height: 44px; }
+}
+
+/* ---------- Escáner: vista volteada (cámara frontal) y botones de linterna/espejo ---------- */
+#lector.espejo video { transform: scaleX(-1); }
+#linterna[aria-pressed="true"] { background: #fef3c7; border-color: #f6c453; color: #8a4b0f; }
+#espejo[aria-pressed="true"] { background: var(--lila-100); border-color: var(--lila-300); }

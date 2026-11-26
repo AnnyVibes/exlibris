@@ -1,16 +1,18 @@
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.views import LoginView
+from django.contrib.auth.views import LoginView, PasswordChangeView
 from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.utils.http import url_has_allowed_host_and_scheme, urlencode
 from django.views.decorators.http import require_POST
 
 from .forms import (
-    AnotacionForm, LibroForm, PreferenciaLibreroForm, PrestamoForm, ProgresoForm, RegistroForm, ResenaForm,
+    AnotacionForm, CuentaForm, LibroForm, PerfilForm, PreferenciaLibreroForm, PrestamoEditarForm, PrestamoForm, ProgresoForm, RegistroForm,
+    ResenaForm,
 )
-from .models import Anotacion, Libro, PreferenciaLibrero, Prestamo, Resena
+from .models import Anotacion, Libro, Perfil, PreferenciaLibrero, Prestamo, Resena
 from .services import catalogo, estadisticas
 from .services.isbn import ISBNInvalido, normalizar
 from .services.prestamos import PrestamoError, devolver, prestar
@@ -279,6 +281,38 @@ def anotacion_crear(request, pk):
     return redirect("libro_detalle", pk=libro.pk)
 
 
+def _siguiente(request, por_defecto):
+    """URL de retorno segura (solo del mismo sitio)."""
+    siguiente = request.POST.get("siguiente") or request.GET.get("siguiente") or ""
+    if url_has_allowed_host_and_scheme(siguiente, allowed_hosts={request.get_host()}):
+        return siguiente
+    return por_defecto
+
+
+@login_required
+def anotacion_editar(request, pk):
+    anotacion = get_object_or_404(Anotacion, pk=pk, libro__propietario=request.user)
+    volver = _siguiente(request, reverse("libro_detalle", args=[anotacion.libro_id]))
+    form = AnotacionForm(request.POST or None, instance=anotacion)
+    if request.method == "POST" and form.is_valid():
+        form.save()
+        messages.success(request, "La anotación se actualizó.")
+        return redirect(volver)
+    return render(request, "biblioteca/anotacion_editar.html", {"form": form, "anotacion": anotacion, "volver": volver})
+
+
+@login_required
+def prestamo_editar(request, pk):
+    prestamo = get_object_or_404(Prestamo, pk=pk, libro__propietario=request.user)
+    volver = _siguiente(request, reverse("prestamos"))
+    form = PrestamoEditarForm(request.POST or None, instance=prestamo)
+    if request.method == "POST" and form.is_valid():
+        form.save()
+        messages.success(request, f"Se actualizaron los datos de «{prestamo.libro.titulo}».")
+        return redirect(volver)
+    return render(request, "biblioteca/prestamo_editar.html", {"form": form, "prestamo": prestamo, "volver": volver})
+
+
 @login_required
 @require_POST
 def anotacion_eliminar(request, pk):
@@ -355,3 +389,34 @@ def estadisticas_view(request):
         },
         "grafico_generos": {"labels": [g for g, _ in generos], "data": [n for _, n in generos]},
     })
+
+
+@login_required
+def cuenta(request):
+    perfil = Perfil.de(request.user)
+    foto_anterior = perfil.foto.name
+    datos = request.POST if request.method == "POST" else None
+    cuenta_form = CuentaForm(datos, instance=request.user)
+    perfil_form = PerfilForm(datos, request.FILES or None, instance=perfil)
+    if request.method == "POST" and cuenta_form.is_valid() and perfil_form.is_valid():
+        cuenta_form.save()
+        perfil = perfil_form.save()
+        if foto_anterior and foto_anterior != perfil.foto.name:
+            perfil.foto.storage.delete(foto_anterior)
+        messages.success(request, "Tus datos se actualizaron.")
+        return redirect("cuenta")
+    return render(request, "biblioteca/cuenta.html", {
+        "cuenta_form": cuenta_form, "perfil_form": perfil_form, "perfil": perfil,
+        "resumen": estadisticas.resumen(request.user),
+    })
+
+
+class CambiarClaveView(PasswordChangeView):
+    template_name = "biblioteca/cambiar_clave.html"
+
+    def get_success_url(self):
+        return reverse("cuenta")
+
+    def form_valid(self, form):
+        messages.success(self.request, "Tu contraseña se cambió.")
+        return super().form_valid(form)

@@ -9,7 +9,7 @@
 <form method="get" class="tarjeta campo" style="margin-bottom:20px">
   <label for="buscar-isbn">Buscar por ISBN</label>
   <div class="fila-busqueda">
-    <input id="buscar-isbn" name="isbn" value="{{ isbn_buscado }}" inputmode="numeric" placeholder="978…" required>
+    <input id="buscar-isbn" name="isbn" value="{{ isbn_buscado }}" inputmode="numeric" placeholder="Ej.: 978-84-376-0494-7" required>
     <button class="boton boton-secundario" type="submit">{% icono 'buscar' %} Buscar</button>
     <a class="boton boton-suave" href="{% url 'escanear' %}" aria-label="Escanear con la cámara" title="Escanear con la cámara">{% icono 'camara' %}</a>
   </div>

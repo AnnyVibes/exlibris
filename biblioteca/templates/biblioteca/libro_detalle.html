@@ -50,7 +50,7 @@
         <div class="campo campo-pagina">
           <label for="{{ progreso_form.pagina_actual.id_for_label }}">Página actual</label>
           <div class="pagina-fila">
-            <input type="number" name="pagina_actual" id="{{ progreso_form.pagina_actual.id_for_label }}" value="{{ libro.pagina_actual }}" min="0" {% if libro.paginas %}max="{{ libro.paginas }}" data-total="{{ libro.paginas }}"{% endif %} inputmode="numeric">
+            <input type="number" name="pagina_actual" id="{{ progreso_form.pagina_actual.id_for_label }}" value="{{ libro.pagina_actual }}" placeholder="Ej.: 120" min="0" {% if libro.paginas %}max="{{ libro.paginas }}" data-total="{{ libro.paginas }}"{% endif %} inputmode="numeric">
             {% if libro.paginas %}<span class="pagina-total">de {{ libro.paginas }}</span>{% endif %}
             <button class="boton boton-primario" type="submit">{% icono 'check' %} Guardar</button>
           </div>
@@ -83,6 +83,7 @@
       <p style="margin-bottom:14px">Lo tiene <strong>{{ prestamo_activo.persona }}</strong>{% if prestamo_activo.contacto %} ({{ prestamo_activo.contacto }}){% endif %} desde el {{ prestamo_activo.prestado_el|date:"j \d\e F" }} ({{ prestamo_activo.dias|dias_texto|lower }}).</p>
       {% if prestamo_activo.devolver_el %}<p style="margin-bottom:14px">Devolución: <span class="fecha-devolucion{% if prestamo_activo.vencido %} vencida{% endif %}">{{ prestamo_activo.devolver_el|date:"j \d\e F" }}</span></p>{% endif %}
       {% if prestamo_activo.notas %}<p class="ayuda" style="margin-bottom:14px">{{ prestamo_activo.notas }}</p>{% endif %}
+      <p style="margin-bottom:14px"><a class="enlace-plegable" href="{% url 'prestamo_editar' prestamo_activo.pk %}?siguiente={{ request.path|urlencode }}">{% icono 'editar' %} Editar datos</a></p>
       <p class="pregunta-devuelto">¿Ya te lo devolvieron?</p>
       <form method="post" action="{% url 'prestamo_devolver' prestamo_activo.pk %}" onsubmit="return confirm('¿Confirmas que te devolvieron «{{ libro.titulo|escapejs }}»?');">
         {% csrf_token %}<input type="hidden" name="siguiente" value="{{ request.path }}">
