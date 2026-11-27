@@ -143,7 +143,7 @@ def preguntar(usuario, mensaje, sesion):
         "api": f"{settings.EXLIBRIS_API_URL}/api/ia",
         "persona": {
             "nombre": usuario.first_name or usuario.username,
-            "tratamiento": perfil.get_tratamiento_display() if perfil else "Persona lectora",
+            "tratamiento": perfil.get_tratamiento_display() if perfil else "Lectora",
         },
     })
     return _texto(respuesta, "respuesta", "output", "texto")

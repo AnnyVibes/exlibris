@@ -970,7 +970,7 @@ a.perfil { transition: box-shadow .15s; } a.perfil:hover { box-shadow: var(--som
 .cuenta-numeros { display: grid; grid-template-columns: repeat(3, 1fr); width: 100%; border-top: 1px solid var(--borde); padding-top: 14px; }
 .cuenta-numeros span { display: grid; font-size: 12px; color: var(--texto-suave); }
 .cuenta-numeros strong { font-size: 20px; color: #3b2a63; }
-.tratamiento .segmento-lectora input:checked + span, .tratamiento .segmento input:checked + span { background: var(--lila-100); border-color: var(--lila-300); color: var(--primario-texto); font-weight: 600; }
+.tratamiento .segmento input:checked + span, .tratamiento-registro .segmento input:checked + span { background: var(--lila-100); border-color: var(--lila-300); color: var(--primario-texto); font-weight: 600; }
 .campo input:disabled { background: #f3f4f6; color: var(--texto-suave); cursor: not-allowed; }
 @media (max-width: 860px) {
   .cuenta-rejilla { grid-template-columns: 1fr; }
@@ -1088,3 +1088,6 @@ a.perfil { transition: box-shadow .15s; } a.perfil:hover { box-shadow: var(--som
 .chat-entrada .boton { width: 46px; height: 46px; padding: 0; border-radius: 50%; flex-shrink: 0; }
 .chat-entrada:focus-within { border-color: var(--lila-400); box-shadow: 0 0 0 4px var(--lila-100); }
 @media (max-width: 860px) { .burbuja { max-width: 92%; } }
+
+.tratamiento, .tratamiento-registro { grid-template-columns: repeat(2, 1fr); }
+.tratamiento-registro legend { font-size: 14px; }

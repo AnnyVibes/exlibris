@@ -31,10 +31,13 @@ class AccesoTests(ConUsuario):
         self.client.logout()
         r = self.client.post(reverse("registro"), {
             "username": "carla", "email": "carla@example.com",
-            "password1": "Una-clave-larga-99", "password2": "Una-clave-larga-99",
+            "password1": "Una-clave-larga-99", "password2": "Una-clave-larga-99", "tratamiento": "lector",
         })
         self.assertRedirects(r, reverse("inicio"))
         self.assertEqual(self.client.get(reverse("inicio")).status_code, 200)
+        from biblioteca.models import Perfil
+        from django.contrib.auth.models import User
+        self.assertEqual(Perfil.de(User.objects.get(username="carla")).tratamiento, "lector")
 
 
 class AltaLibroTests(ConUsuario):
