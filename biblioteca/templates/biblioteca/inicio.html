@@ -12,6 +12,12 @@
       <a class="boton boton-arcoiris" href="{% url 'escanear' %}">{% icono 'camara' %} Escanear libro</a>
       <a class="boton boton-secundario" href="{% url 'libro_nuevo' %}">{% icono 'mas' %} Agregar a mano</a>
     </div>
+    <form class="hero-asistente" method="get" action="{% url 'asistente' %}" role="search" aria-label="Preguntar al asistente">
+      <span class="hero-asistente-icono">{% icono 'ia' %}</span>
+      <label class="solo-lectores" for="pregunta-inicio">Pregúntale a tu asistente</label>
+      <input id="pregunta-inicio" name="q" maxlength="2000" placeholder="Pregúntale a tu asistente…" autocomplete="off">
+      <button type="submit" aria-label="Preguntar">{% icono 'flecha-der' %}</button>
+    </form>
   </div>
 </section>
 

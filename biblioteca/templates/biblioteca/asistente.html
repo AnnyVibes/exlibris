@@ -87,6 +87,9 @@
   entrada.addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); enviar(entrada.value); } });
   entrada.addEventListener("input", () => { entrada.style.height = ""; entrada.style.height = Math.min(entrada.scrollHeight, 160) + "px"; });
   document.querySelectorAll("#sugerencias button").forEach((b) => b.addEventListener("click", () => enviar(b.textContent)));
+  /* Pregunta enviada desde el inicio (?q=…) */
+  const desdeInicio = new URLSearchParams(location.search).get("q");
+  if (desdeInicio && desdeInicio.trim()) { history.replaceState(null, "", location.pathname); enviar(desdeInicio.trim()); }
 })();
 </script>
 {% endblock %}

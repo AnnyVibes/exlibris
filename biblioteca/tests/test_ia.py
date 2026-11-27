@@ -327,3 +327,11 @@ class DescripcionIATests(ConUsuario):
         self.assertEqual(post_json(self.client, reverse("ia_descripcion"), {"titulo": ""}).status_code, 400)
         with patch.object(ia, "_llamar", side_effect=ia.IANoDisponible("La IA no está disponible.")):
             self.assertEqual(post_json(self.client, reverse("ia_descripcion"), {"titulo": "X"}).status_code, 503)
+
+
+class AsistenteDesdeInicioTests(ConUsuario):
+    def test_caja_del_asistente_en_el_inicio(self):
+        html = self.client.get(reverse("inicio")).content.decode()
+        self.assertIn('action="%s"' % reverse("asistente"), html)
+        self.assertIn('name="q"', html)
+        self.assertContains(self.client.get(reverse("asistente") + "?q=hola"), "desdeInicio")
