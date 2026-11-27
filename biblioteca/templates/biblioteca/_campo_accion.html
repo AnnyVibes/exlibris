@@ -1,0 +1,10 @@
+{# Campo con una acción (botón de texto) a la derecha de la etiqueta: mantiene las filas alineadas. #}
+<div class="campo {{ clase }}">
+  <div class="campo-cabecera">
+    <label for="{{ campo.id_for_label }}">{{ campo.label }}</label>
+    {{ accion }}
+  </div>
+  {{ campo }}
+  {% for e in campo.errors %}<p class="error">{{ e }}</p>{% endfor %}
+  <p class="ia-estado" id="{{ estado_id }}" role="status" hidden></p>
+</div>

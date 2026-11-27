@@ -18,7 +18,7 @@ urlpatterns = [
     path("libros/<int:pk>/", views.libro_detalle, name="libro_detalle"),
     path("libros/<int:pk>/editar/", views.libro_editar, name="libro_editar"),
     path("libros/<int:pk>/eliminar/", views.libro_eliminar, name="libro_eliminar"),
-    path("libros/<int:pk>/completar/", views.libro_completar, name="libro_completar"),
+    path("libros/completar-datos/", views.completar_datos, name="completar_datos"),
     path("libros/<int:pk>/progreso/", views.progreso_actualizar, name="progreso_actualizar"),
     path("libros/<int:pk>/resena/", views.resena_guardar, name="resena_guardar"),
     path("libros/<int:pk>/anotaciones/", views.anotacion_crear, name="anotacion_crear"),
@@ -34,6 +34,7 @@ urlpatterns = [
     path("asistente/", views.asistente, name="asistente"),
     path("ia/agente/", views.ia_agente, name="ia_agente"),
     path("ia/clasificar/", views.ia_clasificar, name="ia_clasificar"),
+    path("ia/descripcion/", views.ia_descripcion, name="ia_descripcion"),
     path("ia/libros/<int:pk>/resumir/", views.ia_resumir, name="ia_resumir"),
     path("ia/libros/<int:pk>/resena/", views.ia_resena, name="ia_resena"),
     # API para las herramientas del agente (token firmado)

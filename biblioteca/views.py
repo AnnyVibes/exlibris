@@ -18,6 +18,7 @@ from .forms import (
 )
 from .models import Anotacion, Libro, Perfil, PreferenciaLibrero, Prestamo, Resena
 from .services import catalogo, estadisticas, ia
+from .services.generos import GENEROS
 from .services.isbn import ISBNInvalido, normalizar
 from .services.prestamos import PrestamoError, devolver, prestar
 
@@ -241,21 +242,25 @@ def libro_editar(request, pk):
     return render(request, "biblioteca/libro_form.html", {"form": form, "libro": libro, "portada": libro.imagen_portada})
 
 
-NOMBRES_CAMPOS = {"autores": "autor", "editorial": "editorial", "anio": "año", "paginas": "páginas",
-                  "portada_url": "portada", "descripcion": "descripción", "genero": "género", "isbn": "ISBN"}
-
-
 @login_required
 @require_POST
-def libro_completar(request, pk):
-    """Completa los campos vacíos del libro con Google Books y Open Library (no cambia lo que ya está escrito)."""
-    libro = _libro_del_usuario(request, pk)
-    completados = catalogo.completar_libro(libro)
-    if completados:
-        messages.success(request, "Se completó: " + ", ".join(NOMBRES_CAMPOS[c] for c in completados) + ".")
-    else:
-        messages.info(request, "No se encontraron más datos para este libro en los catálogos.")
-    return redirect("libro_detalle", pk=libro.pk)
+def completar_datos(request):
+    """Datos de los catálogos para rellenar los campos vacíos del formulario (no guarda nada)."""
+    datos = _json(request) or {}
+    isbn = str(datos.get("isbn", "")).strip()
+    try:
+        isbn = normalizar(isbn) if isbn else ""
+    except ISBNInvalido:
+        isbn = ""
+    titulo, autores = str(datos.get("titulo", "")).strip(), str(datos.get("autores", "")).strip()
+    if not titulo and not isbn:
+        return JsonResponse({"error": "Escribe al menos el título o el ISBN."}, status=400)
+    encontrados = catalogo.completar_datos(isbn, titulo, autores)
+    campos = ("autores", "editorial", "anio", "paginas", "portada_url", "descripcion", "genero", "isbn")
+    respuesta = {c: encontrados[c] for c in campos if encontrados.get(c)}
+    if respuesta.get("genero") not in GENEROS:
+        respuesta.pop("genero", None)
+    return JsonResponse(respuesta)
 
 
 @login_required
@@ -494,6 +499,20 @@ def ia_resena(request, pk):
         calificacion = None
     try:
         texto = ia.borrador_resena(libro, calificacion)
+    except ia.IANoDisponible as exc:
+        return _error_ia(exc)
+    return JsonResponse({"texto": texto})
+
+
+@login_required
+@require_POST
+def ia_descripcion(request):
+    datos = _json(request) or {}
+    titulo = str(datos.get("titulo", "")).strip()
+    if not titulo:
+        return JsonResponse({"error": "Primero escribe el título."}, status=400)
+    try:
+        texto = ia.descripcion(titulo, str(datos.get("autores", "")), str(datos.get("genero", "")))
     except ia.IANoDisponible as exc:
         return _error_ia(exc)
     return JsonResponse({"texto": texto})

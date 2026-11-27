@@ -104,6 +104,14 @@ def clasificar(titulo, autores="", descripcion=""):
     return {"genero": genero, "etiquetas": etiquetas}
 
 
+def descripcion(titulo, autores="", genero=""):
+    """Sinopsis breve (sin spoilers) para libros que los catálogos no describen."""
+    respuesta = _llamar("exlibris-tarea", {"tarea": "descripcion", "titulo": titulo, "autores": autores, "genero": genero})
+    texto = _texto(respuesta, "descripcion", "texto")
+    texto = re.sub(r"\*\*(.+?)\*\*|__(.+?)__", lambda m: m.group(1) or m.group(2), texto)
+    return texto.strip()
+
+
 def resumir(libro):
     notas = _anotaciones(libro)
     if not notas:

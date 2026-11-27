@@ -314,3 +314,16 @@ class BuscarIsbnPorTituloTests(ConUsuario):
             self.assertEqual(catalogo.buscar_isbn_por_titulo("Cien años"), "9780307474728")
         with patch.object(catalogo, "_get_json", return_value=None):
             self.assertEqual(catalogo.buscar_isbn_por_titulo("X"), "")
+
+
+class DescripcionIATests(ConUsuario):
+    def test_escribe_sinopsis(self):
+        with patch.object(ia, "_llamar", return_value={"descripcion": "Una novela **experimental** sobre el azar."}) as llamar:
+            r = post_json(self.client, reverse("ia_descripcion"), {"titulo": "Rayuela", "autores": "Cortázar"})
+        self.assertEqual(r.json()["texto"], "Una novela experimental sobre el azar.")
+        self.assertEqual(llamar.call_args[0][1]["tarea"], "descripcion")
+
+    def test_sin_titulo_e_ia_apagada(self):
+        self.assertEqual(post_json(self.client, reverse("ia_descripcion"), {"titulo": ""}).status_code, 400)
+        with patch.object(ia, "_llamar", side_effect=ia.IANoDisponible("La IA no está disponible.")):
+            self.assertEqual(post_json(self.client, reverse("ia_descripcion"), {"titulo": "X"}).status_code, 503)

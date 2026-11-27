@@ -80,6 +80,14 @@ Sus anotaciones:
 Escribe en "resena" entre 80 y 150 palabras, con un tono acorde a la calificación, basándote en sus anotaciones.
 Si no hay anotaciones, escribe una reseña breve y general sin inventar detalles de la trama."""
 
+P_DESCRIPCION = """=Escribe la sinopsis del libro «{{ $json.body.titulo }}» de {{ $json.body.autores || "autor desconocido" }}{{ $json.body.genero ? " (" + $json.body.genero + ")" : "" }}.
+
+En "descripcion": entre 60 y 110 palabras, en español, en tercera persona, como la contraportada de un libro.
+Sin spoilers del final. Si no conoces bien este libro, escribe una descripción general y prudente basada en el título,
+el autor y el género, sin inventar nombres de personajes ni detalles concretos de la trama."""
+
+ESQ_DESCRIPCION = {"type": "object", "properties": {"descripcion": {"type": "string"}}, "required": ["descripcion"]}
+
 ESQ_CLASIFICAR = {"type": "object", "properties": {
     "genero": {"type": "string", "enum": GENEROS},
     "etiquetas": {"type": "array", "items": {"type": "string"}, "maxItems": 5}},
@@ -99,29 +107,34 @@ def regla(id_, valor):
 def tareas(base):
     nodos = [
         webhook("exlibris-tarea", [0, 200]),
-        {"parameters": {"rules": {"values": [regla("r1", "clasificar"), regla("r2", "resumir"), regla("r3", "resena")]},
+        {"parameters": {"rules": {"values": [regla("r1", "clasificar"), regla("r2", "resumir"), regla("r3", "resena"), regla("r4", "descripcion")]},
                         "options": {}},
          "id": "n-switch", "name": "Switch (tarea)", "type": "n8n-nodes-base.switch", "typeVersion": 3.2, "position": [220, 200]},
         cadena("Clasificar libro", "c-clas", P_CLASIFICAR, [500, 0]),
         cadena("Resumir anotaciones", "c-res", P_RESUMIR, [500, 300]),
         cadena("Borrador de reseña", "c-resena", P_RESENA, [500, 600]),
+        cadena("Escribir sinopsis", "c-desc", P_DESCRIPCION, [500, 900]),
         modelo("Modelo (clasificar)", "m-clas", [440, 160], base),
         modelo("Modelo (resumir)", "m-res", [440, 460], base),
         modelo("Modelo (reseña)", "m-resena", [440, 760], base),
+        modelo("Modelo (sinopsis)", "m-desc", [440, 1060], base),
         parser("Parser (clasificar)", "p-clas", ESQ_CLASIFICAR, [640, 160]),
         parser("Parser (resumir)", "p-res", ESQ_RESUMIR, [640, 460]),
         parser("Parser (reseña)", "p-resena", ESQ_RESENA, [640, 760]),
+        parser("Parser (sinopsis)", "p-desc", ESQ_DESCRIPCION, [640, 1060]),
         responder("Responder a Ex Libris", "n-resp", "={{ JSON.stringify($json.output) }}", [900, 300]),
     ]
     conexiones = {
         "Webhook": {"main": [[{"node": "Switch (tarea)", "type": "main", "index": 0}]]},
         "Switch (tarea)": {"main": [[{"node": "Clasificar libro", "type": "main", "index": 0}],
                                     [{"node": "Resumir anotaciones", "type": "main", "index": 0}],
-                                    [{"node": "Borrador de reseña", "type": "main", "index": 0}]]},
+                                    [{"node": "Borrador de reseña", "type": "main", "index": 0}],
+                                    [{"node": "Escribir sinopsis", "type": "main", "index": 0}]]},
     }
     for cadena_, mod, par in (("Clasificar libro", "Modelo (clasificar)", "Parser (clasificar)"),
                               ("Resumir anotaciones", "Modelo (resumir)", "Parser (resumir)"),
-                              ("Borrador de reseña", "Modelo (reseña)", "Parser (reseña)")):
+                              ("Borrador de reseña", "Modelo (reseña)", "Parser (reseña)"),
+                              ("Escribir sinopsis", "Modelo (sinopsis)", "Parser (sinopsis)")):
         conexiones[cadena_] = {"main": [[{"node": "Responder a Ex Libris", "type": "main", "index": 0}]]}
         conexiones[mod] = {"ai_languageModel": [[{"node": cadena_, "type": "ai_languageModel", "index": 0}]]}
         conexiones[par] = {"ai_outputParser": [[{"node": cadena_, "type": "ai_outputParser", "index": 0}]]}

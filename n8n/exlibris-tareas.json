@@ -90,6 +90,29 @@
               },
               "renameOutput": true,
               "outputKey": "resena"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "id": "r4",
+                    "leftValue": "={{ $json.body.tarea }}",
+                    "rightValue": "descripcion",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "descripcion"
             }
           ]
         },
@@ -151,6 +174,21 @@
     },
     {
       "parameters": {
+        "promptType": "define",
+        "text": "=Escribe la sinopsis del libro «{{ $json.body.titulo }}» de {{ $json.body.autores || \"autor desconocido\" }}{{ $json.body.genero ? \" (\" + $json.body.genero + \")\" : \"\" }}.\n\nEn \"descripcion\": entre 60 y 110 palabras, en español, en tercera persona, como la contraportada de un libro.\nSin spoilers del final. Si no conoces bien este libro, escribe una descripción general y prudente basada en el título,\nel autor y el género, sin inventar nombres de personajes ni detalles concretos de la trama.",
+        "hasOutputParser": true
+      },
+      "id": "260d0887-58b8-5733-befc-b59b2ce29680",
+      "name": "Escribir sinopsis",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        500,
+        900
+      ]
+    },
+    {
+      "parameters": {
         "modelName": "models/gemini-3.5-flash",
         "options": {
           "temperature": 0.3
@@ -199,6 +237,22 @@
     },
     {
       "parameters": {
+        "modelName": "models/gemini-3.5-flash",
+        "options": {
+          "temperature": 0.3
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "id": "9fbeee5e-c704-5c36-86c9-702760226587",
+      "name": "Modelo (sinopsis)",
+      "position": [
+        440,
+        1060
+      ]
+    },
+    {
+      "parameters": {
         "schemaType": "manual",
         "inputSchema": "{\n \"type\": \"object\",\n \"properties\": {\n  \"genero\": {\n   \"type\": \"string\",\n   \"enum\": [\n    \"Novela\",\n    \"Cuento\",\n    \"Poesía\",\n    \"Teatro\",\n    \"Fantasía\",\n    \"Ciencia ficción\",\n    \"Misterio y policial\",\n    \"Terror\",\n    \"Romance\",\n    \"Novela histórica\",\n    \"Clásicos\",\n    \"Juvenil\",\n    \"Infantil\",\n    \"Cómic y manga\",\n    \"Biografía y memorias\",\n    \"Ensayo\",\n    \"Historia\",\n    \"Filosofía\",\n    \"Psicología\",\n    \"Desarrollo personal\",\n    \"Ciencia\",\n    \"Tecnología\",\n    \"Negocios y economía\",\n    \"Arte y diseño\",\n    \"Religión y espiritualidad\",\n    \"Cocina\",\n    \"Viajes\",\n    \"Educación y estudio\",\n    \"Otro\"\n   ]\n  },\n  \"etiquetas\": {\n   \"type\": \"array\",\n   \"items\": {\n    \"type\": \"string\"\n   },\n   \"maxItems\": 5\n  }\n },\n \"required\": [\n  \"genero\",\n  \"etiquetas\"\n ]\n}"
       },
@@ -237,6 +291,20 @@
       "position": [
         640,
         760
+      ]
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n \"type\": \"object\",\n \"properties\": {\n  \"descripcion\": {\n   \"type\": \"string\"\n  }\n },\n \"required\": [\n  \"descripcion\"\n ]\n}"
+      },
+      "id": "dc7ba6c1-cd39-5bfb-a709-85c517df87ff",
+      "name": "Parser (sinopsis)",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        640,
+        1060
       ]
     },
     {
@@ -286,6 +354,13 @@
         [
           {
             "node": "Borrador de reseña",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Escribir sinopsis",
             "type": "main",
             "index": 0
           }
@@ -385,6 +460,39 @@
         [
           {
             "node": "Borrador de reseña",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Escribir sinopsis": {
+      "main": [
+        [
+          {
+            "node": "Responder a Ex Libris",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Modelo (sinopsis)": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Escribir sinopsis",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parser (sinopsis)": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Escribir sinopsis",
             "type": "ai_outputParser",
             "index": 0
           }

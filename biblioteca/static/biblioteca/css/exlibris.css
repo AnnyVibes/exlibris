@@ -1101,3 +1101,30 @@ a.perfil { transition: box-shadow .15s; } a.perfil:hover { box-shadow: var(--som
 .burbuja-texto strong, .ia-resumen-texto strong { color: #3b2a63; }
 .burbuja.yo .burbuja-texto strong { color: #fff; }
 .burbuja-texto code { background: rgba(124, 58, 237, .1); padding: 1px 5px; border-radius: 5px; font-size: 13px; }
+
+/* ---------- Formulario del libro: bloques ordenados ---------- */
+.form-campos { display: grid; gap: 18px; min-width: 0; }
+.completar-barra { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;
+  padding: 14px 16px; border-radius: var(--radio-md); background: var(--lila-50); border: 1px solid var(--borde); }
+.completar-barra strong { display: block; color: #3b2a63; font-size: 15px; }
+.completar-barra span { font-size: 13px; color: var(--texto-suave); }
+.bloque-form { border: 0; padding: 0; margin: 0; display: grid; gap: 12px; min-width: 0; }
+.bloque-form > legend { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--primario-texto);
+  padding: 0 0 8px; margin-bottom: 4px; width: 100%; border-bottom: 1px solid var(--borde); }
+.rejilla-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 16px; align-items: start; }
+.rejilla-form .col-2 { grid-column: 1 / -1; }
+.rejilla-form.edicion { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr); }
+.campo-cabecera { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
+.campo-cabecera label { margin-bottom: 0 !important; }
+.boton-enlace { all: unset; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--primario-texto); white-space: nowrap; border-radius: 6px; }
+.boton-enlace:hover { text-decoration: underline; text-underline-offset: 3px; }
+.boton-enlace:focus-visible { box-shadow: var(--foco); }
+.boton-enlace[disabled] { opacity: .5; pointer-events: none; }
+.boton-ia-texto { color: #a21caf; }
+.campo textarea#id_descripcion { min-height: 120px; }
+.recien-completado { border-color: #f0abfc !important; background: #fdf4ff !important; }
+.acciones-form { display: flex; justify-content: flex-end; gap: 10px; padding-top: 16px; border-top: 1px solid var(--borde); }
+@media (max-width: 860px) {
+  .rejilla-form, .rejilla-form.edicion { grid-template-columns: 1fr; }
+  .acciones-form { justify-content: stretch; } .acciones-form .boton { flex: 1; }
+}

@@ -43,29 +43,52 @@
       </div>
     </div>
 
-    <div class="formulario dos">
-      {% include "biblioteca/_campo.html" with campo=form.titulo clase="ancho" %}
-      {% include "biblioteca/_campo.html" with campo=form.autores %}
-      <div class="campo-con-ia">
-        {% include "biblioteca/_campo.html" with campo=form.genero %}
-        <button class="boton boton-ia boton-mini" type="button" id="ia-clasificar" data-url="{% url 'ia_clasificar' %}" title="Sugerir género y etiquetas con IA">{% icono 'ia' %} <span>Sugerir con IA</span></button>
-        <p class="ia-estado" id="ia-clasificar-estado" role="status" hidden></p>
+    <div class="form-campos">
+      <div class="completar-barra">
+        <div>
+          <strong>¿Faltan datos?</strong>
+          <span>Busca en Google Books y Open Library y rellena solo los campos vacíos. Revisa y pulsa Guardar.</span>
+        </div>
+        <button class="boton boton-secundario boton-mini" type="button" id="completar-datos" data-url="{% url 'completar_datos' %}">{% icono 'buscar' %} Completar datos faltantes</button>
       </div>
-      {% include "biblioteca/_campo.html" with campo=form.estado %}
-      {% include "biblioteca/_campo.html" with campo=form.isbn %}
-      {% include "biblioteca/_campo.html" with campo=form.editorial %}
-      <div class="formulario dos" style="gap:14px">
-        {% include "biblioteca/_campo.html" with campo=form.anio %}
-        {% include "biblioteca/_campo.html" with campo=form.paginas %}
-      </div>
-      {% include "biblioteca/_campo.html" with campo=form.descripcion clase="ancho" %}
-      <details class="ancho">
-        <summary class="enlace-plegable">{% icono 'imagen' %} Usar el enlace de una imagen en lugar de subirla</summary>
-        <div style="margin-top:10px">{% include "biblioteca/_campo.html" with campo=form.portada_url %}</div>
-      </details>
-      <div class="acciones-fila ancho">
-        <button class="boton boton-primario" type="submit">Guardar</button>
+      <p class="ia-estado" id="completar-estado" role="status" hidden></p>
+
+      <fieldset class="bloque-form">
+        <legend>Libro</legend>
+        <div class="rejilla-form">
+          {% include "biblioteca/_campo.html" with campo=form.titulo clase="col-2" %}
+          {% include "biblioteca/_campo.html" with campo=form.autores %}
+          {% with accion='<button class="boton-enlace boton-ia-texto" type="button" id="ia-clasificar" data-url="/ia/clasificar/" title="Sugerir género y etiquetas con IA">✦ Sugerir con IA</button>'|safe %}
+            {% include "biblioteca/_campo_accion.html" with campo=form.genero estado_id="ia-clasificar-estado" %}
+          {% endwith %}
+          {% include "biblioteca/_campo.html" with campo=form.estado %}
+          {% include "biblioteca/_campo.html" with campo=form.isbn %}
+        </div>
+      </fieldset>
+
+      <fieldset class="bloque-form">
+        <legend>Edición</legend>
+        <div class="rejilla-form edicion">
+          {% include "biblioteca/_campo.html" with campo=form.editorial %}
+          {% include "biblioteca/_campo.html" with campo=form.anio %}
+          {% include "biblioteca/_campo.html" with campo=form.paginas %}
+        </div>
+      </fieldset>
+
+      <fieldset class="bloque-form">
+        <legend>Sinopsis</legend>
+        {% with accion='<button class="boton-enlace boton-ia-texto" type="button" id="ia-descripcion" title="Escribir una sinopsis breve con IA">✦ Escribir con IA</button>'|safe %}
+          {% include "biblioteca/_campo_accion.html" with campo=form.descripcion estado_id="ia-descripcion-estado" %}
+        {% endwith %}
+        <details>
+          <summary class="enlace-plegable">{% icono 'imagen' %} Usar el enlace de una imagen en lugar de subirla</summary>
+          <div style="margin-top:10px">{% include "biblioteca/_campo.html" with campo=form.portada_url %}</div>
+        </details>
+      </fieldset>
+
+      <div class="acciones-form">
         <a class="boton boton-secundario" href="{% if libro %}{% url 'libro_detalle' libro.pk %}{% else %}{% url 'biblioteca' %}{% endif %}">Cancelar</a>
+        <button class="boton boton-primario" type="submit">Guardar</button>
       </div>
     </div>
   </div>
@@ -73,6 +96,41 @@
 {% endblock %}
 {% block scripts %}
 <script>
+/* Completar datos faltantes desde los catálogos y escribir la sinopsis con IA (rellenan, no guardan). */
+(function () {
+  const valor = (id) => ((document.getElementById(id) || {}).value || "").trim();
+  const poner = (id, v) => { const e = document.getElementById(id); if (e && !e.value.trim() && v) { e.value = v; e.classList.add("recien-completado"); return true; } return false; };
+  const btn = document.getElementById("completar-datos"), est = document.getElementById("completar-estado");
+  if (btn) btn.addEventListener("click", async () => {
+    est.hidden = false; est.classList.remove("error");
+    if (!valor("id_titulo") && !valor("id_isbn")) { est.textContent = "Escribe al menos el título o el ISBN."; est.classList.add("error"); return; }
+    btn.disabled = true; btn.classList.add("cargando"); est.textContent = "Buscando en los catálogos…";
+    const r = await window.exlibrisIA(btn.dataset.url, { isbn: valor("id_isbn"), titulo: valor("id_titulo"), autores: valor("id_autores") });
+    btn.disabled = false; btn.classList.remove("cargando");
+    if (!r.ok) { est.textContent = r.error; est.classList.add("error"); return; }
+    const d = r.datos, nombres = { id_autores: "autor", id_editorial: "editorial", id_anio: "año", id_paginas: "páginas", id_descripcion: "sinopsis", id_isbn: "ISBN", id_portada_url: "portada" };
+    const hechos = [];
+    for (const [id, clave] of [["id_autores", "autores"], ["id_editorial", "editorial"], ["id_anio", "anio"], ["id_paginas", "paginas"], ["id_descripcion", "descripcion"], ["id_isbn", "isbn"], ["id_portada_url", "portada_url"]])
+      if (poner(id, d[clave])) hechos.push(nombres[id]);
+    const genero = document.getElementById("id_genero");
+    if (genero && !genero.value && d.genero) { genero.value = d.genero; hechos.push("género"); }
+    if (d.portada_url && document.getElementById("vista-portada").hidden) document.getElementById("id_portada_url").dispatchEvent(new Event("change"));
+    est.textContent = hechos.length ? "Se completó: " + hechos.join(", ") + ". Revisa y pulsa Guardar." : "Los catálogos no tienen más datos para este libro.";
+  });
+  const bDesc = document.getElementById("ia-descripcion"), eDesc = document.getElementById("ia-descripcion-estado");
+  if (bDesc) bDesc.addEventListener("click", async () => {
+    eDesc.hidden = false; eDesc.classList.remove("error");
+    if (!valor("id_titulo")) { eDesc.textContent = "Primero escribe el título."; eDesc.classList.add("error"); return; }
+    const area = document.getElementById("id_descripcion");
+    if (area.value.trim() && !confirm("¿Reemplazar la sinopsis actual por una escrita con IA?")) return;
+    bDesc.disabled = true; eDesc.textContent = "La IA está escribiendo la sinopsis…";
+    const r = await window.exlibrisIA("{% url 'ia_descripcion' %}", { titulo: valor("id_titulo"), autores: valor("id_autores"), genero: valor("id_genero") });
+    bDesc.disabled = false;
+    if (!r.ok) { eDesc.textContent = r.error; eDesc.classList.add("error"); return; }
+    area.value = r.datos.texto; area.classList.add("recien-completado");
+    eDesc.textContent = "Sinopsis generada por IA. Revísala y pulsa Guardar.";
+  });
+})();
 /* IA: sugerir género (de la lista) y etiquetas a partir del título, autor y descripción. */
 (function () {
   const boton = document.getElementById("ia-clasificar");
@@ -83,9 +141,9 @@
     const titulo = valor("id_titulo").trim();
     estado.hidden = false; estado.classList.remove("error");
     if (!titulo) { estado.textContent = "Primero escribe el título."; estado.classList.add("error"); return; }
-    boton.disabled = true; boton.classList.add("cargando"); estado.textContent = "La IA está pensando…";
+    boton.disabled = true; estado.textContent = "La IA está pensando…";
     const r = await window.exlibrisIA(boton.dataset.url, { titulo, autores: valor("id_autores"), descripcion: valor("id_descripcion") });
-    boton.disabled = false; boton.classList.remove("cargando");
+    boton.disabled = false;
     if (!r.ok) { estado.textContent = r.error; estado.classList.add("error"); return; }
     const select = document.getElementById("id_genero");
     if (r.datos.genero) select.value = r.datos.genero;
