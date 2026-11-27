@@ -22,6 +22,12 @@
         </label>
         {% if campo.errors %}<p class="acceso-error-campo" id="err-{{ campo.html_name }}">{{ campo.errors|first }}</p>{% endif %}
       {% endfor %}
+      <fieldset class="segmentado tratamiento-registro">
+        <legend>¿Cómo prefieres que te llamemos?</legend>
+        {% for opcion in form.tratamiento %}
+          <label class="segmento">{{ opcion.tag }}<span>{{ opcion.choice_label }}</span></label>
+        {% endfor %}
+      </fieldset>
       <button class="boton boton-arcoiris boton-ancho" type="submit">Crear cuenta</button>
     </form>
     </div>

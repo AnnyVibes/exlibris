@@ -187,12 +187,11 @@ class Perfil(models.Model):
     class Tratamiento(models.TextChoices):
         LECTORA = "lectora", "Lectora"
         LECTOR = "lector", "Lector"
-        NEUTRO = "neutro", "Persona lectora"
 
     usuario = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="perfil")
     foto = models.ImageField("foto de perfil", upload_to="perfiles/", blank=True)
     tratamiento = models.CharField(
-        "¿cómo prefieres que te llamemos?", max_length=10, choices=Tratamiento.choices, default=Tratamiento.NEUTRO
+        "¿cómo prefieres que te llamemos?", max_length=10, choices=Tratamiento.choices, default=Tratamiento.LECTORA
     )
 
     class Meta:

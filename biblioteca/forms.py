@@ -176,6 +176,10 @@ class PrestamoEditarForm(forms.ModelForm):
 
 class RegistroForm(UserCreationForm):
     email = forms.EmailField(label="Correo")
+    tratamiento = forms.ChoiceField(
+        label="¿Cómo prefieres que te llamemos?", choices=Perfil.Tratamiento.choices,
+        initial=Perfil.Tratamiento.LECTORA, widget=forms.RadioSelect,
+    )
 
     class Meta:
         model = User

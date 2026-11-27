@@ -44,8 +44,12 @@ class CuentaTests(ConUsuario):
         self.assertEqual(Perfil.de(self.usuario).tratamiento, "lector")
         self.assertContains(self.client.get(reverse("inicio")), "Lector · @ana")
 
-    def test_por_defecto_neutro(self):
-        self.assertEqual(Perfil.de(self.usuario).get_tratamiento_display(), "Persona lectora")
+    def test_solo_lectora_o_lector(self):
+        self.assertEqual(Perfil.Tratamiento.values, ["lectora", "lector"])
+        self.assertEqual(Perfil.de(self.usuario).get_tratamiento_display(), "Lectora")
+        r = self.client.post(reverse("cuenta"), self.datos(tratamiento="neutro"))
+        self.assertEqual(r.status_code, 200)
+        self.assertNotContains(self.client.get(reverse("cuenta")), "Persona lectora")
 
     def test_foto_se_recorta_cuadrada_y_reemplaza_la_anterior(self):
         self.client.post(reverse("cuenta"), self.datos(foto=foto()))

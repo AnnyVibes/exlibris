@@ -44,6 +44,7 @@ def registro(request):
     form = RegistroForm(request.POST or None)
     if request.method == "POST" and form.is_valid():
         usuario = form.save()
+        Perfil.objects.update_or_create(usuario=usuario, defaults={"tratamiento": form.cleaned_data["tratamiento"]})
         login(request, usuario)
         messages.success(request, "¡Tu biblioteca está lista!")
         return redirect("inicio")
