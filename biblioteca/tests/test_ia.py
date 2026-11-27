@@ -196,3 +196,24 @@ class APIAgenteTests(ConUsuario):
     def test_solo_lectura(self):
         self.client.logout()
         self.assertEqual(self.client.post(reverse("api_ia_libros"), **self.cabecera()).status_code, 405)
+
+
+class FormatoRespuestasTests(ConUsuario):
+    def test_markdown_simple_y_seguro(self):
+        from biblioteca.templatetags.exlibris import markdown_simple
+        html = markdown_simple("Tienes:\n\n* **Rayuela** con Lucía\n* <script>x</script>\n\nFin *bien*")
+        self.assertIn("<ul><li><strong>Rayuela</strong> con Lucía</li>", html)
+        self.assertIn("&lt;script&gt;", html)
+        self.assertNotIn("<script>", html)
+        self.assertIn("<em>bien</em>", html)
+
+    def test_borrador_sin_marcas(self):
+        with patch.object(ia, "_llamar", return_value={"resena": "* Me **encantó** el final."}):
+            self.assertEqual(ia.borrador_resena(self.libro()), "Me encantó el final.")
+
+    def test_resumen_se_muestra_con_formato(self):
+        libro = self.libro(resumen_ia="**Temas:**\n- azar\n- juego")
+        Anotacion.objects.create(libro=libro, texto="x")
+        r = self.client.get(reverse("libro_detalle", args=[libro.pk]))
+        self.assertContains(r, "<strong>Temas:</strong>", html=False)
+        self.assertContains(r, "<li>azar</li>", html=False)

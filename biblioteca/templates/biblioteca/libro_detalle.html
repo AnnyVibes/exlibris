@@ -148,7 +148,7 @@
         </form>
       </div>
       {% if libro.resumen_ia %}
-        <div class="ia-resumen-texto">{{ libro.resumen_ia|linebreaks }}</div>
+        <div class="ia-resumen-texto">{{ libro.resumen_ia|markdown_simple }}</div>
         <small class="ia-nota">Generado por IA el {{ libro.resumen_ia_fecha|date:"j M Y, H:i" }} a partir de {{ anotaciones|length }} anotaci{{ anotaciones|length|pluralize:"ón,ones" }}. Revísalo: puede equivocarse.</small>
       {% else %}
         <p class="ia-nota">La IA agrupa tus anotaciones por temas y te devuelve un resumen.</p>

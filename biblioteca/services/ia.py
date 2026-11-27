@@ -11,6 +11,7 @@ Webhooks:
 
 import json
 import logging
+import re
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
@@ -116,7 +117,10 @@ def borrador_resena(libro, calificacion=None):
         "tarea": "resena", "libro": _datos_libro(libro), "anotaciones": _anotaciones(libro),
         "calificacion": calificacion,
     })
-    return _texto(respuesta, "resena", "texto")
+    # La reseña va a un cuadro de texto simple: se quitan las marcas de formato (**negrita**, viñetas).
+    texto = _texto(respuesta, "resena", "texto")
+    texto = re.sub(r"\*\*(.+?)\*\*|__(.+?)__", lambda m: m.group(1) or m.group(2), texto)
+    return re.sub(r"(?m)^\s*[*\-•]\s+", "", texto).strip()
 
 
 # ------------------------------------------------------------------ agente

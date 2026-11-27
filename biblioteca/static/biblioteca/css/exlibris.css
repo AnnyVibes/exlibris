@@ -1091,3 +1091,13 @@ a.perfil { transition: box-shadow .15s; } a.perfil:hover { box-shadow: var(--som
 
 .tratamiento, .tratamiento-registro { grid-template-columns: repeat(2, 1fr); }
 .tratamiento-registro legend { font-size: 14px; }
+
+/* Formato de las respuestas de la IA */
+.burbuja-texto p, .ia-resumen-texto p { margin: 0; }
+.burbuja-texto p + p, .burbuja-texto p + ul, .burbuja-texto ul + p, .burbuja-texto p + ol, .burbuja-texto ol + p,
+.ia-resumen-texto p + p, .ia-resumen-texto p + ul, .ia-resumen-texto ul + p { margin-top: 8px; }
+.burbuja-texto ul, .burbuja-texto ol, .ia-resumen-texto ul, .ia-resumen-texto ol { margin: 6px 0 0; padding-left: 20px; display: grid; gap: 4px; }
+.burbuja-texto li::marker, .ia-resumen-texto li::marker { color: #c026d3; }
+.burbuja-texto strong, .ia-resumen-texto strong { color: #3b2a63; }
+.burbuja.yo .burbuja-texto strong { color: #fff; }
+.burbuja-texto code { background: rgba(124, 58, 237, .1); padding: 1px 5px; border-radius: 5px; font-size: 13px; }

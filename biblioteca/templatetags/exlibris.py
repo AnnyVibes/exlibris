@@ -134,3 +134,52 @@ def absoluto(n):
         return abs(int(n))
     except (TypeError, ValueError):
         return n
+
+
+@register.filter
+def markdown_simple(texto):
+    """Markdown básico de las respuestas de la IA (negrita, cursiva, listas), escapando antes todo el HTML."""
+    import re
+    from django.utils.html import escape
+
+    def en_linea(t):
+        t = escape(t)
+        t = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", t)
+        t = re.sub(r"__(.+?)__", r"<strong>\1</strong>", t)
+        t = re.sub(r"(^|[^*\w])\*(?!\s)(.+?)\*(?!\w)", r"\1<em>\2</em>", t)
+        return t
+
+    html, lista, parrafo = [], None, []
+
+    def cerrar_parrafo():
+        if parrafo:
+            html.append("<p>" + "<br>".join(parrafo) + "</p>")
+            parrafo.clear()
+
+    for linea in str(texto or "").splitlines():
+        vineta = re.match(r"^\s*[*\-•]\s+(.*)$", linea)
+        numero = re.match(r"^\s*\d+[.)]\s+(.*)$", linea)
+        titulo = re.match(r"^\s*#{1,6}\s+(.*)$", linea)
+        if vineta or numero:
+            cerrar_parrafo()
+            tipo = "ul" if vineta else "ol"
+            if lista != tipo:
+                if lista:
+                    html.append(f"</{lista}>")
+                html.append(f"<{tipo}>")
+                lista = tipo
+            html.append("<li>" + en_linea((vineta or numero).group(1)) + "</li>")
+        elif not linea.strip():
+            cerrar_parrafo()
+            if lista:
+                html.append(f"</{lista}>")
+                lista = None
+        else:
+            if lista:
+                html.append(f"</{lista}>")
+                lista = None
+            parrafo.append("<strong>" + en_linea(titulo.group(1)) + "</strong>" if titulo else en_linea(linea))
+    cerrar_parrafo()
+    if lista:
+        html.append(f"</{lista}>")
+    return mark_safe("".join(html))
