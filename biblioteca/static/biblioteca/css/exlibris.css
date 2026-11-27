@@ -1104,10 +1104,6 @@ a.perfil { transition: box-shadow .15s; } a.perfil:hover { box-shadow: var(--som
 
 /* ---------- Formulario del libro: bloques ordenados ---------- */
 .form-campos { display: grid; gap: 18px; min-width: 0; }
-.completar-barra { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;
-  padding: 14px 16px; border-radius: var(--radio-md); background: var(--lila-50); border: 1px solid var(--borde); }
-.completar-barra strong { display: block; color: #3b2a63; font-size: 15px; }
-.completar-barra span { font-size: 13px; color: var(--texto-suave); }
 .bloque-form { border: 0; padding: 0; margin: 0; display: grid; gap: 12px; min-width: 0; }
 .bloque-form > legend { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--primario-texto);
   padding: 0 0 8px; margin-bottom: 4px; width: 100%; border-bottom: 1px solid var(--borde); }
@@ -1123,8 +1119,20 @@ a.perfil { transition: box-shadow .15s; } a.perfil:hover { box-shadow: var(--som
 .boton-ia-texto { color: #a21caf; }
 .campo textarea#id_descripcion { min-height: 120px; }
 .recien-completado { border-color: #f0abfc !important; background: #fdf4ff !important; }
-.acciones-form { display: flex; justify-content: flex-end; gap: 10px; padding-top: 16px; border-top: 1px solid var(--borde); }
+.acciones-form { display: flex; justify-content: flex-end; align-items: center; flex-wrap: wrap; gap: 10px; padding-top: 16px; border-top: 1px solid var(--borde); }
+.acciones-izquierda { margin-right: auto; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; min-width: 0; }
+.acciones-izquierda .boton-enlace { display: inline-flex; align-items: center; gap: 6px; }
+.acciones-izquierda .boton-enlace .icono { width: 16px; height: 16px; }
+.acciones-izquierda .ia-estado { margin: 0; }
+/* Opciones de portada debajo del libro */
+.portada-opciones { display: grid; gap: 8px; min-width: 0; }
+.portada-ayuda { font-size: 12px; color: var(--texto-suave); text-align: center; margin: 0; }
+.portada-enlace { padding-top: 10px; border-top: 1px dashed var(--borde); }
+.portada-enlace summary { font-size: 13px; justify-content: center; width: 100%; }
+.portada-enlace summary .icono { width: 16px; height: 16px; }
+.portada-enlace input { margin-top: 8px; width: 100%; font-size: 13px; }
 @media (max-width: 860px) {
   .rejilla-form, .rejilla-form.edicion { grid-template-columns: 1fr; }
   .acciones-form { justify-content: stretch; } .acciones-form .boton { flex: 1; }
+  .acciones-izquierda { width: 100%; justify-content: center; }
 }
