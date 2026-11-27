@@ -28,6 +28,11 @@ Ex Libris (Django) ──POST──▶ n8n /webhook/exlibris-tarea  ──▶ Sw
    n8n 2.x muestra la ventana **«Importing this from an AI tool?»**: pulsa **Skip** y entonces aparecen los nodos
    (si cierras con la ✕ o la ignoras, el lienzo queda vacío). Repite con `exlibris-agente.json` en otro workflow.
    Alternativa: abre el `.json` en VS Code, copia todo (Ctrl + A, Ctrl + C), haz clic en el lienzo vacío y pega (Ctrl + V).
+   Último recurso con Docker (importa por línea de comandos y luego recarga n8n con F5):
+   ```powershell
+   docker cp n8n\exlibris-tareas.json n8n:/tmp/tareas.json
+   docker exec n8n n8n import:workflow --input=/tmp/tareas.json
+   ```
 3. **Conecta el modelo** (en cada nodo con el triángulo rojo ⚠):
    - **Gemini**: abre el nodo → *Credential* → *Create new* → pega tu API key de https://aistudio.google.com/apikey.
      Si el modelo `gemini-2.5-flash` no aparece, elige otro *flash* de la lista.

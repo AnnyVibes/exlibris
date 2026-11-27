@@ -8,7 +8,7 @@
         "responseMode": "responseNode",
         "options": {}
       },
-      "id": "w-exlibris-tarea",
+      "id": "29adb4cc-091e-5dfc-af50-7276d6cfb636",
       "name": "Webhook",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
@@ -16,7 +16,7 @@
         0,
         200
       ],
-      "webhookId": "exlibris-tarea"
+      "webhookId": "82a52552-8867-5434-9742-e8aa1e220e62"
     },
     {
       "parameters": {
@@ -95,7 +95,7 @@
         },
         "options": {}
       },
-      "id": "n-switch",
+      "id": "233dd787-3dde-5a58-bd6c-f08a7560a902",
       "name": "Switch (tarea)",
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.2,
@@ -110,7 +110,7 @@
         "text": "=Eres bibliotecaria. Clasifica este libro.\n\nTítulo: {{ $json.body.titulo }}\nAutor(es): {{ $json.body.autores || \"desconocido\" }}\nDescripción: {{ $json.body.descripcion || \"sin descripción\" }}\n\nReglas:\n- \"genero\": elige EXACTAMENTE uno de esta lista (copia el texto tal cual): {{ $json.body.generos.join(\" | \") }}\n- \"etiquetas\": de 3 a 5 palabras o frases cortas en español y en minúsculas que describan temas, época o estilo.\n- Si no conoces el libro, deduce por el título y el autor. No inventes datos.",
         "hasOutputParser": true
       },
-      "id": "c-clas",
+      "id": "fe3f13a2-6607-596d-98b7-069df27dc262",
       "name": "Clasificar libro",
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.5,
@@ -125,7 +125,7 @@
         "text": "=Estas son las anotaciones que una persona escribió mientras leía «{{ $json.body.libro.titulo }}» de {{ $json.body.libro.autores || \"autor desconocido\" }}:\n\n{{ $json.body.anotaciones.map(n => (n.pagina ? \"[p. \" + n.pagina + \"] \" : \"- \") + n.texto).join(\"\\n\") }}\n\nEscribe en \"resumen\" un resumen en español de 2 a 4 párrafos cortos que agrupe las ideas por temas.\nUsa solo lo que está en las anotaciones (no agregues datos del libro que la persona no escribió) y habla de «tus notas».",
         "hasOutputParser": true
       },
-      "id": "c-res",
+      "id": "89e615c8-5f85-50bb-97a4-d9da92097b96",
       "name": "Resumir anotaciones",
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.5,
@@ -140,7 +140,7 @@
         "text": "=Redacta un borrador de reseña personal, en primera persona y en español, del libro «{{ $json.body.libro.titulo }}» de {{ $json.body.libro.autores || \"autor desconocido\" }}.\nCalificación que le dio la persona: {{ $json.body.calificacion ? $json.body.calificacion + \" de 5 estrellas\" : \"sin calificar\" }}.\nSus anotaciones:\n{{ $json.body.anotaciones.length ? $json.body.anotaciones.map(n => \"- \" + n.texto).join(\"\\n\") : \"(no tiene anotaciones)\" }}\n\nEscribe en \"resena\" entre 80 y 150 palabras, con un tono acorde a la calificación, basándote en sus anotaciones.\nSi no hay anotaciones, escribe una reseña breve y general sin inventar detalles de la trama.",
         "hasOutputParser": true
       },
-      "id": "c-resena",
+      "id": "8601b718-5b71-53ee-84c5-79071b42d0db",
       "name": "Borrador de reseña",
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.5,
@@ -158,7 +158,7 @@
       },
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
-      "id": "m-clas",
+      "id": "a301a36a-805a-502e-a3b1-17c92fea292a",
       "name": "Modelo (clasificar)",
       "position": [
         440,
@@ -174,7 +174,7 @@
       },
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
-      "id": "m-res",
+      "id": "89e4f2c3-74db-57b9-8148-38a20541f007",
       "name": "Modelo (resumir)",
       "position": [
         440,
@@ -190,7 +190,7 @@
       },
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
-      "id": "m-resena",
+      "id": "9bffcc2b-4fc5-59e1-a1fa-ebe5f0065438",
       "name": "Modelo (reseña)",
       "position": [
         440,
@@ -202,7 +202,7 @@
         "schemaType": "manual",
         "inputSchema": "{\n \"type\": \"object\",\n \"properties\": {\n  \"genero\": {\n   \"type\": \"string\",\n   \"enum\": [\n    \"Novela\",\n    \"Cuento\",\n    \"Poesía\",\n    \"Teatro\",\n    \"Fantasía\",\n    \"Ciencia ficción\",\n    \"Misterio y policial\",\n    \"Terror\",\n    \"Romance\",\n    \"Novela histórica\",\n    \"Clásicos\",\n    \"Juvenil\",\n    \"Infantil\",\n    \"Cómic y manga\",\n    \"Biografía y memorias\",\n    \"Ensayo\",\n    \"Historia\",\n    \"Filosofía\",\n    \"Psicología\",\n    \"Desarrollo personal\",\n    \"Ciencia\",\n    \"Tecnología\",\n    \"Negocios y economía\",\n    \"Arte y diseño\",\n    \"Religión y espiritualidad\",\n    \"Cocina\",\n    \"Viajes\",\n    \"Educación y estudio\",\n    \"Otro\"\n   ]\n  },\n  \"etiquetas\": {\n   \"type\": \"array\",\n   \"items\": {\n    \"type\": \"string\"\n   },\n   \"maxItems\": 5\n  }\n },\n \"required\": [\n  \"genero\",\n  \"etiquetas\"\n ]\n}"
       },
-      "id": "p-clas",
+      "id": "78743cef-09ed-5a68-bee8-0960c7f9807a",
       "name": "Parser (clasificar)",
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.2,
@@ -216,7 +216,7 @@
         "schemaType": "manual",
         "inputSchema": "{\n \"type\": \"object\",\n \"properties\": {\n  \"resumen\": {\n   \"type\": \"string\"\n  }\n },\n \"required\": [\n  \"resumen\"\n ]\n}"
       },
-      "id": "p-res",
+      "id": "eadcfcab-8cca-570d-939d-81235e60727f",
       "name": "Parser (resumir)",
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.2,
@@ -230,7 +230,7 @@
         "schemaType": "manual",
         "inputSchema": "{\n \"type\": \"object\",\n \"properties\": {\n  \"resena\": {\n   \"type\": \"string\"\n  }\n },\n \"required\": [\n  \"resena\"\n ]\n}"
       },
-      "id": "p-resena",
+      "id": "b04dfe01-35c2-5688-adcb-cbd5e41c2041",
       "name": "Parser (reseña)",
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.2,
@@ -245,7 +245,7 @@
         "responseBody": "={{ JSON.stringify($json.output) }}",
         "options": {}
       },
-      "id": "n-resp",
+      "id": "0e00031d-0df4-5b01-8f4e-f1f39aa74cff",
       "name": "Responder a Ex Libris",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
@@ -393,5 +393,8 @@
     }
   },
   "settings": {},
-  "pinData": {}
+  "pinData": {},
+  "meta": {
+    "instanceId": "exlibris"
+  }
 }

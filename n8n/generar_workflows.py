@@ -12,6 +12,7 @@ Crea cuatro archivos en n8n/:
 import copy
 import json
 import sys
+import uuid
 from pathlib import Path
 
 AQUI = Path(__file__).resolve().parent
@@ -191,9 +192,20 @@ def agente(base):
     return {"name": "Ex Libris · Agente", "nodes": nodos, "connections": conexiones, "settings": {}, "pinData": {}}
 
 
+def con_uuids(wf, archivo):
+    """n8n usa UUID para los nodos y los webhooks: se generan estables a partir del nombre."""
+    for n in wf["nodes"]:
+        n["id"] = str(uuid.uuid5(uuid.NAMESPACE_URL, f"exlibris/{archivo}/{n['name']}"))
+        if "webhookId" in n:
+            n["webhookId"] = str(uuid.uuid5(uuid.NAMESPACE_URL, f"exlibris/webhook/{archivo}"))
+    wf["meta"] = {"instanceId": "exlibris"}
+    return wf
+
+
 for archivo, wf in (("exlibris-tareas.json", tareas(GEMINI)), ("exlibris-agente.json", agente(GEMINI)),
                     ("exlibris-tareas-ollama.json", tareas(OLLAMA)), ("exlibris-agente-ollama.json", agente(OLLAMA))):
     if "ollama" in archivo:
         wf["name"] += " (Ollama)"
+    con_uuids(wf, archivo)
     (AQUI / archivo).write_text(json.dumps(wf, ensure_ascii=False, indent=2), encoding="utf-8")
     print("Generado", archivo)
