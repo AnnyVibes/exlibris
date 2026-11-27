@@ -150,4 +150,15 @@ def preguntar(usuario, mensaje, sesion):
             "tratamiento": perfil.get_tratamiento_display() if perfil else "Lectora",
         },
     })
-    return _texto(respuesta, "respuesta", "output", "texto")
+    return limpiar_ids(_texto(respuesta, "respuesta", "output", "texto"))
+
+
+_ID_ENTRE_PARENTESIS = re.compile(r"\s*[(\[]\s*(?:id|ID|Id)\s*(?:del libro)?\s*[:#=]?\s*\d+\s*[)\]]")
+_ID_SUELTO = re.compile(r"[,;]?\s*\b(?:id|ID|Id)\s*(?:del libro)?\s*[:#=]\s*\d+\b")
+
+
+def limpiar_ids(texto):
+    """Quita los identificadores internos («(ID: 25)», «ID: 25») que el agente usa para sus herramientas."""
+    texto = _ID_ENTRE_PARENTESIS.sub("", texto)
+    texto = _ID_SUELTO.sub("", texto)
+    return re.sub(r"[ \t]+([.,;:])", r"\1", texto).strip()

@@ -217,3 +217,21 @@ class FormatoRespuestasTests(ConUsuario):
         r = self.client.get(reverse("libro_detalle", args=[libro.pk]))
         self.assertContains(r, "<strong>Temas:</strong>", html=False)
         self.assertContains(r, "<li>azar</li>", html=False)
+
+
+class LimpiarIdsTests(ConUsuario):
+    def test_quita_ids_de_la_respuesta(self):
+        casos = {
+            "* **Rayuela** (ID: 25) con Lucía.": "* **Rayuela** con Lucía.",
+            "Tienes «Ficciones» (id 7).": "Tienes «Ficciones».",
+            "El libro Sapiens, ID: 12, está en lectura.": "El libro Sapiens, está en lectura.",
+            "Rayuela [ID#3] te la devolvió.": "Rayuela te la devolvió.",
+            "Leíste 25 libros este año.": "Leíste 25 libros este año.",
+        }
+        for entrada, esperado in casos.items():
+            self.assertEqual(ia.limpiar_ids(entrada), esperado)
+
+    def test_agente_devuelve_sin_ids(self):
+        with patch.object(ia, "_llamar", return_value={"respuesta": "**Cuerpo humano** (ID: 25) con Carla."}):
+            r = post_json(self.client, reverse("ia_agente"), {"mensaje": "hola"})
+        self.assertEqual(r.json()["respuesta"], "**Cuerpo humano** con Carla.")
