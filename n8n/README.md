@@ -35,7 +35,7 @@ Ex Libris (Django) ──POST──▶ n8n /webhook/exlibris-tarea  ──▶ Sw
    ```
 3. **Conecta el modelo** (en cada nodo con el triángulo rojo ⚠):
    - **Gemini**: abre el nodo → *Credential* → *Create new* → pega tu API key de https://aistudio.google.com/apikey.
-     Si el modelo `gemini-2.5-flash` no aparece, elige otro *flash* de la lista.
+     El modelo es `gemini-3.8-flash` (Google retiró `gemini-2.5-flash` para cuentas nuevas). Si no aparece, elige el *flash* más reciente de la lista.
    - **Ollama** (alternativa): instala https://ollama.com, ejecuta `ollama pull llama3.2` e importa los archivos `-ollama`.
 4. **Activa** cada workflow con el botón **Publish** (arriba a la derecha). Sin publicar, los webhooks no responden.
 5. **Arranca Ex Libris** normalmente (`python manage.py runserver`). Por defecto busca n8n en
