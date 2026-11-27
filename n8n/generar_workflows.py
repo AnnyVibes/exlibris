@@ -137,12 +137,13 @@ Hoy es {{ $now.toFormat('dd/MM/yyyy') }}.
 - En la app los préstamos se llaman «compartidos»: di siempre «compartido» (nunca «prestado»). Usa la herramienta de compartidos para saber quién tiene un libro y desde hace cuántos días.
 - Puedes usar **negrita** y listas con «*» para ordenar la respuesta.
 - Los «id» de los libros son solo para usar las herramientas: NUNCA los muestres ni los menciones en la respuesta.
+- Si te piden agregar un libro, usa «agregar_libro» con el título y el autor (y el ISBN si te lo dan). Después confirma el título, el autor y el ISBN que se registró; si ya existía, dilo.
 - Si te piden recomendaciones, básate en los géneros y calificaciones de lo que ya leyó; puedes sugerir libros que no tiene, pero aclara que no están en su biblioteca.
 - Si una herramienta no encuentra nada, dilo con honestidad."""
 
 
-def herramienta(nombre, id_, descripcion, ruta, pos, consulta=None, marcadores=None):
-    p = {"toolDescription": descripcion, "method": "GET",
+def herramienta(nombre, id_, descripcion, ruta, pos, consulta=None, marcadores=None, metodo="GET", cuerpo=None):
+    p = {"toolDescription": descripcion, "method": metodo,
          "url": "={{ $('Webhook').item.json.body.api }}" + ruta,
          "sendHeaders": True, "specifyHeaders": "keypair",
          "parametersHeaders": {"values": [{"name": "X-ExLibris-Token", "valueProvider": "fieldValue",
@@ -151,6 +152,9 @@ def herramienta(nombre, id_, descripcion, ruta, pos, consulta=None, marcadores=N
     if consulta:
         p.update({"sendQuery": True, "specifyQuery": "keypair",
                   "parametersQuery": {"values": [{"name": n, "valueProvider": "modelOptional", "description": d} for n, d in consulta]}})
+    if cuerpo:
+        p.update({"sendBody": True, "specifyBody": "keypair",
+                  "parametersBody": {"values": [{"name": n, "valueProvider": v, "description": d} for n, v, d in cuerpo]}})
     if marcadores:
         p["placeholderDefinitions"] = {"values": [{"name": n, "description": d, "type": t} for n, d, t in marcadores]}
     return {"parameters": p, "id": id_, "name": nombre, "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
@@ -181,6 +185,12 @@ def agente(base):
         herramienta("resumen_biblioteca", "t-resumen",
                     "Totales de la biblioteca: libros, leídos, leyendo, anotaciones, compartidos, páginas leídas, calificación media y libros por género.",
                     "/resumen/", [1060, 260]),
+        herramienta("agregar_libro", "t-agregar",
+                    "AGREGA un libro a la biblioteca. Úsala solo cuando la persona pida agregar o registrar un libro. Necesita el título; el autor y el ISBN son opcionales (la app busca el ISBN, la portada y los datos en los catálogos). Devuelve si se creó o si ya existía, con su ISBN.",
+                    "/libros/agregar/", [1220, 260], metodo="POST",
+                    cuerpo=[("titulo", "modelRequired", "título del libro"),
+                            ("autores", "modelOptional", "autor o autores"),
+                            ("isbn", "modelOptional", "ISBN si la persona lo dio")]),
         responder("Responder a Ex Libris", "n-resp", "={{ JSON.stringify({ respuesta: $json.output }) }}", [560, 0]),
     ]
     conexiones = {
@@ -189,7 +199,7 @@ def agente(base):
         "Modelo": {"ai_languageModel": [[{"node": "Agente Ex Libris", "type": "ai_languageModel", "index": 0}]]},
         "Memoria": {"ai_memory": [[{"node": "Agente Ex Libris", "type": "ai_memory", "index": 0}]]},
     }
-    for t in ("buscar_libros", "ver_libro", "libros_compartidos", "buscar_anotaciones", "resumen_biblioteca"):
+    for t in ("buscar_libros", "ver_libro", "libros_compartidos", "buscar_anotaciones", "resumen_biblioteca", "agregar_libro"):
         conexiones[t] = {"ai_tool": [[{"node": "Agente Ex Libris", "type": "ai_tool", "index": 0}]]}
     return {"name": "Ex Libris · Agente", "nodes": nodos, "connections": conexiones, "settings": {}, "pinData": {}}
 

@@ -38,6 +38,7 @@ urlpatterns = [
     # API para las herramientas del agente (token firmado)
     path("api/ia/libros/", api_ia.libros, name="api_ia_libros"),
     path("api/ia/libros/<int:pk>/", api_ia.libro, name="api_ia_libro"),
+    path("api/ia/libros/agregar/", api_ia.agregar_libro, name="api_ia_agregar"),
     path("api/ia/compartidos/", api_ia.compartidos, name="api_ia_compartidos"),
     path("api/ia/anotaciones/", api_ia.anotaciones, name="api_ia_anotaciones"),
     path("api/ia/resumen/", api_ia.resumen, name="api_ia_resumen"),

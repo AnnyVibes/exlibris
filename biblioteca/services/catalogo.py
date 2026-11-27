@@ -92,3 +92,43 @@ def buscar_por_isbn(isbn):
         return {}
     resultado["isbn"] = isbn
     return {k: v for k, v in resultado.items() if v not in (None, "")}
+
+
+# ------------------------------------------------------------------ búsqueda por título y autor
+GOOGLE_BUSQUEDA = "https://www.googleapis.com/books/v1/volumes?q={q}&printType=books&maxResults=10"
+OPEN_LIBRARY_BUSQUEDA = "https://openlibrary.org/search.json?title={titulo}&author={autor}&limit=5&fields=isbn"
+
+
+def _isbn13_validos(candidatos):
+    from .isbn import ISBNInvalido, normalizar
+
+    vistos = []
+    for c in candidatos:
+        try:
+            isbn = normalizar(str(c))
+        except ISBNInvalido:
+            continue
+        if isbn not in vistos:
+            vistos.append(isbn)
+    return vistos
+
+
+def buscar_isbn_por_titulo(titulo, autor=""):
+    """Busca el ISBN de un libro por título (y autor). Prefiere ediciones en español. Devuelve "" si no lo encuentra."""
+    titulo, autor = (titulo or "").strip(), (autor or "").strip()
+    if not titulo:
+        return ""
+    q = f"intitle:{titulo}" + (f"+inauthor:{autor}" if autor else "")
+    for idioma in ("&langRestrict=es", ""):
+        data = _get_json(GOOGLE_BUSQUEDA.format(q=quote(q, safe=":+")) + idioma)
+        for item in (data or {}).get("items") or []:
+            ids = (item.get("volumeInfo") or {}).get("industryIdentifiers") or []
+            validos = _isbn13_validos(i.get("identifier") for i in ids if i.get("type") in ("ISBN_13", "ISBN_10"))
+            if validos:
+                return validos[0]
+    data = _get_json(OPEN_LIBRARY_BUSQUEDA.format(titulo=quote(titulo), autor=quote(autor)))
+    for doc in (data or {}).get("docs") or []:
+        validos = _isbn13_validos(doc.get("isbn") or [])
+        if validos:
+            return validos[0]
+    return ""

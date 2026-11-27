@@ -162,3 +162,56 @@ def limpiar_ids(texto):
     texto = _ID_ENTRE_PARENTESIS.sub("", texto)
     texto = _ID_SUELTO.sub("", texto)
     return re.sub(r"[ \t]+([.,;:])", r"\1", texto).strip()
+
+
+# ------------------------------------------------------------------ agregar libros desde el asistente
+def agregar_libro(usuario, titulo, autores="", isbn=""):
+    """Agrega un libro a la biblioteca de la persona. Busca el ISBN y los datos en los catálogos públicos.
+
+    Devuelve {"creado": bool, "libro": {...}, "mensaje": str}. No duplica: si ya lo tiene, lo indica.
+    """
+    from ..models import Libro
+    from . import catalogo
+    from .isbn import ISBNInvalido, normalizar
+
+    titulo, autores = (titulo or "").strip()[:255], (autores or "").strip()[:255]
+    if not titulo and not isbn:
+        raise ValueError("Falta el título del libro.")
+    try:
+        isbn = normalizar(isbn) if isbn else ""
+    except ISBNInvalido:
+        isbn = ""
+    if not isbn:
+        isbn = catalogo.buscar_isbn_por_titulo(titulo, autores)
+    datos = catalogo.buscar_por_isbn(isbn) if isbn else {}
+
+    existente = None
+    if isbn:
+        existente = Libro.objects.filter(propietario=usuario, isbn=isbn).first()
+    if existente is None and titulo:
+        existente = Libro.objects.filter(propietario=usuario, titulo__iexact=titulo).first()
+    if existente:
+        return {"creado": False, "libro": _resumen_libro(existente),
+                "mensaje": "Ese libro ya estaba en la biblioteca; no se agregó de nuevo."}
+
+    libro = Libro.objects.create(
+        propietario=usuario,
+        isbn=isbn,
+        titulo=titulo or datos.get("titulo", ""),
+        autores=autores or datos.get("autores", ""),
+        editorial=datos.get("editorial", "")[:255],
+        anio=datos.get("anio"),
+        paginas=datos.get("paginas"),
+        portada_url=datos.get("portada_url", "")[:500],
+        descripcion=datos.get("descripcion", ""),
+        genero=datos.get("genero", ""),
+        estado=Libro.Estado.POR_LEER,
+    )
+    mensaje = "Libro agregado como «Por leer»." + ("" if isbn else " No se encontró su ISBN en los catálogos.")
+    return {"creado": True, "libro": _resumen_libro(libro), "mensaje": mensaje}
+
+
+def _resumen_libro(libro):
+    return {"titulo": libro.titulo, "autores": libro.autores, "isbn": libro.isbn, "genero": libro.genero,
+            "paginas": libro.paginas, "editorial": libro.editorial, "anio": libro.anio,
+            "estado": libro.get_estado_display(), "tiene_portada": bool(libro.imagen_portada)}

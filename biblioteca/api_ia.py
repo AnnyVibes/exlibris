@@ -10,16 +10,18 @@ from functools import wraps
 from django.contrib.auth import get_user_model
 from django.db.models import Count, Q
 from django.http import JsonResponse
-from django.views.decorators.http import require_GET
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_GET, require_POST
 
 from .models import Anotacion, Libro, Prestamo
 from .services import estadisticas
+from .services import ia
 from .services.ia import usuario_de_token
 
 LIMITE = 25
 
 
-def con_token(vista):
+def con_token(vista, metodo="GET"):
     @wraps(vista)
     def envoltura(request, *args, **kwargs):
         token = request.headers.get("X-ExLibris-Token") or request.GET.get("token", "")
@@ -29,6 +31,9 @@ def con_token(vista):
             return JsonResponse({"error": "Token inválido o caducado."}, status=401)
         request.usuario_ia = usuario
         return vista(request, *args, **kwargs)
+    if metodo == "POST":
+        # Autenticación por token firmado (no por cookie de sesión): no aplica CSRF.
+        return csrf_exempt(require_POST(envoltura))
     return require_GET(envoltura)
 
 
@@ -116,3 +121,23 @@ def resumen(request):
     datos = estadisticas.resumen(request.usuario_ia)
     datos["generos"] = dict(estadisticas.generos(request.usuario_ia, limite=30))
     return JsonResponse(datos, json_dumps_params={"ensure_ascii": False})
+
+
+def agregar_libro(request):
+    """Única acción de escritura del agente: agrega un libro (título, autores e ISBN opcional)."""
+    import json
+    try:
+        datos = json.loads(request.body or b"{}")
+    except ValueError:
+        datos = None
+    if not isinstance(datos, dict):
+        datos = request.POST.dict()
+    try:
+        resultado = ia.agregar_libro(request.usuario_ia, str(datos.get("titulo", "")),
+                                     str(datos.get("autores", "")), str(datos.get("isbn", "")))
+    except ValueError as exc:
+        return JsonResponse({"error": str(exc)}, status=400)
+    return JsonResponse(resultado, status=201 if resultado["creado"] else 200, json_dumps_params={"ensure_ascii": False})
+
+
+agregar_libro = con_token(agregar_libro, metodo="POST")

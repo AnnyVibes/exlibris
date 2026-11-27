@@ -23,7 +23,7 @@
         "promptType": "define",
         "text": "={{ $json.body.mensaje }}",
         "options": {
-          "systemMessage": "=Eres el asistente de «Ex Libris», la biblioteca personal de {{ $('Webhook').item.json.body.persona.nombre }} ({{ $('Webhook').item.json.body.persona.tratamiento }}).\nHoy es {{ $now.toFormat('dd/MM/yyyy') }}.\n\n- Responde siempre en español, de forma breve y amable.\n- Para cualquier dato de su biblioteca USA LAS HERRAMIENTAS: nunca inventes libros, personas, fechas ni anotaciones.\n- En la app los préstamos se llaman «compartidos»: di siempre «compartido» (nunca «prestado»). Usa la herramienta de compartidos para saber quién tiene un libro y desde hace cuántos días.\n- Puedes usar **negrita** y listas con «*» para ordenar la respuesta.\n- Los «id» de los libros son solo para usar las herramientas: NUNCA los muestres ni los menciones en la respuesta.\n- Si te piden recomendaciones, básate en los géneros y calificaciones de lo que ya leyó; puedes sugerir libros que no tiene, pero aclara que no están en su biblioteca.\n- Si una herramienta no encuentra nada, dilo con honestidad."
+          "systemMessage": "=Eres el asistente de «Ex Libris», la biblioteca personal de {{ $('Webhook').item.json.body.persona.nombre }} ({{ $('Webhook').item.json.body.persona.tratamiento }}).\nHoy es {{ $now.toFormat('dd/MM/yyyy') }}.\n\n- Responde siempre en español, de forma breve y amable.\n- Para cualquier dato de su biblioteca USA LAS HERRAMIENTAS: nunca inventes libros, personas, fechas ni anotaciones.\n- En la app los préstamos se llaman «compartidos»: di siempre «compartido» (nunca «prestado»). Usa la herramienta de compartidos para saber quién tiene un libro y desde hace cuántos días.\n- Puedes usar **negrita** y listas con «*» para ordenar la respuesta.\n- Los «id» de los libros son solo para usar las herramientas: NUNCA los muestres ni los menciones en la respuesta.\n- Si te piden agregar un libro, usa «agregar_libro» con el título y el autor (y el ISBN si te lo dan). Después confirma el título, el autor y el ISBN que se registró; si ya existía, dilo.\n- Si te piden recomendaciones, básate en los géneros y calificaciones de lo que ya leyó; puedes sugerir libros que no tiene, pero aclara que no están en su biblioteca.\n- Si una herramienta no encuentra nada, dilo con honestidad."
         }
       },
       "id": "419643af-1fb3-5b90-9bcf-c4633f954c71",
@@ -255,6 +255,54 @@
     },
     {
       "parameters": {
+        "toolDescription": "AGREGA un libro a la biblioteca. Úsala solo cuando la persona pida agregar o registrar un libro. Necesita el título; el autor y el ISBN son opcionales (la app busca el ISBN, la portada y los datos en los catálogos). Devuelve si se creó o si ya existía, con su ISBN.",
+        "method": "POST",
+        "url": "={{ $('Webhook').item.json.body.api }}/libros/agregar/",
+        "sendHeaders": true,
+        "specifyHeaders": "keypair",
+        "parametersHeaders": {
+          "values": [
+            {
+              "name": "X-ExLibris-Token",
+              "valueProvider": "fieldValue",
+              "value": "={{ $('Webhook').item.json.body.token }}"
+            }
+          ]
+        },
+        "optimizeResponse": false,
+        "sendBody": true,
+        "specifyBody": "keypair",
+        "parametersBody": {
+          "values": [
+            {
+              "name": "titulo",
+              "valueProvider": "modelRequired",
+              "description": "título del libro"
+            },
+            {
+              "name": "autores",
+              "valueProvider": "modelOptional",
+              "description": "autor o autores"
+            },
+            {
+              "name": "isbn",
+              "valueProvider": "modelOptional",
+              "description": "ISBN si la persona lo dio"
+            }
+          ]
+        }
+      },
+      "id": "293dece2-cf0b-5e85-8284-46ea00bf4c15",
+      "name": "agregar_libro",
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [
+        1220,
+        260
+      ]
+    },
+    {
+      "parameters": {
         "respondWith": "json",
         "responseBody": "={{ JSON.stringify({ respuesta: $json.output }) }}",
         "options": {}
@@ -359,6 +407,17 @@
       ]
     },
     "resumen_biblioteca": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente Ex Libris",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "agregar_libro": {
       "ai_tool": [
         [
           {

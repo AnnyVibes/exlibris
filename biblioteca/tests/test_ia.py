@@ -235,3 +235,81 @@ class LimpiarIdsTests(ConUsuario):
         with patch.object(ia, "_llamar", return_value={"respuesta": "**Cuerpo humano** (ID: 25) con Carla."}):
             r = post_json(self.client, reverse("ia_agente"), {"mensaje": "hola"})
         self.assertEqual(r.json()["respuesta"], "**Cuerpo humano** con Carla.")
+
+
+class AgregarLibroAgenteTests(ConUsuario):
+    DATOS = {"isbn": "9780307474728", "titulo": "Cien años de soledad", "autores": "Gabriel García Márquez",
+             "paginas": 417, "genero": "Novela"}
+
+    def post(self, datos, usuario=None):
+        self.client.logout()
+        return self.client.post(reverse("api_ia_agregar"), data=json.dumps(datos), content_type="application/json",
+                                HTTP_X_EXLIBRIS_TOKEN=ia.token_para(usuario or self.usuario))
+
+    @patch("biblioteca.services.catalogo.buscar_por_isbn")
+    @patch("biblioteca.services.catalogo.buscar_isbn_por_titulo", return_value="9780307474728")
+    def test_busca_el_isbn_y_agrega(self, buscar_isbn, buscar_datos):
+        buscar_datos.return_value = dict(self.DATOS)
+        r = self.post({"titulo": "Cien años de soledad", "autores": "García Márquez"})
+        self.assertEqual(r.status_code, 201)
+        buscar_isbn.assert_called_once_with("Cien años de soledad", "García Márquez")
+        libro = Libro.objects.get(propietario=self.usuario, isbn="9780307474728")
+        self.assertEqual((libro.estado, libro.genero, libro.paginas), ("por_leer", "Novela", 417))
+        self.assertEqual(r.json()["libro"]["isbn"], "9780307474728")
+
+    @patch("biblioteca.services.catalogo.buscar_por_isbn", return_value={})
+    @patch("biblioteca.services.catalogo.buscar_isbn_por_titulo")
+    def test_usa_el_isbn_que_da_la_persona(self, buscar_isbn, _):
+        self.post({"titulo": "Rayuela", "isbn": "0-307-47472-0"})
+        buscar_isbn.assert_not_called()
+        self.assertTrue(Libro.objects.filter(titulo="Rayuela", isbn="9780307474728").exists())
+
+    @patch("biblioteca.services.catalogo.buscar_por_isbn", return_value={})
+    @patch("biblioteca.services.catalogo.buscar_isbn_por_titulo", return_value="")
+    def test_sin_isbn_igual_lo_agrega(self, *_):
+        r = self.post({"titulo": "Libro raro", "autores": "Nadie"})
+        self.assertEqual(r.status_code, 201)
+        self.assertIn("No se encontró su ISBN", r.json()["mensaje"])
+
+    @patch("biblioteca.services.catalogo.buscar_por_isbn", return_value={})
+    @patch("biblioteca.services.catalogo.buscar_isbn_por_titulo", return_value="9780307474728")
+    def test_no_duplica(self, *_):
+        self.libro(titulo="Otro título", isbn="9780307474728")
+        r = self.post({"titulo": "Cien años de soledad"})
+        self.assertEqual((r.status_code, r.json()["creado"]), (200, False))
+        self.libro(titulo="Rayuela")
+        r = self.post({"titulo": "rayuela"})
+        self.assertFalse(r.json()["creado"])
+        self.assertEqual(Libro.objects.filter(propietario=self.usuario).count(), 2)
+
+    def test_requiere_token_titulo_y_post(self):
+        self.client.logout()
+        self.assertEqual(self.client.post(reverse("api_ia_agregar"), data="{}", content_type="application/json").status_code, 401)
+        self.assertEqual(self.post({"titulo": " "}).status_code, 400)
+        self.assertEqual(self.client.get(reverse("api_ia_agregar"), HTTP_X_EXLIBRIS_TOKEN=ia.token_para(self.usuario)).status_code, 405)
+
+    @patch("biblioteca.services.catalogo.buscar_por_isbn", return_value={})
+    @patch("biblioteca.services.catalogo.buscar_isbn_por_titulo", return_value="")
+    def test_se_agrega_a_quien_pregunta(self, *_):
+        self.post({"titulo": "Solo mío"}, usuario=self.otro)
+        self.assertTrue(Libro.objects.filter(propietario=self.otro, titulo="Solo mío").exists())
+        self.assertFalse(Libro.objects.filter(propietario=self.usuario, titulo="Solo mío").exists())
+
+
+class BuscarIsbnPorTituloTests(ConUsuario):
+    def test_prefiere_google_en_espanol_y_valida(self):
+        from biblioteca.services import catalogo
+        google = {"items": [{"volumeInfo": {"industryIdentifiers": [{"type": "ISBN_10", "identifier": "0307474720"}]}}]}
+        with patch.object(catalogo, "_get_json", return_value=google) as get:
+            self.assertEqual(catalogo.buscar_isbn_por_titulo("Cien años de soledad", "García Márquez"), "9780307474728")
+        self.assertIn("langRestrict=es", get.call_args_list[0][0][0])
+
+    def test_respaldo_open_library_y_nada(self):
+        from biblioteca.services import catalogo
+
+        def falso(url):
+            return {"docs": [{"isbn": ["123", "9780307474728"]}]} if "openlibrary" in url else {"items": []}
+        with patch.object(catalogo, "_get_json", side_effect=falso):
+            self.assertEqual(catalogo.buscar_isbn_por_titulo("Cien años"), "9780307474728")
+        with patch.object(catalogo, "_get_json", return_value=None):
+            self.assertEqual(catalogo.buscar_isbn_por_titulo("X"), "")

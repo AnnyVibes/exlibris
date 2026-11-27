@@ -13,7 +13,7 @@ Ex Libris (Django) ──POST──▶ n8n /webhook/exlibris-tarea  ──▶ Sw
 | Archivo | Qué hace |
 |---|---|
 | `exlibris-tareas.json` | **Clasificar** un libro (género de la lista + etiquetas), **resumir** las anotaciones y **borrador de reseña**. Switch por `tarea` → 3 *Basic LLM Chain* con *Structured Output Parser* → *Respond to Webhook*. |
-| `exlibris-agente.json` | **Asistente «Pregúntale a tu biblioteca»**: *AI Agent* con memoria por conversación y 5 herramientas HTTP (`buscar_libros`, `ver_libro`, `libros_compartidos`, `buscar_anotaciones`, `resumen_biblioteca`). |
+| `exlibris-agente.json` | **Asistente «Pregúntale a tu biblioteca»**: *AI Agent* con memoria por conversación y 6 herramientas HTTP: 5 de consulta (`buscar_libros`, `ver_libro`, `libros_compartidos`, `buscar_anotaciones`, `resumen_biblioteca`) y 1 de escritura (`agregar_libro`: busca el ISBN por título y autor y agrega el libro). |
 | `*-ollama.json` | Los mismos workflows con **Ollama** en lugar de Gemini. |
 | `generar_workflows.py` | Script que genera los cuatro JSON (prompts, esquemas y lista de géneros salen del código de la app). |
 
@@ -78,8 +78,8 @@ Si n8n está apagado, la app sigue funcionando y muestra «La IA no está dispon
 
 ## Seguridad
 
-- El agente **solo puede leer** la biblioteca de quien pregunta: cada pregunta lleva un token firmado por Django
-  que identifica a la persona y **caduca a los 15 minutos**. Las rutas `/api/ia/` son de solo lectura (GET).
+- El agente solo ve la biblioteca de quien pregunta y su **única acción de escritura** es `agregar_libro` (no edita ni borra): cada pregunta lleva un token firmado por Django
+  que identifica a la persona y **caduca a los 15 minutos**. Las rutas `/api/ia/` son de lectura (GET), salvo `POST /api/ia/libros/agregar/`.
 - Opcional: define `N8N_SECRET` y Django enviará la cabecera `X-ExLibris-Secret`; en el nodo Webhook activa
   *Authentication → Header Auth* con ese mismo valor.
 - La API key de Gemini vive solo en n8n (credenciales), nunca en el código ni en la app.

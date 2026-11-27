@@ -22,6 +22,7 @@ Versión 0.1. Estado: ✅ implementado en la fase 1 · ⏳ pendiente.
 | RF-12 | IA: sugerir el género (de la lista) y etiquetas de un libro. | ✅ |
 | RF-13 | IA: resumir las anotaciones de un libro (se guarda con fecha). | ✅ |
 | RF-14 | IA: borrador de reseña a partir de las anotaciones y la calificación (editable antes de guardar). | ✅ |
+| RF-16 | IA: el asistente agrega un libro a partir del título y el autor, buscando su ISBN y datos en los catálogos. | ✅ |
 | RF-15 | IA: agente que responde preguntas en lenguaje natural sobre la biblioteca y los compartidos, con herramientas que consultan la API. | ✅ |
 
 ## No funcionales
