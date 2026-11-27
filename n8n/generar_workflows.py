@@ -19,7 +19,7 @@ AQUI = Path(__file__).resolve().parent
 sys.path.insert(0, str(AQUI.parent))
 from biblioteca.services.generos import GENEROS  # noqa: E402
 
-GEMINI = {"parameters": {"modelName": "models/gemini-3.8-flash", "options": {"temperature": 0.3}},
+GEMINI = {"parameters": {"modelName": "models/gemini-3.5-flash", "options": {"temperature": 0.3}},
           "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini", "typeVersion": 1}
 OLLAMA = {"parameters": {"model": "llama3.2", "options": {"temperature": 0.3}},
           "type": "@n8n/n8n-nodes-langchain.lmChatOllama", "typeVersion": 1}
