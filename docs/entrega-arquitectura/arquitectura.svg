@@ -49,13 +49,14 @@
 <rect x="782" y="345" width="96" height="75" rx="12" fill="#f3e8ff" stroke="#a855f7" stroke-width="1.6"/>
 <text x="830.0" y="386.5" font-size="15" font-weight="700" fill="#1f2937" text-anchor="middle">Estadísticas</text>
 <rect x="888" y="345" width="96" height="75" rx="12" fill="#f3e8ff" stroke="#a855f7" stroke-width="1.6"/>
-<text x="936.0" y="386.5" font-size="15" font-weight="700" fill="#1f2937" text-anchor="middle">Géneros</text>
+<text x="936.0" y="378.0" font-size="15" font-weight="700" fill="#1f2937" text-anchor="middle">Cliente IA</text>
+<text x="936.0" y="399.0" font-size="12.5" fill="#4b5563" text-anchor="middle">valida JSON</text>
 <rect x="994" y="345" width="96" height="75" rx="12" fill="#f3e8ff" stroke="#a855f7" stroke-width="1.6"/>
 <text x="1042.0" y="378.0" font-size="15" font-weight="700" fill="#1f2937" text-anchor="middle">Catálogo</text>
 <text x="1042.0" y="399.0" font-size="12.5" fill="#4b5563" text-anchor="middle">ISBN → datos</text>
 <rect x="570" y="445" width="520" height="70" rx="12" fill="#faf5ff" stroke="#a78bfa" stroke-width="1.6"/>
 <text x="830.0" y="475.5" font-size="15" font-weight="700" fill="#1f2937" text-anchor="middle">Modelos (ORM de Django)</text>
-<text x="830.0" y="496.5" font-size="12.5" fill="#4b5563" text-anchor="middle">Libro · Reseña · Anotación · Compartido · Preferencia del librero</text>
+<text x="830.0" y="496.5" font-size="12.5" fill="#4b5563" text-anchor="middle">Libro · Reseña · Anotación · Compartido · Perfil · Librero</text>
 <rect x="570" y="610" width="160" height="85" rx="12" fill="#fdf4ff" stroke="#c026d3" stroke-width="1.6"/>
 <text x="650.0" y="648.0" font-size="15" font-weight="700" fill="#1f2937" text-anchor="middle">SQLite</text>
 <text x="650.0" y="669.0" font-size="12.5" fill="#4b5563" text-anchor="middle">base de datos</text>
@@ -64,33 +65,40 @@
 <text x="830.0" y="660.5" font-size="12.5" fill="#4b5563" text-anchor="middle">portadas subidas</text>
 <text x="830.0" y="677.5" font-size="12.5" fill="#4b5563" text-anchor="middle">(Pillow)</text>
 <rect x="930" y="610" width="160" height="85" rx="12" fill="#fdf4ff" stroke="#c026d3" stroke-width="1.6"/>
-<text x="1010.0" y="648.0" font-size="15" font-weight="700" fill="#1f2937" text-anchor="middle">API /api/ia/</text>
-<text x="1010.0" y="669.0" font-size="12.5" fill="#4b5563" text-anchor="middle">solo lectura · token</text>
+<text x="1010.0" y="639.5" font-size="15" font-weight="700" fill="#1f2937" text-anchor="middle">API /api/ia/</text>
+<text x="1010.0" y="660.5" font-size="12.5" fill="#4b5563" text-anchor="middle">token firmado · consulta</text>
+<text x="1010.0" y="677.5" font-size="12.5" fill="#4b5563" text-anchor="middle">y agregar libro</text>
 <rect x="1170" y="170" width="180" height="90" rx="12" fill="#fef3c7" stroke="#d97706" stroke-width="1.6"/>
 <text x="1260.0" y="210.5" font-size="15" font-weight="700" fill="#1f2937" text-anchor="middle">Open Library</text>
 <text x="1260.0" y="231.5" font-size="12.5" fill="#4b5563" text-anchor="middle">datos y portada</text>
 <rect x="1370" y="170" width="180" height="90" rx="12" fill="#fef3c7" stroke="#d97706" stroke-width="1.6"/>
 <text x="1460.0" y="210.5" font-size="15" font-weight="700" fill="#1f2937" text-anchor="middle">Google Books</text>
 <text x="1460.0" y="231.5" font-size="12.5" fill="#4b5563" text-anchor="middle">respaldo</text>
-<rect x="1170" y="390" width="380" height="70" rx="12" fill="#fce7f3" stroke="#db2777" stroke-width="1.6"/>
-<text x="1360.0" y="420.5" font-size="15" font-weight="700" fill="#1f2937" text-anchor="middle">n8n (instalado en local, gratis)</text>
-<text x="1360.0" y="441.5" font-size="12.5" fill="#4b5563" text-anchor="middle">Webhooks · workflows como el Lab 14</text>
-<rect x="1170" y="480" width="88" height="70" rx="12" fill="#fce7f3" stroke="#db2777" stroke-width="1.6"/>
-<text x="1214.0" y="510.5" font-size="15" font-weight="700" fill="#1f2937" text-anchor="middle">Agente</text>
-<text x="1214.0" y="531.5" font-size="12.5" fill="#4b5563" text-anchor="middle">preguntas</text>
-<rect x="1268" y="480" width="88" height="70" rx="12" fill="#fce7f3" stroke="#db2777" stroke-width="1.6"/>
-<text x="1312.0" y="510.5" font-size="15" font-weight="700" fill="#1f2937" text-anchor="middle">Clasificar</text>
-<text x="1312.0" y="531.5" font-size="12.5" fill="#4b5563" text-anchor="middle">género</text>
-<rect x="1366" y="480" width="88" height="70" rx="12" fill="#fce7f3" stroke="#db2777" stroke-width="1.6"/>
-<text x="1410.0" y="510.5" font-size="15" font-weight="700" fill="#1f2937" text-anchor="middle">Resumir</text>
-<text x="1410.0" y="531.5" font-size="12.5" fill="#4b5563" text-anchor="middle">notas</text>
-<rect x="1464" y="480" width="88" height="70" rx="12" fill="#fce7f3" stroke="#db2777" stroke-width="1.6"/>
-<text x="1508.0" y="510.5" font-size="15" font-weight="700" fill="#1f2937" text-anchor="middle">Borrador</text>
-<text x="1508.0" y="531.5" font-size="12.5" fill="#4b5563" text-anchor="middle">de reseña</text>
-<rect x="1170" y="590" width="380" height="100" rx="12" fill="#fce7f3" stroke="#db2777" stroke-width="1.6"/>
-<text x="1360.0" y="627.0" font-size="15" font-weight="700" fill="#1f2937" text-anchor="middle">LLM gratuito</text>
-<text x="1360.0" y="648.0" font-size="12.5" fill="#4b5563" text-anchor="middle">Google Gemini (capa gratuita)</text>
-<text x="1360.0" y="665.0" font-size="12.5" fill="#4b5563" text-anchor="middle">o Ollama (modelo local)</text>
+<rect x="1170" y="385" width="380" height="66" rx="12" fill="#fce7f3" stroke="#db2777" stroke-width="1.6"/>
+<text x="1360.0" y="413.5" font-size="15" font-weight="700" fill="#1f2937" text-anchor="middle">n8n en Docker (gratis)</text>
+<text x="1360.0" y="434.5" font-size="12.5" fill="#4b5563" text-anchor="middle">2 webhooks: tareas y agente</text>
+<rect x="1170" y="468" width="120" height="58" rx="12" fill="#fce7f3" stroke="#db2777" stroke-width="1.6"/>
+<text x="1230.0" y="492.5" font-size="15" font-weight="700" fill="#1f2937" text-anchor="middle">Agente</text>
+<text x="1230.0" y="513.5" font-size="12.5" fill="#4b5563" text-anchor="middle">chat + agregar</text>
+<rect x="1300" y="468" width="120" height="58" rx="12" fill="#fce7f3" stroke="#db2777" stroke-width="1.6"/>
+<text x="1360.0" y="492.5" font-size="15" font-weight="700" fill="#1f2937" text-anchor="middle">Clasificar</text>
+<text x="1360.0" y="513.5" font-size="12.5" fill="#4b5563" text-anchor="middle">género + etiquetas</text>
+<rect x="1430" y="468" width="120" height="58" rx="12" fill="#fce7f3" stroke="#db2777" stroke-width="1.6"/>
+<text x="1490.0" y="492.5" font-size="15" font-weight="700" fill="#1f2937" text-anchor="middle">Completar</text>
+<text x="1490.0" y="513.5" font-size="12.5" fill="#4b5563" text-anchor="middle">datos del libro</text>
+<rect x="1170" y="534" width="120" height="58" rx="12" fill="#fce7f3" stroke="#db2777" stroke-width="1.6"/>
+<text x="1230.0" y="558.5" font-size="15" font-weight="700" fill="#1f2937" text-anchor="middle">Resumir</text>
+<text x="1230.0" y="579.5" font-size="12.5" fill="#4b5563" text-anchor="middle">anotaciones</text>
+<rect x="1300" y="534" width="120" height="58" rx="12" fill="#fce7f3" stroke="#db2777" stroke-width="1.6"/>
+<text x="1360.0" y="558.5" font-size="15" font-weight="700" fill="#1f2937" text-anchor="middle">Borrador</text>
+<text x="1360.0" y="579.5" font-size="12.5" fill="#4b5563" text-anchor="middle">de reseña</text>
+<rect x="1430" y="534" width="120" height="58" rx="12" fill="#fce7f3" stroke="#db2777" stroke-width="1.6"/>
+<text x="1490.0" y="558.5" font-size="15" font-weight="700" fill="#1f2937" text-anchor="middle">Sinopsis</text>
+<text x="1490.0" y="579.5" font-size="12.5" fill="#4b5563" text-anchor="middle">sin spoilers</text>
+<rect x="1170" y="615" width="380" height="90" rx="12" fill="#fce7f3" stroke="#db2777" stroke-width="1.6"/>
+<text x="1360.0" y="647.0" font-size="15" font-weight="700" fill="#1f2937" text-anchor="middle">LLM gratuito</text>
+<text x="1360.0" y="668.0" font-size="12.5" fill="#4b5563" text-anchor="middle">Google Gemini 3.5 Flash (capa gratuita)</text>
+<text x="1360.0" y="685.0" font-size="12.5" fill="#4b5563" text-anchor="middle">o Ollama (modelo local)</text>
 <rect x="60" y="815" width="220" height="100" rx="12" fill="#ecfdf5" stroke="#059669" stroke-width="1.6"/>
 <text x="170.0" y="852.0" font-size="15" font-weight="700" fill="#1f2937" text-anchor="middle">Especificación</text>
 <text x="170.0" y="873.0" font-size="12.5" fill="#4b5563" text-anchor="middle">ODD / SDD (specs/)</text>
@@ -104,7 +112,7 @@
 <text x="790.0" y="881.5" font-size="12.5" fill="#4b5563" text-anchor="middle">repositorio exlibris</text>
 <rect x="990" y="815" width="220" height="100" rx="12" fill="#ecfdf5" stroke="#059669" stroke-width="1.6"/>
 <text x="1100.0" y="852.0" font-size="15" font-weight="700" fill="#1f2937" text-anchor="middle">GitHub Actions</text>
-<text x="1100.0" y="873.0" font-size="12.5" fill="#4b5563" text-anchor="middle">CI: 143 pruebas</text>
+<text x="1100.0" y="873.0" font-size="12.5" fill="#4b5563" text-anchor="middle">CI: 165 pruebas</text>
 <text x="1100.0" y="890.0" font-size="12.5" fill="#4b5563" text-anchor="middle">en cada push</text>
 <rect x="1300" y="815" width="240" height="100" rx="12" fill="#ecfdf5" stroke="#059669" stroke-width="1.6"/>
 <text x="1420.0" y="852.0" font-size="15" font-weight="700" fill="#1f2937" text-anchor="middle">AI_LOG.md</text>
@@ -123,9 +131,9 @@
 <polyline points="830,515 830,610" fill="none" stroke="#5b4a8a" stroke-width="2" marker-end="url(#f)"/>
 <polyline points="1090,382 1115,382 1115,215 1150,215" fill="none" stroke="#5b4a8a" stroke-width="2" marker-end="url(#f)"/>
 <polyline points="1090,285 1135,285 1135,425 1170,425" fill="none" stroke="#5b4a8a" stroke-width="2" marker-end="url(#f)"/>
-<polyline points="1360,460 1360,480" fill="none" stroke="#5b4a8a" stroke-width="2" marker-end="url(#f)"/>
-<polyline points="1360,550 1360,590" fill="none" stroke="#5b4a8a" stroke-width="2" marker-end="url(#f)"/>
-<polyline points="1170,515 1130,515 1130,652 1090,652" fill="none" stroke="#5b4a8a" stroke-width="2" marker-end="url(#f)"/>
+<polyline points="1360,451 1360,468" fill="none" stroke="#5b4a8a" stroke-width="2" marker-end="url(#f)"/>
+<polyline points="1360,592 1360,615" fill="none" stroke="#5b4a8a" stroke-width="2" marker-end="url(#f)"/>
+<polyline points="1170,497 1130,497 1130,652 1090,652" fill="none" stroke="#5b4a8a" stroke-width="2" marker-end="url(#f)"/>
 <polyline points="280,865 370,865" fill="none" stroke="#5b4a8a" stroke-width="2" marker-end="url(#f)"/>
 <polyline points="590,865 680,865" fill="none" stroke="#5b4a8a" stroke-width="2" marker-end="url(#f)"/>
 <polyline points="900,865 990,865" fill="none" stroke="#5b4a8a" stroke-width="2" marker-end="url(#f)"/>
@@ -137,8 +145,8 @@
 <text x="1360" y="291" font-size="12" fill="#3b2a63" text-anchor="middle">HTTPS · JSON por ISBN</text>
 <rect x="1205.5" y="312" width="61" height="20" rx="6" fill="#fff" stroke="#e9e3fb"/>
 <text x="1236" y="327" font-size="12" fill="#3b2a63" text-anchor="middle">webhook</text>
-<rect x="1371.0" y="557" width="138" height="20" rx="6" fill="#fff" stroke="#e9e3fb"/>
-<text x="1440" y="572" font-size="12" fill="#3b2a63" text-anchor="middle">prompt / respuesta</text>
+<rect x="1383.0" y="595" width="138" height="20" rx="6" fill="#fff" stroke="#e9e3fb"/>
+<text x="1452" y="610" font-size="12" fill="#3b2a63" text-anchor="middle">prompt / respuesta</text>
 <rect x="1006.5" y="571" width="131" height="20" rx="6" fill="#fff" stroke="#e9e3fb"/>
 <text x="1072" y="586" font-size="12" fill="#3b2a63" text-anchor="middle">herramientas HTTP</text>
 <rect x="305.0" y="843.0" width="40" height="20" rx="6" fill="#fff" stroke="#e9e3fb"/>
