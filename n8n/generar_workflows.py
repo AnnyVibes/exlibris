@@ -86,6 +86,24 @@ En "descripcion": entre 60 y 110 palabras, en español, en tercera persona, como
 Sin spoilers del final. Si no conoces bien este libro, escribe una descripción general y prudente basada en el título,
 el autor y el género, sin inventar nombres de personajes ni detalles concretos de la trama."""
 
+P_COMPLETAR = """=Eres bibliotecaria. Completa la ficha del libro «{{ $json.body.titulo }}»{{ $json.body.autores ? " de " + $json.body.autores : "" }}.
+
+Devuelve los datos de la edición en español más conocida (si no existe en español, la edición original):
+- "autores": nombre completo del autor o autores, separados por coma.
+- "editorial": nombre de la editorial de esa edición.
+- "anio": año de publicación de esa edición (número). 0 si no lo sabes.
+- "paginas": número de páginas de esa edición (número aproximado). 0 si no lo sabes.
+- "genero": EXACTAMENTE uno de esta lista (copia el texto tal cual): {{ $json.body.generos.join(" | ") }}
+- "descripcion": sinopsis de 60 a 110 palabras, en español, como la contraportada, sin spoilers del final.
+- "isbn": el ISBN-13 de esa edición SOLO si lo conoces con seguridad; si no, "" (nunca lo inventes).
+Si no conoces un dato, déjalo vacío ("" o 0). No inventes nombres de personajes ni detalles de la trama."""
+
+ESQ_COMPLETAR = {"type": "object", "properties": {
+    "autores": {"type": "string"}, "editorial": {"type": "string"}, "anio": {"type": "integer"},
+    "paginas": {"type": "integer"}, "genero": {"type": "string"}, "descripcion": {"type": "string"},
+    "isbn": {"type": "string"}},
+    "required": ["autores", "editorial", "anio", "paginas", "genero", "descripcion", "isbn"]}
+
 ESQ_DESCRIPCION = {"type": "object", "properties": {"descripcion": {"type": "string"}}, "required": ["descripcion"]}
 
 ESQ_CLASIFICAR = {"type": "object", "properties": {
@@ -107,21 +125,24 @@ def regla(id_, valor):
 def tareas(base):
     nodos = [
         webhook("exlibris-tarea", [0, 200]),
-        {"parameters": {"rules": {"values": [regla("r1", "clasificar"), regla("r2", "resumir"), regla("r3", "resena"), regla("r4", "descripcion")]},
+        {"parameters": {"rules": {"values": [regla("r1", "clasificar"), regla("r2", "resumir"), regla("r3", "resena"), regla("r4", "descripcion"), regla("r5", "completar")]},
                         "options": {}},
          "id": "n-switch", "name": "Switch (tarea)", "type": "n8n-nodes-base.switch", "typeVersion": 3.2, "position": [220, 200]},
         cadena("Clasificar libro", "c-clas", P_CLASIFICAR, [500, 0]),
         cadena("Resumir anotaciones", "c-res", P_RESUMIR, [500, 300]),
         cadena("Borrador de reseña", "c-resena", P_RESENA, [500, 600]),
         cadena("Escribir sinopsis", "c-desc", P_DESCRIPCION, [500, 900]),
+        cadena("Completar datos", "c-comp", P_COMPLETAR, [500, 1200]),
         modelo("Modelo (clasificar)", "m-clas", [440, 160], base),
         modelo("Modelo (resumir)", "m-res", [440, 460], base),
         modelo("Modelo (reseña)", "m-resena", [440, 760], base),
         modelo("Modelo (sinopsis)", "m-desc", [440, 1060], base),
+        modelo("Modelo (completar)", "m-comp", [440, 1360], base),
         parser("Parser (clasificar)", "p-clas", ESQ_CLASIFICAR, [640, 160]),
         parser("Parser (resumir)", "p-res", ESQ_RESUMIR, [640, 460]),
         parser("Parser (reseña)", "p-resena", ESQ_RESENA, [640, 760]),
         parser("Parser (sinopsis)", "p-desc", ESQ_DESCRIPCION, [640, 1060]),
+        parser("Parser (completar)", "p-comp", ESQ_COMPLETAR, [640, 1360]),
         responder("Responder a Ex Libris", "n-resp", "={{ JSON.stringify($json.output) }}", [900, 300]),
     ]
     conexiones = {
@@ -129,12 +150,14 @@ def tareas(base):
         "Switch (tarea)": {"main": [[{"node": "Clasificar libro", "type": "main", "index": 0}],
                                     [{"node": "Resumir anotaciones", "type": "main", "index": 0}],
                                     [{"node": "Borrador de reseña", "type": "main", "index": 0}],
-                                    [{"node": "Escribir sinopsis", "type": "main", "index": 0}]]},
+                                    [{"node": "Escribir sinopsis", "type": "main", "index": 0}],
+                                    [{"node": "Completar datos", "type": "main", "index": 0}]]},
     }
     for cadena_, mod, par in (("Clasificar libro", "Modelo (clasificar)", "Parser (clasificar)"),
                               ("Resumir anotaciones", "Modelo (resumir)", "Parser (resumir)"),
                               ("Borrador de reseña", "Modelo (reseña)", "Parser (reseña)"),
-                              ("Escribir sinopsis", "Modelo (sinopsis)", "Parser (sinopsis)")):
+                              ("Escribir sinopsis", "Modelo (sinopsis)", "Parser (sinopsis)"),
+                              ("Completar datos", "Modelo (completar)", "Parser (completar)")):
         conexiones[cadena_] = {"main": [[{"node": "Responder a Ex Libris", "type": "main", "index": 0}]]}
         conexiones[mod] = {"ai_languageModel": [[{"node": cadena_, "type": "ai_languageModel", "index": 0}]]}
         conexiones[par] = {"ai_outputParser": [[{"node": cadena_, "type": "ai_outputParser", "index": 0}]]}

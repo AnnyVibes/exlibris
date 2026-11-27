@@ -12,7 +12,7 @@ Ex Libris (Django) ──POST──▶ n8n /webhook/exlibris-tarea  ──▶ Sw
 
 | Archivo | Qué hace |
 |---|---|
-| `exlibris-tareas.json` | **Clasificar** un libro (género de la lista + etiquetas), **resumir** las anotaciones, **borrador de reseña** y **escribir sinopsis**. Switch por `tarea` → 4 *Basic LLM Chain* con *Structured Output Parser* → *Respond to Webhook*. |
+| `exlibris-tareas.json` | **Clasificar** un libro (género de la lista + etiquetas), **resumir** las anotaciones, **borrador de reseña**, **escribir sinopsis** y **completar datos** (con título y autor). Switch por `tarea` → 5 *Basic LLM Chain* con *Structured Output Parser* → *Respond to Webhook*. |
 | `exlibris-agente.json` | **Asistente «Pregúntale a tu biblioteca»**: *AI Agent* con memoria por conversación y 6 herramientas HTTP: 5 de consulta (`buscar_libros`, `ver_libro`, `libros_compartidos`, `buscar_anotaciones`, `resumen_biblioteca`) y 1 de escritura (`agregar_libro`: busca el ISBN por título y autor y agrega el libro). |
 | `*-ollama.json` | Los mismos workflows con **Ollama** en lugar de Gemini. |
 | `generar_workflows.py` | Script que genera los cuatro JSON (prompts, esquemas y lista de géneros salen del código de la app). |

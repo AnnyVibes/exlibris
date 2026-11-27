@@ -81,7 +81,7 @@
 
       <div class="acciones-form">
         <div class="acciones-izquierda">
-          <button class="boton-enlace boton-completar" type="button" id="completar-datos" data-url="{% url 'completar_datos' %}" title="Busca en Google Books y Open Library y rellena solo los campos vacíos">Completar datos faltantes</button>
+          <button class="boton-enlace boton-completar" type="button" id="completar-datos" data-url="{% url 'completar_datos' %}" title="Con el título y el autor, la IA rellena los campos vacíos">✦ Completar datos con IA</button>
           <span class="ia-estado" id="completar-estado" role="status" hidden></span>
         </div>
         <a class="boton boton-secundario" href="{% if libro %}{% url 'libro_detalle' libro.pk %}{% else %}{% url 'biblioteca' %}{% endif %}">Cancelar</a>
@@ -93,16 +93,16 @@
 {% endblock %}
 {% block scripts %}
 <script>
-/* Completar datos faltantes desde los catálogos y escribir la sinopsis con IA (rellenan, no guardan). */
+/* Completar datos con IA (título + autor) y escribir la sinopsis con IA (rellenan, no guardan). */
 (function () {
   const valor = (id) => ((document.getElementById(id) || {}).value || "").trim();
   const poner = (id, v) => { const e = document.getElementById(id); if (e && !e.value.trim() && v) { e.value = v; e.classList.add("recien-completado"); return true; } return false; };
   const btn = document.getElementById("completar-datos"), est = document.getElementById("completar-estado");
   if (btn) btn.addEventListener("click", async () => {
     est.hidden = false; est.classList.remove("error");
-    if (!valor("id_titulo") && !valor("id_isbn")) { est.textContent = "Escribe al menos el título o el ISBN."; est.classList.add("error"); return; }
-    btn.disabled = true; btn.classList.add("cargando"); est.textContent = "Buscando…";
-    const r = await window.exlibrisIA(btn.dataset.url, { isbn: valor("id_isbn"), titulo: valor("id_titulo"), autores: valor("id_autores") });
+    if (!valor("id_titulo")) { est.textContent = "Escribe el título y el autor."; est.classList.add("error"); return; }
+    btn.disabled = true; btn.classList.add("cargando"); est.textContent = "La IA está buscando los datos…";
+    const r = await window.exlibrisIA(btn.dataset.url, { titulo: valor("id_titulo"), autores: valor("id_autores") });
     btn.disabled = false; btn.classList.remove("cargando");
     if (!r.ok) { est.textContent = r.error; est.classList.add("error"); return; }
     const d = r.datos, nombres = { id_autores: "autor", id_editorial: "editorial", id_anio: "año", id_paginas: "páginas", id_descripcion: "sinopsis", id_isbn: "ISBN", id_portada_url: "portada" };
@@ -112,7 +112,7 @@
     const genero = document.getElementById("id_genero");
     if (genero && !genero.value && d.genero) { genero.value = d.genero; hechos.push("género"); }
     if (d.portada_url && document.getElementById("vista-portada").hidden) document.getElementById("id_portada_url").dispatchEvent(new Event("change"));
-    if (hechos.length) est.hidden = true; else est.textContent = "No se encontraron más datos.";
+    if (hechos.length) est.hidden = true; else est.textContent = "La IA no encontró más datos para este libro.";
   });
   const bDesc = document.getElementById("ia-descripcion"), eDesc = document.getElementById("ia-descripcion-estado");
   if (bDesc) bDesc.addEventListener("click", async () => {

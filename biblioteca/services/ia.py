@@ -5,7 +5,7 @@ Django no llama al LLM directamente: envía la tarea a un webhook de n8n, donde 
 sigue funcionando y solo muestra «IA no disponible».
 
 Webhooks:
-  POST {N8N_URL}/exlibris-tarea   {"tarea": "clasificar" | "resumir" | "resena", ...}
+  POST {N8N_URL}/exlibris-tarea   {"tarea": "clasificar" | "resumir" | "resena" | "descripcion" | "completar", ...}
   POST {N8N_URL}/exlibris-agente  {"mensaje", "sesion", "token", "api", "persona"}
 """
 
@@ -110,6 +110,41 @@ def descripcion(titulo, autores="", genero=""):
     texto = _texto(respuesta, "descripcion", "texto")
     texto = re.sub(r"\*\*(.+?)\*\*|__(.+?)__", lambda m: m.group(1) or m.group(2), texto)
     return texto.strip()
+
+
+def _entero(valor, minimo, maximo):
+    try:
+        n = int(str(valor).strip().split()[0])
+    except (TypeError, ValueError, IndexError):
+        return None
+    return n if minimo <= n <= maximo else None
+
+
+def completar(titulo, autores=""):
+    """Datos del libro según la IA a partir del título y el autor (para lo que los catálogos no tienen).
+
+    Devuelve solo los campos que la IA conoce y que pasan la validación: autores, editorial,
+    anio, paginas, descripcion, genero (de la lista) e isbn (con dígito de control correcto).
+    """
+    from datetime import date
+
+    from .isbn import ISBNInvalido, normalizar
+
+    r = _llamar("exlibris-tarea", {"tarea": "completar", "titulo": titulo, "autores": autores, "generos": GENEROS})
+    limpio = lambda clave, largo: re.sub(r"\*\*(.+?)\*\*", r"\1", str(r.get(clave) or "")).strip()[:largo]
+    datos = {
+        "autores": limpio("autores", 300), "editorial": limpio("editorial", 200),
+        "descripcion": limpio("descripcion", 3000),
+        "anio": _entero(r.get("anio"), 1000, date.today().year),
+        "paginas": _entero(r.get("paginas"), 1, 10000),
+    }
+    genero = str(r.get("genero") or "").strip()
+    datos["genero"] = genero if genero in GENEROS else sugerir(genero)
+    try:
+        datos["isbn"] = normalizar(str(r.get("isbn") or "")) if r.get("isbn") else ""
+    except ISBNInvalido:
+        datos["isbn"] = ""  # un ISBN inventado casi nunca tiene el dígito de control correcto
+    return {c: v for c, v in datos.items() if v}
 
 
 def resumir(libro):

@@ -245,22 +245,15 @@ def libro_editar(request, pk):
 @login_required
 @require_POST
 def completar_datos(request):
-    """Datos de los catálogos para rellenar los campos vacíos del formulario (no guarda nada)."""
+    """La IA completa los datos del libro a partir del título y el autor (no guarda nada)."""
     datos = _json(request) or {}
-    isbn = str(datos.get("isbn", "")).strip()
-    try:
-        isbn = normalizar(isbn) if isbn else ""
-    except ISBNInvalido:
-        isbn = ""
     titulo, autores = str(datos.get("titulo", "")).strip(), str(datos.get("autores", "")).strip()
-    if not titulo and not isbn:
-        return JsonResponse({"error": "Escribe al menos el título o el ISBN."}, status=400)
-    encontrados = catalogo.completar_datos(isbn, titulo, autores)
-    campos = ("autores", "editorial", "anio", "paginas", "portada_url", "descripcion", "genero", "isbn")
-    respuesta = {c: encontrados[c] for c in campos if encontrados.get(c)}
-    if respuesta.get("genero") not in GENEROS:
-        respuesta.pop("genero", None)
-    return JsonResponse(respuesta)
+    if not titulo:
+        return JsonResponse({"error": "Escribe el título (y mejor también el autor)."}, status=400)
+    try:
+        return JsonResponse(ia.completar(titulo, autores))
+    except ia.IANoDisponible as exc:
+        return _error_ia(exc)
 
 
 @login_required

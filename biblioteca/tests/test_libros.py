@@ -205,22 +205,39 @@ class CompletarDatosFormularioTests(ConUsuario):
         import json
         return self.client.post(reverse("completar_datos"), data=json.dumps(datos), content_type="application/json")
 
-    def test_devuelve_datos_para_rellenar(self):
+    def test_la_ia_completa_y_valida(self):
         from unittest.mock import patch
-        datos = {"autores": "Julio Cortázar", "paginas": 633, "editorial": "Seix Barral", "genero": "Fiction raro",
-                 "descripcion": "Novela", "isbn": "9788432221552"}
-        with patch("biblioteca.services.catalogo.completar_datos", return_value=datos) as completar:
-            r = self.post({"titulo": "Rayuela", "autores": "Julio Cortazar", "isbn": "978-84-322-2155-2"})
-        completar.assert_called_once_with("9788432221552", "Rayuela", "Julio Cortazar")
-        self.assertEqual(r.json()["paginas"], 633)
-        self.assertNotIn("genero", r.json())  # solo géneros de la lista
+        from biblioteca.services import ia
+        respuesta = {"autores": "Julio Cortázar", "editorial": "Alfaguara", "anio": 1963, "paginas": "633",
+                     "genero": "zzz", "descripcion": "Una **novela** que se lee en varios órdenes.",
+                     "isbn": "9788432221553"}  # dígito de control incorrecto: se descarta
+        with patch.object(ia, "_llamar", return_value=respuesta) as llamar:
+            r = self.post({"titulo": "Rayuela", "autores": "Julio Cortazar"})
+        enviado = llamar.call_args[0][1]
+        self.assertEqual((enviado["tarea"], enviado["titulo"]), ("completar", "Rayuela"))
+        d = r.json()
+        self.assertEqual((d["paginas"], d["anio"], d["editorial"]), (633, 1963, "Alfaguara"))
+        self.assertEqual(d["descripcion"], "Una novela que se lee en varios órdenes.")
+        self.assertNotIn("isbn", d)
+        self.assertNotIn("genero", d)  # solo géneros de la lista
 
-    def test_requiere_titulo_o_isbn(self):
-        self.assertEqual(self.post({"titulo": " ", "isbn": "123"}).status_code, 400)
+    def test_isbn_valido_y_datos_imposibles(self):
+        from unittest.mock import patch
+        from biblioteca.services import ia
+        with patch.object(ia, "_llamar", return_value={"isbn": "978-84-322-2155-2", "anio": 3050, "paginas": 0, "genero": "Novela"}):
+            d = self.post({"titulo": "Rayuela"}).json()
+        self.assertEqual(d, {"isbn": "9788432221552", "genero": "Novela"})
+
+    def test_requiere_titulo_e_ia_apagada(self):
+        from unittest.mock import patch
+        from biblioteca.services import ia
+        self.assertEqual(self.post({"titulo": " ", "isbn": "9788432221552"}).status_code, 400)
+        with patch.object(ia, "_llamar", side_effect=ia.IANoDisponible("La IA no está disponible.")):
+            self.assertEqual(self.post({"titulo": "Rayuela"}).status_code, 503)
 
     def test_boton_en_el_formulario_y_no_en_la_ficha(self):
         libro = self.libro()
-        self.assertContains(self.client.get(reverse("libro_editar", args=[libro.pk])), "Completar datos faltantes")
+        self.assertContains(self.client.get(reverse("libro_editar", args=[libro.pk])), "Completar datos con IA")
         self.assertContains(self.client.get(reverse("libro_nuevo")), "Escribir con IA")
-        self.assertNotContains(self.client.get(reverse("libro_detalle", args=[libro.pk])), "Completar datos faltantes")
+        self.assertNotContains(self.client.get(reverse("libro_detalle", args=[libro.pk])), "Completar datos")
 

@@ -113,6 +113,29 @@
               },
               "renameOutput": true,
               "outputKey": "descripcion"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "id": "r5",
+                    "leftValue": "={{ $json.body.tarea }}",
+                    "rightValue": "completar",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "completar"
             }
           ]
         },
@@ -189,6 +212,21 @@
     },
     {
       "parameters": {
+        "promptType": "define",
+        "text": "=Eres bibliotecaria. Completa la ficha del libro «{{ $json.body.titulo }}»{{ $json.body.autores ? \" de \" + $json.body.autores : \"\" }}.\n\nDevuelve los datos de la edición en español más conocida (si no existe en español, la edición original):\n- \"autores\": nombre completo del autor o autores, separados por coma.\n- \"editorial\": nombre de la editorial de esa edición.\n- \"anio\": año de publicación de esa edición (número). 0 si no lo sabes.\n- \"paginas\": número de páginas de esa edición (número aproximado). 0 si no lo sabes.\n- \"genero\": EXACTAMENTE uno de esta lista (copia el texto tal cual): {{ $json.body.generos.join(\" | \") }}\n- \"descripcion\": sinopsis de 60 a 110 palabras, en español, como la contraportada, sin spoilers del final.\n- \"isbn\": el ISBN-13 de esa edición SOLO si lo conoces con seguridad; si no, \"\" (nunca lo inventes).\nSi no conoces un dato, déjalo vacío (\"\" o 0). No inventes nombres de personajes ni detalles de la trama.",
+        "hasOutputParser": true
+      },
+      "id": "e65e7285-acd7-52fc-a5c0-2b8bebe70ee4",
+      "name": "Completar datos",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        500,
+        1200
+      ]
+    },
+    {
+      "parameters": {
         "model": "llama3.2",
         "options": {
           "temperature": 0.3
@@ -253,6 +291,22 @@
     },
     {
       "parameters": {
+        "model": "llama3.2",
+        "options": {
+          "temperature": 0.3
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "id": "74ed34e2-98f3-570f-a9f0-a28fe5bfa70d",
+      "name": "Modelo (completar)",
+      "position": [
+        440,
+        1360
+      ]
+    },
+    {
+      "parameters": {
         "schemaType": "manual",
         "inputSchema": "{\n \"type\": \"object\",\n \"properties\": {\n  \"genero\": {\n   \"type\": \"string\",\n   \"enum\": [\n    \"Novela\",\n    \"Cuento\",\n    \"Poesía\",\n    \"Teatro\",\n    \"Fantasía\",\n    \"Ciencia ficción\",\n    \"Misterio y policial\",\n    \"Terror\",\n    \"Romance\",\n    \"Novela histórica\",\n    \"Clásicos\",\n    \"Juvenil\",\n    \"Infantil\",\n    \"Cómic y manga\",\n    \"Biografía y memorias\",\n    \"Ensayo\",\n    \"Historia\",\n    \"Filosofía\",\n    \"Psicología\",\n    \"Desarrollo personal\",\n    \"Ciencia\",\n    \"Tecnología\",\n    \"Negocios y economía\",\n    \"Arte y diseño\",\n    \"Religión y espiritualidad\",\n    \"Cocina\",\n    \"Viajes\",\n    \"Educación y estudio\",\n    \"Otro\"\n   ]\n  },\n  \"etiquetas\": {\n   \"type\": \"array\",\n   \"items\": {\n    \"type\": \"string\"\n   },\n   \"maxItems\": 5\n  }\n },\n \"required\": [\n  \"genero\",\n  \"etiquetas\"\n ]\n}"
       },
@@ -309,6 +363,20 @@
     },
     {
       "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n \"type\": \"object\",\n \"properties\": {\n  \"autores\": {\n   \"type\": \"string\"\n  },\n  \"editorial\": {\n   \"type\": \"string\"\n  },\n  \"anio\": {\n   \"type\": \"integer\"\n  },\n  \"paginas\": {\n   \"type\": \"integer\"\n  },\n  \"genero\": {\n   \"type\": \"string\"\n  },\n  \"descripcion\": {\n   \"type\": \"string\"\n  },\n  \"isbn\": {\n   \"type\": \"string\"\n  }\n },\n \"required\": [\n  \"autores\",\n  \"editorial\",\n  \"anio\",\n  \"paginas\",\n  \"genero\",\n  \"descripcion\",\n  \"isbn\"\n ]\n}"
+      },
+      "id": "29f96f32-2230-52fb-b7c9-ef56f18f5c75",
+      "name": "Parser (completar)",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        640,
+        1360
+      ]
+    },
+    {
+      "parameters": {
         "respondWith": "json",
         "responseBody": "={{ JSON.stringify($json.output) }}",
         "options": {}
@@ -361,6 +429,13 @@
         [
           {
             "node": "Escribir sinopsis",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Completar datos",
             "type": "main",
             "index": 0
           }
@@ -493,6 +568,39 @@
         [
           {
             "node": "Escribir sinopsis",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Completar datos": {
+      "main": [
+        [
+          {
+            "node": "Responder a Ex Libris",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Modelo (completar)": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Completar datos",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parser (completar)": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Completar datos",
             "type": "ai_outputParser",
             "index": 0
           }
