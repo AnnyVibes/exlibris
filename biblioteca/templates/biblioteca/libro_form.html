@@ -81,7 +81,7 @@
 
       <div class="acciones-form">
         <div class="acciones-izquierda">
-          <button class="boton-enlace" type="button" id="completar-datos" data-url="{% url 'completar_datos' %}" title="Busca en Google Books y Open Library y rellena solo los campos vacíos">{% icono 'buscar' %} Completar datos faltantes</button>
+          <button class="boton-enlace boton-completar" type="button" id="completar-datos" data-url="{% url 'completar_datos' %}" title="Busca en Google Books y Open Library y rellena solo los campos vacíos">Completar datos faltantes</button>
           <span class="ia-estado" id="completar-estado" role="status" hidden></span>
         </div>
         <a class="boton boton-secundario" href="{% if libro %}{% url 'libro_detalle' libro.pk %}{% else %}{% url 'biblioteca' %}{% endif %}">Cancelar</a>

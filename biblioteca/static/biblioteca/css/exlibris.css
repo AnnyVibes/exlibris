@@ -1113,7 +1113,7 @@ a.perfil { transition: box-shadow .15s; } a.perfil:hover { box-shadow: var(--som
 .campo-cabecera { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
 .campo-cabecera label { margin-bottom: 0 !important; }
 .boton-enlace { all: unset; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--primario-texto); white-space: nowrap; border-radius: 6px; }
-.boton-enlace:hover { text-decoration: underline; text-underline-offset: 3px; }
+.boton-enlace:hover { opacity: .8; }
 .boton-enlace:focus-visible { box-shadow: var(--foco); }
 .boton-enlace[disabled] { opacity: .5; pointer-events: none; }
 .boton-ia-texto { color: #a21caf; }
@@ -1121,8 +1121,9 @@ a.perfil { transition: box-shadow .15s; } a.perfil:hover { box-shadow: var(--som
 .recien-completado { border-color: #f0abfc !important; background: #fdf4ff !important; }
 .acciones-form { display: flex; justify-content: flex-end; align-items: center; flex-wrap: wrap; gap: 10px; padding-top: 16px; border-top: 1px solid var(--borde); }
 .acciones-izquierda { margin-right: auto; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; min-width: 0; }
-.acciones-izquierda .boton-enlace { display: inline-flex; align-items: center; gap: 6px; }
-.acciones-izquierda .boton-enlace .icono { width: 16px; height: 16px; }
+/* Mismo estilo que «Escribir con IA», con el degradado de Buscar (un poco más oscuro para que se lea bien) */
+.boton-completar { font-size: 14px; font-weight: 700; color: #c026d3;
+  background: linear-gradient(90deg, #7c6fd0 0%, #b46cf0 35%, #e5534b 75%, #d98b0b 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
 .acciones-izquierda .ia-estado { margin: 0; }
 /* Opciones de portada debajo del libro */
 .portada-opciones { display: grid; gap: 8px; min-width: 0; }
