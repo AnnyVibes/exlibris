@@ -67,7 +67,11 @@ def desde_google_books(isbn):
     items = (data or {}).get("items") or []
     if not items:
         return {}
-    info = items[0].get("volumeInfo", {})
+    return _desde_volumen(items[0].get("volumeInfo", {}))
+
+
+def _desde_volumen(info):
+    """Convierte un volumen de Google Books al formato de Ex Libris."""
     return {
         "titulo": info.get("title", ""),
         "autores": ", ".join(info.get("authors", [])),
@@ -113,22 +117,77 @@ def _isbn13_validos(candidatos):
     return vistos
 
 
-def buscar_isbn_por_titulo(titulo, autor=""):
-    """Busca el ISBN de un libro por título (y autor). Prefiere ediciones en español. Devuelve "" si no lo encuentra."""
+def buscar_por_titulo(titulo, autor=""):
+    """Busca un libro por título (y autor). Devuelve sus datos con el ISBN (prefiere ediciones en español
+    y, entre los resultados, el que trae más datos). Devuelve {} si no encuentra nada."""
     titulo, autor = (titulo or "").strip(), (autor or "").strip()
     if not titulo:
-        return ""
+        return {}
     q = f"intitle:{titulo}" + (f"+inauthor:{autor}" if autor else "")
     for idioma in ("&langRestrict=es", ""):
         data = _get_json(GOOGLE_BUSQUEDA.format(q=quote(q, safe=":+")) + idioma)
+        candidatos = []
         for item in (data or {}).get("items") or []:
-            ids = (item.get("volumeInfo") or {}).get("industryIdentifiers") or []
+            info = item.get("volumeInfo") or {}
+            ids = info.get("industryIdentifiers") or []
             validos = _isbn13_validos(i.get("identifier") for i in ids if i.get("type") in ("ISBN_13", "ISBN_10"))
             if validos:
-                return validos[0]
+                datos = _desde_volumen(info)
+                datos["isbn"] = validos[0]
+                candidatos.append(datos)
+        if candidatos:
+            # el primero de Google es el más relevante; entre los 3 primeros se elige el más completo
+            mejor = max(candidatos[:3], key=lambda d: sum(1 for c in CAMPOS if d.get(c)))
+            return {k: v for k, v in mejor.items() if v not in (None, "")}
     data = _get_json(OPEN_LIBRARY_BUSQUEDA.format(titulo=quote(titulo), autor=quote(autor)))
     for doc in (data or {}).get("docs") or []:
         validos = _isbn13_validos(doc.get("isbn") or [])
         if validos:
-            return validos[0]
-    return ""
+            return {"isbn": validos[0]}
+    return {}
+
+
+def buscar_isbn_por_titulo(titulo, autor=""):
+    return buscar_por_titulo(titulo, autor).get("isbn", "")
+
+
+def completar_datos(isbn="", titulo="", autor=""):
+    """Datos más completos posibles. Sin ISBN, primero lo busca por título y autor; luego consulta ese ISBN
+    y rellena lo que falte con el resultado de la búsqueda por título (otra edición del mismo libro)."""
+    por_titulo = None
+    if not isbn and titulo:
+        por_titulo = buscar_por_titulo(titulo, autor)
+        isbn = por_titulo.get("isbn", "")
+    datos = buscar_por_isbn(isbn) if isbn else {}
+    if titulo and (not datos or any(not datos.get(c) for c in CAMPOS)):
+        if por_titulo is None:
+            por_titulo = buscar_por_titulo(titulo, autor)
+        for campo in CAMPOS:
+            if not datos.get(campo) and por_titulo.get(campo):
+                datos[campo] = por_titulo[campo]
+    if isbn:
+        datos["isbn"] = isbn
+    return datos
+
+
+def completar_libro(libro):
+    """Rellena SOLO los campos vacíos de un libro con los catálogos. Devuelve la lista de campos completados."""
+    from .generos import GENEROS
+
+    datos = completar_datos(libro.isbn, libro.titulo, libro.autores)
+    completados = []
+    for campo in ("autores", "editorial", "anio", "paginas", "portada_url", "descripcion", "genero", "isbn"):
+        valor = datos.get(campo)
+        if not valor or getattr(libro, campo):
+            continue
+        if campo == "portada_url" and libro.portada:
+            continue
+        if campo == "genero" and valor not in GENEROS:
+            continue
+        if campo == "isbn" and type(libro).objects.filter(propietario=libro.propietario, isbn=valor).exclude(pk=libro.pk).exists():
+            continue
+        setattr(libro, campo, valor[:500] if isinstance(valor, str) and campo == "portada_url" else valor)
+        completados.append(campo)
+    if completados:
+        libro.save()
+    return completados

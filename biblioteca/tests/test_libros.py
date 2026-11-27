@@ -70,14 +70,16 @@ class AltaLibroTests(ConUsuario):
         self.client.post(reverse("libro_nuevo"), {"isbn": "9780307474728", "titulo": "Rayuela", "estado": "por_leer"})
         self.assertEqual(Libro.objects.filter(propietario=self.usuario, isbn="9780307474728").count(), 1)
 
+    @patch("biblioteca.views.catalogo.buscar_por_titulo", return_value={"paginas": 417, "descripcion": "Macondo"})
     @patch("biblioteca.views.catalogo.buscar_por_isbn")
-    def test_busqueda_por_isbn_precarga_formulario(self, buscar):
+    def test_busqueda_por_isbn_precarga_formulario(self, buscar, _titulo):
         """Al escanear se llega a /libros/nuevo/?isbn=… con los datos del catálogo ya puestos."""
         buscar.return_value = {"isbn": "9780307474728", "titulo": "Cien años de soledad", "autores": "García Márquez"}
         r = self.client.get(reverse("libro_nuevo"), {"isbn": "978-0307474728"})
         buscar.assert_called_once_with("9780307474728")
         self.assertContains(r, 'value="Cien años de soledad"')
         self.assertContains(r, "Encontramos el libro")
+        self.assertContains(r, 'value="417"')  # completado por título: esa edición no traía páginas
 
     @patch("biblioteca.views.catalogo.buscar_por_isbn", return_value={})
     def test_isbn_no_encontrado_permite_completar_a_mano(self, _):
@@ -196,3 +198,26 @@ class CacheImagenesTests(ConUsuario):
         html = self.client.get(reverse("login")).content.decode()
         self.assertRegex(html, r'exlibris\.css\?v=\d+')
         self.assertNotRegex(html, r'\.(svg|css)["\')]')  # ningún estático sin versión
+
+
+class CompletarLibroTests(ConUsuario):
+    def test_solo_rellena_lo_vacio(self):
+        from unittest.mock import patch
+        libro = self.libro(titulo="Rayuela", autores="Julio Cortazar", paginas=None, isbn="9788432221552")
+        datos = {"autores": "Otro", "paginas": 736, "descripcion": "Novela", "editorial": "Cátedra", "genero": "Novela"}
+        with patch("biblioteca.services.catalogo.completar_datos", return_value=datos):
+            r = self.client.post(reverse("libro_completar", args=[libro.pk]), follow=True)
+        libro.refresh_from_db()
+        self.assertEqual((libro.autores, libro.paginas, libro.editorial), ("Julio Cortazar", 736, "Cátedra"))
+        self.assertContains(r, "Se completó")
+
+    def test_sin_datos_nuevos(self):
+        from unittest.mock import patch
+        libro = self.libro()
+        with patch("biblioteca.services.catalogo.completar_datos", return_value={}):
+            r = self.client.post(reverse("libro_completar", args=[libro.pk]), follow=True)
+        self.assertContains(r, "No se encontraron más datos")
+
+    def test_no_completa_libro_ajeno(self):
+        ajeno = Libro.objects.create(propietario=self.otro, titulo="X")
+        self.assertEqual(self.client.post(reverse("libro_completar", args=[ajeno.pk])).status_code, 404)

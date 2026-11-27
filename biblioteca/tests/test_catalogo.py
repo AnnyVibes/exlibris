@@ -53,3 +53,23 @@ class CatalogoTests(SimpleTestCase):
     def test_no_encontrado(self):
         with patch.object(catalogo, "_get_json", return_value=None):
             self.assertEqual(catalogo.buscar_por_isbn(ISBN), {})
+
+
+class CompletarDatosTests(SimpleTestCase):
+    def test_completa_lo_que_falta_por_titulo(self):
+        isbn_pobre = {"titulo": "Rayuela", "isbn": "9788432221552"}
+        por_titulo = {"titulo": "Rayuela", "autores": "Julio Cortázar", "paginas": 736, "descripcion": "Novela de Cortázar",
+                      "portada_url": "https://x/p.jpg", "isbn": "9788437604572"}
+        with patch.object(catalogo, "buscar_por_isbn", return_value=dict(isbn_pobre)), \
+             patch.object(catalogo, "buscar_por_titulo", return_value=por_titulo):
+            datos = catalogo.completar_datos("9788432221552", "Rayuela", "Julio Cortázar")
+        self.assertEqual(datos["isbn"], "9788432221552")  # se conserva el ISBN de la persona
+        self.assertEqual((datos["paginas"], datos["descripcion"]), (736, "Novela de Cortázar"))
+
+    def test_elige_el_resultado_mas_completo(self):
+        def vol(isbn, **extra):
+            return {"volumeInfo": {"title": "Rayuela", "industryIdentifiers": [{"type": "ISBN_13", "identifier": isbn}], **extra}}
+        google = {"items": [vol("9780307474728"), vol("9788437604572", pageCount=736, description="d", publisher="Cátedra")]}
+        with patch.object(catalogo, "_get_json", return_value=google):
+            datos = catalogo.buscar_por_titulo("Rayuela", "Cortázar")
+        self.assertEqual((datos["isbn"], datos["paginas"]), ("9788437604572", 736))

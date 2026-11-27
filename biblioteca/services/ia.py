@@ -181,9 +181,8 @@ def agregar_libro(usuario, titulo, autores="", isbn=""):
         isbn = normalizar(isbn) if isbn else ""
     except ISBNInvalido:
         isbn = ""
-    if not isbn:
-        isbn = catalogo.buscar_isbn_por_titulo(titulo, autores)
-    datos = catalogo.buscar_por_isbn(isbn) if isbn else {}
+    datos = catalogo.completar_datos(isbn, titulo, autores)
+    isbn = isbn or datos.get("isbn", "")
 
     existente = None
     if isbn:

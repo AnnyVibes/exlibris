@@ -195,6 +195,12 @@ def libro_nuevo(request):
                 messages.info(request, "Ese libro ya está en tu biblioteca.")
                 return redirect("libro_detalle", pk=existente.pk)
             inicial = catalogo.buscar_por_isbn(isbn) or {"isbn": isbn}
+            if inicial.get("titulo") and any(not inicial.get(c) for c in catalogo.CAMPOS):
+                # Esta edición tiene pocos datos: se completan con otra edición del mismo libro (título y autor)
+                extra = catalogo.buscar_por_titulo(inicial["titulo"], inicial.get("autores", ""))
+                for campo in catalogo.CAMPOS:
+                    if not inicial.get(campo) and extra.get(campo):
+                        inicial[campo] = extra[campo]
             if "titulo" not in inicial:
                 aviso = "No encontramos ese ISBN en el catálogo. Completa los datos a mano."
     form = LibroForm(initial=inicial, propietario=request.user)
@@ -233,6 +239,23 @@ def libro_editar(request, pk):
         messages.success(request, "Cambios guardados.")
         return redirect("libro_detalle", pk=libro.pk)
     return render(request, "biblioteca/libro_form.html", {"form": form, "libro": libro, "portada": libro.imagen_portada})
+
+
+NOMBRES_CAMPOS = {"autores": "autor", "editorial": "editorial", "anio": "año", "paginas": "páginas",
+                  "portada_url": "portada", "descripcion": "descripción", "genero": "género", "isbn": "ISBN"}
+
+
+@login_required
+@require_POST
+def libro_completar(request, pk):
+    """Completa los campos vacíos del libro con Google Books y Open Library (no cambia lo que ya está escrito)."""
+    libro = _libro_del_usuario(request, pk)
+    completados = catalogo.completar_libro(libro)
+    if completados:
+        messages.success(request, "Se completó: " + ", ".join(NOMBRES_CAMPOS[c] for c in completados) + ".")
+    else:
+        messages.info(request, "No se encontraron más datos para este libro en los catálogos.")
+    return redirect("libro_detalle", pk=libro.pk)
 
 
 @login_required

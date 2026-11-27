@@ -20,6 +20,11 @@
     {% if libro.descripcion %}<p class="descripcion">{{ libro.descripcion }}</p>{% endif %}
     <div class="acciones-fila">
       <a class="boton-accion" href="{% url 'libro_editar' libro.pk %}" title="Editar libro" aria-label="Editar libro">{% icono 'editar' %}</a>
+      {% if not libro.paginas or not libro.descripcion or not libro.imagen_portada or not libro.editorial or not libro.isbn %}
+      <form method="post" action="{% url 'libro_completar' libro.pk %}" class="form-completar">
+        {% csrf_token %}<button class="boton boton-suave boton-mini" type="submit" title="Buscar en Google Books y Open Library los datos que faltan">{% icono 'buscar' %} Completar datos faltantes</button>
+      </form>
+      {% endif %}
       <form method="post" action="{% url 'libro_eliminar' libro.pk %}" onsubmit="return confirm('¿Eliminar «{{ libro.titulo|escapejs }}» y todas sus anotaciones?');">
         {% csrf_token %}<button class="boton-accion peligro" type="submit" title="Eliminar libro" aria-label="Eliminar libro">{% icono 'basura' %}</button>
       </form>
@@ -183,6 +188,9 @@
     if (r.ok) { area.value = r.datos.texto; area.focus(); estado.textContent = "Borrador listo. Edítalo a tu gusto y pulsa «Guardar reseña»."; }
     else { estado.textContent = r.error; estado.classList.add("error"); }
   });
+  document.querySelectorAll(".form-completar").forEach((f) => f.addEventListener("submit", () => {
+    const b = f.querySelector("button"); b.disabled = true; b.classList.add("cargando");
+  }));
   document.querySelectorAll(".form-ia").forEach((f) => f.addEventListener("submit", () => {
     const b = f.querySelector("button"); b.disabled = true; b.classList.add("cargando"); b.textContent = "Resumiendo…";
   }));
